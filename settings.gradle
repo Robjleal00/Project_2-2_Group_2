@@ -1,2 +1,3 @@
 rootProject.name = 'Project_2-2_Group_2'
+include 'test'
 

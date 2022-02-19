@@ -25,6 +25,6 @@ javafx {
     version = '17'
 }
 
-mainClassName = 'org.openjfx.UI.MainApp'
+mainClassName = 'src/main/java/org/openjfx/UI/MainApp.java'
 
 compileJava.options.encoding = 'UTF-8'
