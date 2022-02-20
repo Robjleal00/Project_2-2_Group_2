@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class GameController {
-    private HashMap map;
+    private ArrayList[][] map;
     private ArrayList walls;
     private int mapLength;
     private int mapHeight;
@@ -16,28 +16,8 @@ public class GameController {
         this.mapLength=length;
         this.mapHeight=height;
     }
-    private HashMap makeMap(int height, int length){
-        HashMap<Integer, ArrayList<Integer>> map = new HashMap<Integer, ArrayList<Integer>>();
-        for(int i=1;i<=height;i++){
-            for(int j=1;j<=length;j++){
-                int number = ((i-1)*length)+j;
-                map.put(number,new ArrayList<Integer>());
-                if (number>length){  // can add top
-                    map.get(number).add(number-length);
-                }
-                if(number<=length*(height-1)){  //can add bottom
-                    map.get(number).add(number+length);
-                }
-                if(j!=length){  //can add right
-                    map.get(number).add(number+1);
-                }
-                if(j!=1){  //can add left
-                    map.get(number).add(number-1);
-                }
-            }
-        }
-        makeBorders(length,height);
-        return map;
+    private ArrayList[][] makeMap(int height, int length){
+        return new ArrayList[length][height];
     }
     public void printMap(){
 
