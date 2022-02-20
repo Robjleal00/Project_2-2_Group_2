@@ -1,4 +1,5 @@
 package org.openjfx.UI;
+import javafx.stage.Stage;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
@@ -17,18 +18,11 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) {
-        Button button = new Button("Hello, World!");
-        button.setOnAction(e -> System.out.println("Button is Pressed"));
+        double AREA_HEIGHT = 80;
+        double AREA_WIDTH = 120;
+        double SCALE = 0.3;
 
-        Scene scene = new Scene(button, 800,  600);
+       new GuiMaker(AREA_HEIGHT, AREA_WIDTH, SCALE);
 
-        VBox pane = new VBox(10);
-        pane.setStyle("-fx-background-color: #383838");
-
-
-        primaryStage.setScene(scene);
-        primaryStage.setResizable(false);
-        primaryStage.setTitle("Surveillance Game");
-        primaryStage.show();
     }
 }
