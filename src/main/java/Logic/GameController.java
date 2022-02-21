@@ -182,14 +182,11 @@ public class GameController {
                 for (int i=0;i<eyeRange;i++){
                     for(int j=-1;j<2;j++){
                         if(canSee[j+1]){
-                            int[] lookingAt={position[0]+i,position[1]+j};{
+                            int[] lookingAt={position[0]+i,position[1]+(j*-1)};{
                                 if(existsInBoard(lookingAt)){
                                     String symbol=map[lookingAt[0]][lookingAt[1]];
-                                    int invertsides=0;
-                                    if(j==-1)invertsides=2;
-                                    if(j==0)invertsides=1;
-                                    if(j==1)invertsides=0;
-                                    vision[eyeRange-(i+1)][invertsides]= symbol;
+
+                                    vision[eyeRange-(i+1)][j+1]= symbol;
                                     if(symbol=="W"){
                                         canSee[j+1]=false;
                                     }
@@ -198,14 +195,10 @@ public class GameController {
                         }
                         else{
                             if(j+1!=1&&canSee[1]){
-                                int[] lookingAt={position[0]+i,position[1]+j};{
+                                int[] lookingAt={position[0]+i,position[1]+(j*-1)};{
                                     if(existsInBoard(lookingAt)){
                                         String symbol=map[lookingAt[0]][lookingAt[1]];
-                                        int invertsides=0;
-                                        if(j==-1)invertsides=2;
-                                        if(j==0)invertsides=1;
-                                        if(j==1)invertsides=0;
-                                        vision[eyeRange-(i+1)][invertsides]= symbol;
+                                        vision[eyeRange-(i+1)][j+1]= symbol;
                                         if(symbol=="W"){
                                             canSee[j+1]=false;
                                         }
@@ -214,11 +207,8 @@ public class GameController {
 
                             }
                             else {
-                                int invertsides = 0;
-                                if (j == -1) invertsides = 2;
-                                if (j == 0) invertsides = 1;
-                                if (j == 1) invertsides = 0;
-                                vision[eyeRange - (i + 1)][invertsides] ="X";
+
+                                vision[eyeRange - (i + 1)][j+1] ="X";
                             }
                         }
                     }
