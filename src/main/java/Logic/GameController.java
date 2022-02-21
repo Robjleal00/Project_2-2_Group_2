@@ -8,6 +8,7 @@ import Enums.Rotations;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+
 public class GameController {
     private String [][]map;
     private int mapLength;
@@ -77,14 +78,15 @@ public class GameController {
         String [][] vision = new String [eyeRange][3];
         int[] position = locations.get(e);
         boolean canSee[]={true,true,true};
-        if(rot==Rotations.UP){
-            for(int i=eyeRange-1;i!=-1;i--){
+        switch(rot){
+            case UP -> {
+                for (int i=0;i<eyeRange;i++){
                 for(int j=-1;j<2;j++){
                     if(canSee[j+1]){
-                        int[] lookingAt={position[0]-(eyeRange-(i+1)),position[1]+j};{
+                        int[] lookingAt={position[0]-i,position[1]+j};{
                             if(existsInBoard(lookingAt)){
                                 String symbol=map[lookingAt[0]][lookingAt[1]];
-                                vision[i][j+1]= symbol;
+                                vision[eyeRange-(i+1)][j+1]= symbol;
                                 if(symbol=="W"){
                                     canSee[j+1]=false;
                                 }
@@ -92,11 +94,139 @@ public class GameController {
                         }
                     }
                     else{
-                        vision[i][j+1]= "X";
+                        if(j+1!=1&&canSee[1]){
+                            int[] lookingAt={position[0]-i,position[1]+j};{
+                                if(existsInBoard(lookingAt)){
+                                    String symbol=map[lookingAt[0]][lookingAt[1]];
+                                    vision[eyeRange-(i+1)][j+1]= symbol;
+                                    if(symbol=="W"){
+                                        canSee[j+1]=false;
+                                    }
+                                }
+                            }
+
+                        }
+                        else vision[eyeRange-(i+1)][j+1]= "X";
                     }
                 }
             }
+            }
+            case RIGHT -> {
+                for (int i=0;i<eyeRange;i++){
+                    for(int j=-1;j<2;j++){
+                        if(canSee[j+1]){
+                            int[] lookingAt={position[0]+j,position[1]+i};{
+                                if(existsInBoard(lookingAt)){
+                                    String symbol=map[lookingAt[0]][lookingAt[1]];
+                                    vision[eyeRange-(i+1)][j+1]= symbol;
+                                    if(symbol=="W"){
+                                        canSee[j+1]=false;
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            if(j+1!=1&&canSee[1]){
+                                int[] lookingAt={position[0]+j,position[1]+i};{
+                                    if(existsInBoard(lookingAt)){
+                                        String symbol=map[lookingAt[0]][lookingAt[1]];
+                                        vision[eyeRange-(i+1)][j+1]= symbol;
+                                        if(symbol=="W"){
+                                            canSee[j+1]=false;
+                                        }
+                                    }
+                                }
+
+                            }
+                            else vision[eyeRange-(i+1)][j+1]= "X";
+                        }
+                    }
+                }
+
+            }
+            case LEFT -> {
+                for (int i=0;i<eyeRange;i++){
+                    for(int j=-1;j<2;j++){
+                        if(canSee[j+1]){
+                            int[] lookingAt={position[0]+j,position[1]-i};{
+                                if(existsInBoard(lookingAt)){
+                                    String symbol=map[lookingAt[0]][lookingAt[1]];
+                                    vision[eyeRange-(i+1)][j+1]= symbol;
+                                    if(symbol=="W"){
+                                        canSee[j+1]=false;
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            if(j+1!=1&&canSee[1]){
+                                int[] lookingAt={position[0]+j,position[1]-i};{
+                                    if(existsInBoard(lookingAt)){
+                                        String symbol=map[lookingAt[0]][lookingAt[1]];
+                                        vision[eyeRange-(i+1)][j+1]= symbol;
+                                        if(symbol=="W"){
+                                            canSee[j+1]=false;
+                                        }
+                                    }
+                                }
+
+                            }
+                            else vision[eyeRange-(i+1)][j+1]= "X";
+                        }
+                    }
+                }
+
+
+            }
+            case DOWN -> {
+                for (int i=0;i<eyeRange;i++){
+                    for(int j=-1;j<2;j++){
+                        if(canSee[j+1]){
+                            int[] lookingAt={position[0]+i,position[1]+j};{
+                                if(existsInBoard(lookingAt)){
+                                    String symbol=map[lookingAt[0]][lookingAt[1]];
+                                    int invertsides=0;
+                                    if(j==-1)invertsides=2;
+                                    if(j==0)invertsides=1;
+                                    if(j==1)invertsides=0;
+                                    vision[eyeRange-(i+1)][invertsides]= symbol;
+                                    if(symbol=="W"){
+                                        canSee[j+1]=false;
+                                    }
+                                }
+                            }
+                        }
+                        else{
+                            if(j+1!=1&&canSee[1]){
+                                int[] lookingAt={position[0]+i,position[1]+j};{
+                                    if(existsInBoard(lookingAt)){
+                                        String symbol=map[lookingAt[0]][lookingAt[1]];
+                                        int invertsides=0;
+                                        if(j==-1)invertsides=2;
+                                        if(j==0)invertsides=1;
+                                        if(j==1)invertsides=0;
+                                        vision[eyeRange-(i+1)][invertsides]= symbol;
+                                        if(symbol=="W"){
+                                            canSee[j+1]=false;
+                                        }
+                                    }
+                                }
+
+                            }
+                            else {
+                                int invertsides = 0;
+                                if (j == -1) invertsides = 2;
+                                if (j == 0) invertsides = 1;
+                                if (j == 1) invertsides = 0;
+                                vision[eyeRange - (i + 1)][invertsides] ="X";
+                            }
+                        }
+                    }
+                }
+
+            }
         }
+        System.out.println(rot);
         return vision;
     }
     private void executeMove(Entity e, Moves m){
@@ -111,7 +241,7 @@ public class GameController {
                             entityRotationsHashMap.put(e,Rotations.DOWN);
                         }
                         case RIGHT -> {
-                            entityRotationsHashMap.put(e,Rotations.UP);
+                            entityRotationsHashMap.put(e, Rotations.UP);
                         }
                         case UP -> {
                             entityRotationsHashMap.put(e,Rotations.LEFT);
@@ -125,7 +255,7 @@ public class GameController {
                             entityRotationsHashMap.put(e,Rotations.LEFT);
                         }
                         case LEFT -> {
-                            entityRotationsHashMap.put(e,Rotations.UP);
+                            entityRotationsHashMap.put(e, Rotations.UP);
                         }
                         case RIGHT -> {
                             entityRotationsHashMap.put(e,Rotations.DOWN);
@@ -140,7 +270,7 @@ public class GameController {
                 case TURN_AROUND -> {
                     switch(rotation){
                         case DOWN -> {
-                            entityRotationsHashMap.put(e,Rotations.UP);
+                            entityRotationsHashMap.put(e, Rotations.UP);
                         }
                         case LEFT -> {
                             entityRotationsHashMap.put(e,Rotations.RIGHT);
@@ -213,8 +343,8 @@ public class GameController {
 
     public void addEntity(Entity e, int h, int l,Rotations rot) {
         entities.add(e);
-        int[] xyz = {h,l};
-        locations.put(e,xyz);
+        int[] yx = {h,l};
+        locations.put(e,yx);
         entityRotationsHashMap.put(e,rot);
         putOnMap(symbol(e),h,l);
     }
@@ -234,8 +364,8 @@ public class GameController {
             putOnMap("W",j,length-1);
         }
     }
-    private void putOnMap(String s,int[]xyz){
-        map[xyz[0]][xyz[1]]=s;
+    private void putOnMap(String s,int[]yx){
+        map[yx[0]][yx[1]]=s;
     }
     private void putOnMap(String s,int h,int l){
         map[h][l]=s;
@@ -243,8 +373,8 @@ public class GameController {
     private void removeFromMap(int h, int l){
         map[h][l]=" ";
     }
-    private void removeFromMap(int []xyz){
-        map[xyz[0]][xyz[1]]=" ";
+    private void removeFromMap(int []yx){
+        map[yx[0]][yx[1]]=" ";
     }
     private String symbol(Entity e){
         if(e.getType()== EntityType.EXPLORER){
