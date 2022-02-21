@@ -10,373 +10,373 @@ import java.util.HashMap;
 
 
 public class GameController {
-    private String [][]map;
+    private String[][] map;
     private int mapLength;
     private int mapHeight;
     private boolean isRunning;
     private int eyeRange;
     private ArrayList<Entity> entities;
-    private HashMap<Entity,int[]> locations;
+    private HashMap<Entity, int[]> locations;
     private HashMap<Entity, Rotations> entityRotationsHashMap;
     private HashMap<Entity, Moves> queuedMoves;
 
-    public GameController(int height, int length,int eyeRange){
-        this.map=makeMap(height,length);
-        this.mapLength=length;
-        this.mapHeight=height;
-       makeBorders(length,height);
-       isRunning=true;
-       this.eyeRange=eyeRange;
-       entities= new ArrayList<Entity>();
-       locations=new HashMap<Entity,int[]>();
-       entityRotationsHashMap= new HashMap<Entity,Rotations>();
-       queuedMoves = new HashMap<Entity,Moves>();
-
+    public GameController(int height, int length, int eyeRange) {
+        this.map = makeMap(height, length);
+        this.mapLength = length;
+        this.mapHeight = height;
+        makeBorders(length, height);
+        isRunning = true;
+        this.eyeRange = eyeRange;
+        entities = new ArrayList<Entity>();
+        locations = new HashMap<Entity, int[]>();
+        entityRotationsHashMap = new HashMap<Entity, Rotations>();
+        queuedMoves = new HashMap<Entity, Moves>();
     }
+
     public void init() throws InterruptedException {
-        while(isRunning){//gameloop
-            for(Entity e : entities){
-            Moves currentMove = e.getMove();
-            queuedMoves.put(e,currentMove);
+        while (isRunning) {//gameloop
+            for (Entity e : entities) {
+                Moves currentMove = e.getMove();
+                queuedMoves.put(e, currentMove);
             }
-            for(Entity e:entities){
-                executeMove(e,queuedMoves.get(e));
+            for (Entity e : entities) {
+                executeMove(e, queuedMoves.get(e));
             }
             printMap();
             Thread.sleep(200);
         }
     }
-    private String[][] makeMap(int height, int length){
-        String[][] mappy=new String[height][length];
-        for(int i =0;i<height;i++){
-            for(int j=0;j<length;j++){
-               mappy[i][j]=" ";
+
+    private String[][] makeMap(int height, int length) {
+        String[][] mappy = new String[height][length];
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < length; j++) {
+                mappy[i][j] = " ";
             }
         }
         return mappy;
     }
-    public void printMap(){
+
+    public void printMap() {
         printArray(map);
         print("------------------------");
     }
-    public void printArray(String[][] thing){
+
+    public void printArray(String[][] thing) {
         int height = thing.length;
         int lenght = thing[0].length;
-        for(int i =0;i<height;i++){
-            for(int j=0;j<lenght;j++){
-                if(j==lenght-1){
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < lenght; j++) {
+                if (j == lenght - 1) {
                     print(thing[i][j]);
-                }
-                else {
-                    System.out.print(thing[i][j]+"-");
+                } else {
+                    System.out.print(thing[i][j] + "-");
                 }
             }
         }
     }
-    public String[][] giveVision(Entity e){
+
+    public String[][] giveVision(Entity e) {
+        //!TODO FIX LEFT CORNER BUG
         Rotations rot = entityRotationsHashMap.get(e);
-        String [][] vision = new String [eyeRange][3];
+        String[][] vision = new String[eyeRange][3];
         int[] position = locations.get(e);
-        boolean canSee[]={true,true,true};
-        switch(rot){
+        boolean canSee[] = {true, true, true};
+        switch (rot) {
             case UP -> {
-                for (int i=0;i<eyeRange;i++){
-                for(int j=-1;j<2;j++){
-                    if(canSee[j+1]){
-                        int[] lookingAt={position[0]-i,position[1]+j};{
-                            if(existsInBoard(lookingAt)){
-                                String symbol=map[lookingAt[0]][lookingAt[1]];
-                                vision[eyeRange-(i+1)][j+1]= symbol;
-                                if(symbol=="W"){
-                                    canSee[j+1]=false;
-                                }
-                            }
-                        }
-                    }
-                    else{
-                        if(j+1!=1&&canSee[1]){
-                            int[] lookingAt={position[0]-i,position[1]+j};{
-                                if(existsInBoard(lookingAt)){
-                                    String symbol=map[lookingAt[0]][lookingAt[1]];
-                                    vision[eyeRange-(i+1)][j+1]= symbol;
-                                    if(symbol=="W"){
-                                        canSee[j+1]=false;
+                for (int i = 0; i < eyeRange; i++) {
+                    for (int j = -1; j < 2; j++) {
+                        int[] lookingAt = {position[0] - i, position[1] + j};
+                        if (canSee[j + 1]) {
+
+                            {
+                                if (existsInBoard(lookingAt)) {
+                                    String symbol = map[lookingAt[0]][lookingAt[1]];
+                                    vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                    if (symbol == "W") {
+                                        canSee[j + 1] = false;
                                     }
                                 }
                             }
+                        } else {
+                            if (j != 0 && canSee[1]) {
+                                if (j == -1&&(map[lookingAt[0]+1][lookingAt[1]])=="W") {
+                                    vision[eyeRange - (i + 1)][j + 1] = "X";
+                                } else {
+                                    {
+                                        if (existsInBoard(lookingAt)) {
+                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                            if (symbol == "W") {
+                                                canSee[j + 1] = false;
+                                            }
+                                        }
+                                    }
 
+                                }
+                            }else vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
-                        else vision[eyeRange-(i+1)][j+1]= "X";
                     }
                 }
-            }
             }
             case RIGHT -> {
-                for (int i=0;i<eyeRange;i++){
-                    for(int j=-1;j<2;j++){
-                        if(canSee[j+1]){
-                            int[] lookingAt={position[0]+j,position[1]+i};{
-                                if(existsInBoard(lookingAt)){
-                                    String symbol=map[lookingAt[0]][lookingAt[1]];
-                                    vision[eyeRange-(i+1)][j+1]= symbol;
-                                    if(symbol=="W"){
-                                        canSee[j+1]=false;
+                for (int i = 0; i < eyeRange; i++) {
+                    for (int j = -1; j < 2; j++) {
+                        if (canSee[j + 1]) {
+                            int[] lookingAt = {position[0] + j, position[1] + i};
+                            {
+                                if (existsInBoard(lookingAt)) {
+                                    String symbol = map[lookingAt[0]][lookingAt[1]];
+                                    vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                    if (symbol == "W") {
+                                        canSee[j + 1] = false;
                                     }
                                 }
                             }
-                        }
-                        else{
-                            if(j+1!=1&&canSee[1]){
-                                int[] lookingAt={position[0]+j,position[1]+i};{
-                                    if(existsInBoard(lookingAt)){
-                                        String symbol=map[lookingAt[0]][lookingAt[1]];
-                                        vision[eyeRange-(i+1)][j+1]= symbol;
-                                        if(symbol=="W"){
-                                            canSee[j+1]=false;
+                        } else {
+                            if (j  != 0 && canSee[1]) {
+                                int[] lookingAt = {position[0] + j, position[1] + i};
+                                {
+                                    if (existsInBoard(lookingAt)) {
+                                        String symbol = map[lookingAt[0]][lookingAt[1]];
+                                        vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                        if (symbol == "W") {
+                                            canSee[j + 1] = false;
                                         }
                                     }
                                 }
-
-                            }
-                            else vision[eyeRange-(i+1)][j+1]= "X";
+                            } else vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
                     }
                 }
-
             }
             case LEFT -> {
-                for (int i=0;i<eyeRange;i++){
-                    for(int j=-1;j<2;j++){
-                        if(canSee[j+1]){
-                            int[] lookingAt={position[0]+j,position[1]-i};{
-                                if(existsInBoard(lookingAt)){
-                                    String symbol=map[lookingAt[0]][lookingAt[1]];
-                                    vision[eyeRange-(i+1)][j+1]= symbol;
-                                    if(symbol=="W"){
-                                        canSee[j+1]=false;
+                for (int i = 0; i < eyeRange; i++) {
+                    for (int j = -1; j < 2; j++) {
+                        if (canSee[j + 1]) {
+                            int[] lookingAt = {position[0] - j, position[1] - i};
+                            {
+                                if (existsInBoard(lookingAt)) {
+                                    String symbol = map[lookingAt[0]][lookingAt[1]];
+                                    vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                    if (symbol == "W") {
+                                        canSee[j + 1] = false;
                                     }
                                 }
                             }
-                        }
-                        else{
-                            if(j+1!=1&&canSee[1]){
-                                int[] lookingAt={position[0]+j,position[1]-i};{
-                                    if(existsInBoard(lookingAt)){
-                                        String symbol=map[lookingAt[0]][lookingAt[1]];
-                                        vision[eyeRange-(i+1)][j+1]= symbol;
-                                        if(symbol=="W"){
-                                            canSee[j+1]=false;
+                        } else {
+                            if (j != 0 && canSee[1]) {
+                                int[] lookingAt = {position[0] - j, position[1] - i};
+                                {
+                                    if (existsInBoard(lookingAt)) {
+                                        String symbol = map[lookingAt[0]][lookingAt[1]];
+                                        vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                        if (symbol == "W") {
+                                            canSee[j + 1] = false;
                                         }
                                     }
                                 }
-
-                            }
-                            else vision[eyeRange-(i+1)][j+1]= "X";
+                            } else vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
                     }
                 }
-
-
             }
             case DOWN -> {
-                for (int i=0;i<eyeRange;i++){
-                    for(int j=-1;j<2;j++){
-                        if(canSee[j+1]){
-                            int[] lookingAt={position[0]+i,position[1]+(j*-1)};{
-                                if(existsInBoard(lookingAt)){
-                                    String symbol=map[lookingAt[0]][lookingAt[1]];
+                for (int i = 0; i < eyeRange; i++) {
+                    for (int j = -1; j < 2; j++) {
+                        if (canSee[j + 1]) {
+                            int[] lookingAt = {position[0] + i, position[1] - j};
+                            {
+                                if (existsInBoard(lookingAt)) {
+                                    String symbol = map[lookingAt[0]][lookingAt[1]];
 
-                                    vision[eyeRange-(i+1)][j+1]= symbol;
-                                    if(symbol=="W"){
-                                        canSee[j+1]=false;
+                                    vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                    if (symbol == "W") {
+                                        canSee[j + 1] = false;
                                     }
                                 }
                             }
-                        }
-                        else{
-                            if(j+1!=1&&canSee[1]){
-                                int[] lookingAt={position[0]+i,position[1]+(j*-1)};{
-                                    if(existsInBoard(lookingAt)){
-                                        String symbol=map[lookingAt[0]][lookingAt[1]];
-                                        vision[eyeRange-(i+1)][j+1]= symbol;
-                                        if(symbol=="W"){
-                                            canSee[j+1]=false;
+                        } else {
+                            if (j  != 0 && canSee[1]) {
+                                int[] lookingAt = {position[0] + i, position[1] - j};
+                                {
+                                    if (existsInBoard(lookingAt)) {
+                                        String symbol = map[lookingAt[0]][lookingAt[1]];
+                                        vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                        if (symbol == "W") {
+                                            canSee[j + 1] = false;
                                         }
                                     }
                                 }
 
-                            }
-                            else {
-
-                                vision[eyeRange - (i + 1)][j+1] ="X";
+                            } else {
+                                vision[eyeRange - (i + 1)][j + 1] = "X";
                             }
                         }
                     }
                 }
-
             }
         }
         System.out.println(rot);
         return vision;
     }
-    private void executeMove(Entity e, Moves m){
+
+    private void executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
-            switch(m){
-                case TURN_LEFT ->{
-                    switch(rotation){
-                        case DOWN -> {
-                            entityRotationsHashMap.put(e,Rotations.RIGHT);
-                        }
-                        case LEFT -> {
-                            entityRotationsHashMap.put(e,Rotations.DOWN);
-                        }
-                        case RIGHT -> {
-                            entityRotationsHashMap.put(e, Rotations.UP);
-                        }
-                        case UP -> {
-                            entityRotationsHashMap.put(e,Rotations.LEFT);
-                        }
-
+        switch (m) {
+            case TURN_LEFT -> {
+                switch (rotation) {
+                    case DOWN -> {
+                        entityRotationsHashMap.put(e, Rotations.RIGHT);
+                    }
+                    case LEFT -> {
+                        entityRotationsHashMap.put(e, Rotations.DOWN);
+                    }
+                    case RIGHT -> {
+                        entityRotationsHashMap.put(e, Rotations.UP);
+                    }
+                    case UP -> {
+                        entityRotationsHashMap.put(e, Rotations.LEFT);
                     }
                 }
-                case TURN_RIGHT -> {
-                    switch(rotation){
-                        case DOWN -> {
-                            entityRotationsHashMap.put(e,Rotations.LEFT);
-                        }
-                        case LEFT -> {
-                            entityRotationsHashMap.put(e, Rotations.UP);
-                        }
-                        case RIGHT -> {
-                            entityRotationsHashMap.put(e,Rotations.DOWN);
-                        }
-                        case UP -> {
-                            entityRotationsHashMap.put(e,Rotations.RIGHT);
-                        }
-
+            }
+            case TURN_RIGHT -> {
+                switch (rotation) {
+                    case DOWN -> {
+                        entityRotationsHashMap.put(e, Rotations.LEFT);
                     }
-
+                    case LEFT -> {
+                        entityRotationsHashMap.put(e, Rotations.UP);
+                    }
+                    case RIGHT -> {
+                        entityRotationsHashMap.put(e, Rotations.DOWN);
+                    }
+                    case UP -> {
+                        entityRotationsHashMap.put(e, Rotations.RIGHT);
+                    }
                 }
-                case TURN_AROUND -> {
-                    switch(rotation){
-                        case DOWN -> {
-                            entityRotationsHashMap.put(e, Rotations.UP);
-                        }
-                        case LEFT -> {
-                            entityRotationsHashMap.put(e,Rotations.RIGHT);
-                        }
-                        case RIGHT -> {
-                            entityRotationsHashMap.put(e,Rotations.LEFT);
-                        }
-                        case UP -> {
-                            entityRotationsHashMap.put(e,Rotations.DOWN);
-                        }
-
+            }
+            case TURN_AROUND -> {
+                switch (rotation) {
+                    case DOWN -> {
+                        entityRotationsHashMap.put(e, Rotations.UP);
                     }
-
+                    case LEFT -> {
+                        entityRotationsHashMap.put(e, Rotations.RIGHT);
+                    }
+                    case RIGHT -> {
+                        entityRotationsHashMap.put(e, Rotations.LEFT);
+                    }
+                    case UP -> {
+                        entityRotationsHashMap.put(e, Rotations.DOWN);
+                    }
                 }
-                case WALK -> {
-
-                    int[] pos = locations.get(e);
-                    switch (rotation) {
-                        case UP -> {
-                            int[] targetlocation = {pos[0] - 1, pos[1]};
-                            if (existsInBoard(targetlocation)) {
-                                if (canBePutThere(targetlocation[0], targetlocation[1])) {
-                                    putOnMap(symbol(e), targetlocation);
-                                    removeFromMap(pos);
-                                    locations.put(e,targetlocation);
-                                }
-
+            }
+            case WALK -> {
+                int[] pos = locations.get(e);
+                switch (rotation) {
+                    case UP -> {
+                        int[] targetlocation = {pos[0] - 1, pos[1]};
+                        if (existsInBoard(targetlocation)) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                                putOnMap(symbol(e), targetlocation);
+                                removeFromMap(pos);
+                                locations.put(e, targetlocation);
                             }
-                        }
-                        case DOWN -> {
-                            int[] targetlocation = {pos[0] + 1, pos[1]};
-                            if (existsInBoard(targetlocation)) {
-                                if (canBePutThere(targetlocation[0], targetlocation[1])) {
-                                    putOnMap(symbol(e), targetlocation);
-                                    removeFromMap(pos);
-                                    locations.put(e,targetlocation);
-                                }
-
-                            }
-                        }
-                        case RIGHT -> {
-                            int[] targetlocation = {pos[0], pos[1] + 1};
-                            if (existsInBoard(targetlocation)) {
-                                if (canBePutThere(targetlocation[0], targetlocation[1])) {
-                                    putOnMap(symbol(e), targetlocation);
-                                    removeFromMap(pos);
-                                    locations.put(e,targetlocation);
-                                }
-                            }
-
-                        }
-                        case LEFT -> {
-                            int[] targetlocation = {pos[0], pos[1] - 1};
-                            if (existsInBoard(targetlocation)) {
-                                if (canBePutThere(targetlocation[0], targetlocation[1])) {
-                                    putOnMap(symbol(e), targetlocation);
-                                    removeFromMap(pos);
-                                    locations.put(e,targetlocation);
-                                }
-
-                            }
-
                         }
                     }
-
+                    case DOWN -> {
+                        int[] targetlocation = {pos[0] + 1, pos[1]};
+                        if (existsInBoard(targetlocation)) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                                putOnMap(symbol(e), targetlocation);
+                                removeFromMap(pos);
+                                locations.put(e, targetlocation);
+                            }
+                        }
+                    }
+                    case RIGHT -> {
+                        int[] targetlocation = {pos[0], pos[1] + 1};
+                        if (existsInBoard(targetlocation)) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                                putOnMap(symbol(e), targetlocation);
+                                removeFromMap(pos);
+                                locations.put(e, targetlocation);
+                            }
+                        }
+                    }
+                    case LEFT -> {
+                        int[] targetlocation = {pos[0], pos[1] - 1};
+                        if (existsInBoard(targetlocation)) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                                putOnMap(symbol(e), targetlocation);
+                                removeFromMap(pos);
+                                locations.put(e, targetlocation);
+                            }
+                        }
+                    }
                 }
             }
         }
+    }
 
 
-    public void addEntity(Entity e, int h, int l,Rotations rot) {
+    public void addEntity(Entity e, int h, int l, Rotations rot) {
         entities.add(e);
-        int[] yx = {h,l};
-        locations.put(e,yx);
-        entityRotationsHashMap.put(e,rot);
-        putOnMap(symbol(e),h,l);
+        int[] yx = {h, l};
+        locations.put(e, yx);
+        entityRotationsHashMap.put(e, rot);
+        putOnMap(symbol(e), h, l);
     }
-    private void print(String s){
+
+    private void print(String s) {
         System.out.println(s);
     }
-    private void print(int s){
+
+    private void print(int s) {
         System.out.println(s);
     }
-    public void makeBorders(int length,int height){
-        for(int i=0;i<length;i++){
-            putOnMap("W",0,i);
-            putOnMap("W",height-1,i);
+
+    public void makeBorders(int length, int height) {
+        for (int i = 0; i < length; i++) {
+            putOnMap("W", 0, i);
+            putOnMap("W", height - 1, i);
         }
-        for(int j=0;j<height;j++){
-            putOnMap("W",j,0);
-            putOnMap("W",j,length-1);
+        for (int j = 0; j < height; j++) {
+            putOnMap("W", j, 0);
+            putOnMap("W", j, length - 1);
         }
     }
-    private void putOnMap(String s,int[]yx){
-        map[yx[0]][yx[1]]=s;
+
+    private void putOnMap(String s, int[] yx) {
+        map[yx[0]][yx[1]] = s;
     }
-    private void putOnMap(String s,int h,int l){
-        map[h][l]=s;
+
+    private void putOnMap(String s, int h, int l) {
+        map[h][l] = s;
     }
-    private void removeFromMap(int h, int l){
-        map[h][l]=" ";
+
+    private void removeFromMap(int h, int l) {
+        map[h][l] = " ";
     }
-    private void removeFromMap(int []yx){
-        map[yx[0]][yx[1]]=" ";
+
+    private void removeFromMap(int[] yx) {
+        map[yx[0]][yx[1]] = " ";
     }
-    private String symbol(Entity e){
-        if(e.getType()== EntityType.EXPLORER){
-        return "E";
+
+    private String symbol(Entity e) {
+        if (e.getType() == EntityType.EXPLORER) {
+            return "E";
         }
         return "ERROR";
     }
-    private boolean canBePutThere(int h, int l){
-        return map[h][l]==" ";
+
+    private boolean canBePutThere(int h, int l) {
+        return map[h][l] == " ";
     }
-    private boolean existsInBoard(int[] pos){
-        return(pos[0]>-1 && pos[0]<mapHeight && pos[1]>-1 && pos[1]<mapLength);
+
+    private boolean existsInBoard(int[] pos) {
+        return (pos[0] > -1 && pos[0] < mapHeight && pos[1] > -1 && pos[1] < mapLength);
     }
 
 
