@@ -77,7 +77,6 @@ public class GameController {
     }
 
     public String[][] giveVision(Entity e) {
-        //!TODO FIX LEFT CORNER BUG
         Rotations rot = entityRotationsHashMap.get(e);
         String[][] vision = new String[eyeRange][3];
         int[] position = locations.get(e);
@@ -122,8 +121,8 @@ public class GameController {
             case RIGHT -> {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
+                        int[] lookingAt = {position[0] + j, position[1] + i};
                         if (canSee[j + 1]) {
-                            int[] lookingAt = {position[0] + j, position[1] + i};
                             {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
@@ -135,13 +134,16 @@ public class GameController {
                             }
                         } else {
                             if (j  != 0 && canSee[1]) {
-                                int[] lookingAt = {position[0] + j, position[1] + i};
-                                {
-                                    if (existsInBoard(lookingAt)) {
-                                        String symbol = map[lookingAt[0]][lookingAt[1]];
-                                        vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                        if (symbol == "W") {
-                                            canSee[j + 1] = false;
+                                if (j == -1&&(map[lookingAt[0]+1][lookingAt[1]])=="W") {
+                                    vision[eyeRange - (i + 1)][j + 1] = "X";
+                                } else {
+                                    {
+                                        if (existsInBoard(lookingAt)) {
+                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                            if (symbol == "W") {
+                                                canSee[j + 1] = false;
+                                            }
                                         }
                                     }
                                 }
@@ -153,8 +155,8 @@ public class GameController {
             case LEFT -> {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
+                        int[] lookingAt = {position[0] - j, position[1] - i};
                         if (canSee[j + 1]) {
-                            int[] lookingAt = {position[0] - j, position[1] - i};
                             {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
@@ -166,13 +168,16 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] lookingAt = {position[0] - j, position[1] - i};
-                                {
-                                    if (existsInBoard(lookingAt)) {
-                                        String symbol = map[lookingAt[0]][lookingAt[1]];
-                                        vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                        if (symbol == "W") {
-                                            canSee[j + 1] = false;
+                                if (j == -1&&(map[lookingAt[0]+1][lookingAt[1]])=="W") {
+                                    vision[eyeRange - (i + 1)][j + 1] = "X";
+                                } else {
+                                    {
+                                        if (existsInBoard(lookingAt)) {
+                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                            if (symbol == "W") {
+                                                canSee[j + 1] = false;
+                                            }
                                         }
                                     }
                                 }
@@ -184,8 +189,9 @@ public class GameController {
             case DOWN -> {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
+                        int[] lookingAt = {position[0] + i, position[1] - j};
                         if (canSee[j + 1]) {
-                            int[] lookingAt = {position[0] + i, position[1] - j};
+
                             {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
@@ -198,13 +204,16 @@ public class GameController {
                             }
                         } else {
                             if (j  != 0 && canSee[1]) {
-                                int[] lookingAt = {position[0] + i, position[1] - j};
-                                {
-                                    if (existsInBoard(lookingAt)) {
-                                        String symbol = map[lookingAt[0]][lookingAt[1]];
-                                        vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                        if (symbol == "W") {
-                                            canSee[j + 1] = false;
+                                if (j == -1&&(map[lookingAt[0]+1][lookingAt[1]])=="W") {
+                                    vision[eyeRange - (i + 1)][j + 1] = "X";
+                                } else {
+                                    {
+                                        if (existsInBoard(lookingAt)) {
+                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                            if (symbol == "W") {
+                                                canSee[j + 1] = false;
+                                            }
                                         }
                                     }
                                 }
