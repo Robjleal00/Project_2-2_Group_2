@@ -2,6 +2,8 @@ package Strategies;
 
 import Enums.Moves;
 import Enums.Rotations;
+import OptimalSearch.TreeNode;
+import OptimalSearch.TreeRoot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,17 +11,24 @@ import java.util.HashMap;
 public class BasicExplo extends Strategy{
     private Moves[] moves = {Moves.WALK, Moves.TURN_AROUND,Moves.TURN_LEFT,Moves.TURN_RIGHT};
     private HashMap<Integer, ArrayList<Integer>> explored;
+    private HashMap<Integer, ArrayList<Integer>> walls;
     public BasicExplo(){
         explored=new HashMap<Integer,ArrayList<Integer>>();
+        walls=new HashMap<Integer,ArrayList<Integer>>();
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[]  xy, Rotations rot){
+        updateExploration(vision,xy,rot);
+        //System.out.println(explored);
+        //System.out.println(walls);
+        TreeRoot root = new TreeRoot((HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,3,vision.length);
+        Moves decision = root.getMove();
         double random = (Math.random()*4)-0.00000001;
-        int decision = (int) random;
-        return moves [decision];
+       // int decision = (int) random;
+        return Moves.TURN_LEFT;
+        //return moves [decision];
     }
     public int updateExploration(String[][]vision,int[] xy, Rotations rot){
-        boolean []canSee={true,true,true};
         int informationGain=0;
         int eyeRange=vision.length;
         int currentX=xy[0];
@@ -30,37 +39,126 @@ public class BasicExplo extends Strategy{
                 int l=j+1;
                 switch(rot){
                     case FORWARD -> {
-                        //if(vision[h][l]=="W"){
-                         //   canSee[l]=false;
-                        //}
-                            if(explored.containsKey(currentX+j)){
-                                if(!explored.get(currentX+j).contains(i)) {
-                                    explored.get(currentX + j).add(i);
-                                    informationGain++;
+                            if (vision[h][l]!="X") {
+                                if (vision[h][l] != "W") {
+                                    if (explored.containsKey(currentX + j)) {
+                                        if (!explored.get(currentX + j).contains(currentY+i)) {
+                                            explored.get(currentX + j).add(currentY+i);
+                                            informationGain++;
+                                        }
+
+                                    } else {
+                                        explored.put(currentX + j, new ArrayList<Integer>());
+                                        explored.get(currentX + j).add(currentY+i);
+                                        informationGain++;
+                                    }
+                                } else {
+                                    if (walls.containsKey(currentX + j)) {
+                                        if (!walls.get(currentX + j).contains(currentY+i)) {
+                                            walls.get(currentX + j).add(currentY+i);
+                                            informationGain++;
+                                        }
+
+                                    } else {
+                                        walls.put(currentX + j, new ArrayList<Integer>());
+                                        walls.get(currentX + j).add(currentY+i);
+                                        informationGain++;
+                                    }
                                 }
-
-                            }else{
-                                explored.put(currentX+j,new ArrayList<Integer>());
-                                explored.get(currentX+j).add(i);
                             }
-
-                        return 1;
-
-
                     }
                     case BACK -> {
-                        return 1;
+                        if (vision[h][l]!="X") {
+                            if (vision[h][l] != "W") {
+                                if (explored.containsKey(currentX - j)) {
+                                    if (!explored.get(currentX - j).contains(currentY-i)) {
+                                        explored.get(currentX - j).add(currentY-i);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    explored.put(currentX - j, new ArrayList<Integer>());
+                                    explored.get(currentX - j).add(currentY-i);
+                                    informationGain++;
+                                }
+                            } else {
+                                if (walls.containsKey(currentX - j)) {
+                                    if (!walls.get(currentX - j).contains(currentY-i)) {
+                                        walls.get(currentX - j).add(currentY-i);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    walls.put(currentX - j, new ArrayList<Integer>());
+                                    walls.get(currentX - j).add(currentY-i);
+                                    informationGain++;
+                                }
+                            }
+                        }
                     }
                     case LEFT -> {
-                        return 1;
+                        if (vision[h][l]!="X") {
+                            if (vision[h][l] != "W") {
+                                if (explored.containsKey(currentX-i)) {
+                                    if (!explored.get(currentX-i).contains(currentY+j)) {
+                                        explored.get(currentX-i).add(currentY+j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    explored.put(currentX-i, new ArrayList<Integer>());
+                                    explored.get(currentX-i).add(currentY+j);
+                                    informationGain++;
+                                }
+                            } else {
+                                if (walls.containsKey(currentX-i)) {
+                                    if (!walls.get(currentX-i).contains(currentY+j)) {
+                                        walls.get(currentX-i).add(currentY+j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    walls.put(currentX-i, new ArrayList<Integer>());
+                                    walls.get(currentX-i).add(currentY+j);
+                                    informationGain++;
+                                }
+                            }
+                        }
                     }
                     case RIGHT -> {
-                        return 1;
+                        if (vision[h][l]!="X") {
+                            if (vision[h][l] != "W") {
+                                if (explored.containsKey(currentX+i)) {
+                                    if (!explored.get(currentX+i).contains(currentY-j)) {
+                                        explored.get(currentX+i).add(currentY-j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    explored.put(currentX+i, new ArrayList<Integer>());
+                                    explored.get(currentX+i).add(currentY-j);
+                                    informationGain++;
+                                }
+                            } else {
+                                if (walls.containsKey(currentX+i)) {
+                                    if (!walls.get(currentX+i).contains(currentY-j)) {
+                                        walls.get(currentX+i).add(currentY-j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    walls.put(currentX+i, new ArrayList<Integer>());
+                                    walls.get(currentX+i).add(currentY-j);
+                                    informationGain++;
+                                }
+                            }
+                        }
                     }
 
 
                 }
             }
         }
-        return 1;}
+        return informationGain;
+    }
 }

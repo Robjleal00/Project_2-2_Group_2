@@ -32,6 +32,7 @@ public class GameController {
         entityRotationsHashMap = new HashMap<Entity, Rotations>();
         queuedMoves = new HashMap<Entity, Moves>();
     }
+    public GameController(){};
 
     public void init() throws InterruptedException {
         while (isRunning) {//gameloop
@@ -42,8 +43,17 @@ public class GameController {
             for (Entity e : entities) {
                 executeMove(e, queuedMoves.get(e));
             }
+            for(Entity e:entities){
+                Moves move = queuedMoves.get(e);
+                switch(move){
+                    case WALK -> e.walk();
+                    case TURN_AROUND -> e.turnAround();
+                    case TURN_RIGHT -> e.turnRight();
+                    case TURN_LEFT -> e.turnLeft();
+                }
+            }
             printMap();
-            Thread.sleep(200);
+            Thread.sleep(1000);
         }
     }
 
@@ -338,11 +348,11 @@ public class GameController {
         putOnMap(symbol(e), h, l);
     }
 
-    private void print(String s) {
+    public void print(String s) {
         System.out.println(s);
     }
 
-    private void print(int s) {
+    public void print(int s) {
         System.out.println(s);
     }
 

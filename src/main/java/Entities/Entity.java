@@ -10,6 +10,10 @@ public class Entity {
     public Moves getMove(){
         return Moves.WALK;
     }
+    public void turnLeft(){};
+    public void turnRight(){};
+    public void turnAround(){};
+    public void walk(){};
 
 
 }
