@@ -7,6 +7,8 @@ import Logic.GameController;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static java.util.Collections.max;
+
 public class TreeNode {
     private Moves move;
     private HashMap<Integer, ArrayList> explored;
@@ -14,6 +16,7 @@ public class TreeNode {
     private int[] xy;
     private Rotations rot;
     private int eyeRange;
+    private Moves[] avaliableMoves = {Moves.WALK,Moves.TURN_RIGHT,Moves.TURN_LEFT,Moves.TURN_AROUND};
     public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot,int eyeRange){
             this.move=move;
             this.rot=rot;
@@ -30,11 +33,22 @@ public class TreeNode {
             case TURN_LEFT -> {rot=turnLeft(rot);}
         }
         String[][] vision = predictVision(xy,rot,walls,explored);
+        /*
+        VISION TESTING
         GameController printer = new GameController();
         printer.printArray(vision);
         printer.print("---------------------");
-
-        return 1;
+        */
+        int value = updateExploration(vision,xy,rot);
+        if(depth==0) {
+            return value;
+        }else {
+            ArrayList<Integer> values = new ArrayList<Integer>();
+            for (int i=0;i<avaliableMoves.length;i++){
+                values.add(new TreeNode(avaliableMoves[i],(HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,eyeRange).getValue(depth-1));
+            }
+            return value + max(values);
+        }
     }
     private String[][] predictVision(int[]xy,Rotations rot,HashMap<Integer, ArrayList>walls,HashMap<Integer, ArrayList>explored){
         String[][] returner = new String[eyeRange][3];
@@ -278,7 +292,6 @@ public class TreeNode {
         return returner;
 
     }
-
     public Rotations turnLeft(Rotations rot) {
         switch(rot){
             case BACK -> {
@@ -357,5 +370,139 @@ public class TreeNode {
             default -> {return Rotations.LEFT; }
         }
     }
+    public int updateExploration(String[][]vision,int[] xy, Rotations rot){
+        int informationGain=0;
+        int eyeRange=vision.length;
+        int currentX=xy[0];
+        int currentY=xy[1];
+        for(int i=0;i<5;i++){ //i= upfront
+            for(int j=-1;j<2;j++){ //j==sideways
+                int h=eyeRange-(i+1);
+                int l=j+1;
+                switch(rot){
+                    case FORWARD -> {
+                        if (vision[h][l]!="X") {
+                            if (vision[h][l] != "W") {
+                                if (explored.containsKey(currentX + j)) {
+                                    if (!explored.get(currentX + j).contains(currentY+i)) {
+                                        explored.get(currentX + j).add(currentY+i);
+                                        informationGain++;
+                                    }
 
+                                } else {
+                                    explored.put(currentX + j, new ArrayList<Integer>());
+                                    explored.get(currentX + j).add(currentY+i);
+                                    informationGain++;
+                                }
+                            } else {
+                                if (walls.containsKey(currentX + j)) {
+                                    if (!walls.get(currentX + j).contains(currentY+i)) {
+                                        walls.get(currentX + j).add(currentY+i);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    walls.put(currentX + j, new ArrayList<Integer>());
+                                    walls.get(currentX + j).add(currentY+i);
+                                    informationGain++;
+                                }
+                            }
+                        }
+                    }
+                    case BACK -> {
+                        if (vision[h][l]!="X") {
+                            if (vision[h][l] != "W") {
+                                if (explored.containsKey(currentX - j)) {
+                                    if (!explored.get(currentX - j).contains(currentY-i)) {
+                                        explored.get(currentX - j).add(currentY-i);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    explored.put(currentX - j, new ArrayList<Integer>());
+                                    explored.get(currentX - j).add(currentY-i);
+                                    informationGain++;
+                                }
+                            } else {
+                                if (walls.containsKey(currentX - j)) {
+                                    if (!walls.get(currentX - j).contains(currentY-i)) {
+                                        walls.get(currentX - j).add(currentY-i);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    walls.put(currentX - j, new ArrayList<Integer>());
+                                    walls.get(currentX - j).add(currentY-i);
+                                    informationGain++;
+                                }
+                            }
+                        }
+                    }
+                    case LEFT -> {
+                        if (vision[h][l]!="X") {
+                            if (vision[h][l] != "W") {
+                                if (explored.containsKey(currentX-i)) {
+                                    if (!explored.get(currentX-i).contains(currentY+j)) {
+                                        explored.get(currentX-i).add(currentY+j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    explored.put(currentX-i, new ArrayList<Integer>());
+                                    explored.get(currentX-i).add(currentY+j);
+                                    informationGain++;
+                                }
+                            } else {
+                                if (walls.containsKey(currentX-i)) {
+                                    if (!walls.get(currentX-i).contains(currentY+j)) {
+                                        walls.get(currentX-i).add(currentY+j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    walls.put(currentX-i, new ArrayList<Integer>());
+                                    walls.get(currentX-i).add(currentY+j);
+                                    informationGain++;
+                                }
+                            }
+                        }
+                    }
+                    case RIGHT -> {
+                        if (vision[h][l]!="X") {
+                            if (vision[h][l] != "W") {
+                                if (explored.containsKey(currentX+i)) {
+                                    if (!explored.get(currentX+i).contains(currentY-j)) {
+                                        explored.get(currentX+i).add(currentY-j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    explored.put(currentX+i, new ArrayList<Integer>());
+                                    explored.get(currentX+i).add(currentY-j);
+                                    informationGain++;
+                                }
+                            } else {
+                                if (walls.containsKey(currentX+i)) {
+                                    if (!walls.get(currentX+i).contains(currentY-j)) {
+                                        walls.get(currentX+i).add(currentY-j);
+                                        informationGain++;
+                                    }
+
+                                } else {
+                                    walls.put(currentX+i, new ArrayList<Integer>());
+                                    walls.get(currentX+i).add(currentY-j);
+                                    informationGain++;
+                                }
+                            }
+                        }
+                    }
+
+
+                }
+            }
+        }
+        return informationGain;
+    }
 }
+
+

@@ -21,12 +21,9 @@ public class BasicExplo extends Strategy{
         updateExploration(vision,xy,rot);
         //System.out.println(explored);
         //System.out.println(walls);
-        TreeRoot root = new TreeRoot((HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,3,vision.length);
+        TreeRoot root = new TreeRoot((HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,6,vision.length);
         Moves decision = root.getMove();
-        double random = (Math.random()*4)-0.00000001;
-       // int decision = (int) random;
-        return Moves.TURN_LEFT;
-        //return moves [decision];
+        return decision;
     }
     public int updateExploration(String[][]vision,int[] xy, Rotations rot){
         int informationGain=0;
