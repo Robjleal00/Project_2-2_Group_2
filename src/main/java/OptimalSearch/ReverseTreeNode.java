@@ -4,33 +4,35 @@ import Enums.Moves;
 import Enums.Rotations;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static java.util.Collections.max;
-import static java.util.Collections.min;
 
 public class ReverseTreeNode {
-    private Moves move;
-    private HashMap<Integer, ArrayList<Integer>> explored;
-    private HashMap<Integer,ArrayList<Integer>> walls;
+    private final Moves move;
+    private final HashMap<Integer, ArrayList<Integer>> explored;
+    private final HashMap<Integer, ArrayList<Integer>> walls;
     private int[] xy;
     private Rotations rot;
-    private int eyeRange;
-    private Moves[] avaliableMoves = {Moves.WALK,Moves.TURN_RIGHT,Moves.TURN_LEFT,Moves.TURN_AROUND};
-    private int target;
-    private int parentValue;
-    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot,int eyeRange,int target,int parentValue){
-        this.move=move;
-        this.rot=rot;
-        this.explored=explored;
-        this.walls=walls;
-        this.xy=xy;
-        this.eyeRange=eyeRange;
-        this.target=target;
-        this.parentValue=parentValue;
+    private final int eyeRange;
+    private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
+    private final int target;
+    private final int parentValue;
+
+    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, int target, int parentValue) {
+        this.move = move;
+        this.rot = rot;
+        this.explored = explored;
+        this.walls = walls;
+        this.xy = xy;
+        this.eyeRange = eyeRange;
+        this.target = target;
+        this.parentValue = parentValue;
     }
+
     public int getValue(int depth) {
         switch (move) {
             case TURN_AROUND -> {
@@ -54,12 +56,11 @@ public class ReverseTreeNode {
         printer.print("---------------------");
         */
         int value = updateExploration(vision, xy, rot);
-        value+=parentValue;
+        value += parentValue;
         //if(depth==0)return Integer.MAX_VALUE;
-        if(value == target) {
+        if (value == target) {
             return depth;
-        }
-        else {
+        } else {
               /*
             if (value == 1) {
 
@@ -79,29 +80,29 @@ public class ReverseTreeNode {
             } else {
                 ArrayList<Integer> values = new ArrayList<Integer>();
                 for (int i = 0; i < avaliableMoves.length; i++) {
-                    values.add(new ReverseTreeNode(avaliableMoves[i], deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,target,value).getValue(depth - 1));
+                    values.add(new ReverseTreeNode(avaliableMoves[i], deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, target, value).getValue(depth - 1));
                 }
                 return max(values);
             }
         }
     }
 
-    private String[][] predictVision(int[]xy,Rotations rot,HashMap<Integer, ArrayList<Integer>>walls,HashMap<Integer, ArrayList<Integer>>explored){
+    private String[][] predictVision(int[] xy, Rotations rot, HashMap<Integer, ArrayList<Integer>> walls, HashMap<Integer, ArrayList<Integer>> explored) {
         String[][] returner = new String[eyeRange][3];
-        int currentX=xy[0];
-        int currentY=xy[1];
-        boolean canSee[]={true,true,true};
-        for(int i=0;i<5;i++){ //i= upfront
-            for(int j=-1;j<2;j++){ //j==sideways
-                int h=eyeRange-(i+1);
-                int l=j+1;
-                boolean middleisNotWall=true;
-                switch(rot){
+        int currentX = xy[0];
+        int currentY = xy[1];
+        boolean[] canSee = {true, true, true};
+        for (int i = 0; i < 5; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                boolean middleisNotWall = true;
+                switch (rot) {
                     case FORWARD -> {
-                        if(j==-1) {
-                            if(walls.containsKey(currentX)){
-                                if (walls.get(currentX).contains(currentY + i)){
-                                    middleisNotWall=false;
+                        if (j == -1) {
+                            if (walls.containsKey(currentX)) {
+                                if (walls.get(currentX).contains(currentY + i)) {
+                                    middleisNotWall = false;
                                 }
                             }
                         }
@@ -125,7 +126,7 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else if(canSee[1]&&middleisNotWall){
+                        } else if (canSee[1] && middleisNotWall) {
                             if (explored.containsKey(currentX + j)) {
                                 if (!explored.get(currentX + j).contains(currentY + i)) {
                                     returner[h][l] = " ";
@@ -147,16 +148,16 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else{
-                            returner[h][l]="X";
+                        } else {
+                            returner[h][l] = "X";
                         }
 
                     }
                     case BACK -> {
-                        if(j==-1) {
-                            if(walls.containsKey(currentX)){
-                                if (walls.get(currentX).contains(currentY - i)){
-                                    middleisNotWall=false;
+                        if (j == -1) {
+                            if (walls.containsKey(currentX)) {
+                                if (walls.get(currentX).contains(currentY - i)) {
+                                    middleisNotWall = false;
                                 }
                             }
                         }
@@ -182,7 +183,7 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else if(canSee[1]&&middleisNotWall){
+                        } else if (canSee[1] && middleisNotWall) {
                             if (explored.containsKey(currentX - j)) {
                                 if (!explored.get(currentX - j).contains(currentY - i)) {
                                     returner[h][l] = " ";
@@ -204,22 +205,22 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else{
-                            returner[h][l]="X";
+                        } else {
+                            returner[h][l] = "X";
                         }
 
                     }
                     case LEFT -> {
-                        if(j==-1) {
-                            if(walls.containsKey(currentX-i)){
-                                if (walls.get(currentX -i).contains(currentY)){
-                                    middleisNotWall=false;
+                        if (j == -1) {
+                            if (walls.containsKey(currentX - i)) {
+                                if (walls.get(currentX - i).contains(currentY)) {
+                                    middleisNotWall = false;
                                 }
                             }
                         }
                         if (canSee[j + 1]) {
-                            if (explored.containsKey(currentX-i)) {
-                                if (!explored.get(currentX -i).contains(currentY + j)) {
+                            if (explored.containsKey(currentX - i)) {
+                                if (!explored.get(currentX - i).contains(currentY + j)) {
                                     returner[h][l] = " ";
 
                                 }
@@ -227,8 +228,8 @@ public class ReverseTreeNode {
                                 returner[h][l] = " ";
 
                             }
-                            if (walls.containsKey(currentX -i)) {
-                                if (walls.get(currentX -i).contains(currentY + j)) {
+                            if (walls.containsKey(currentX - i)) {
+                                if (walls.get(currentX - i).contains(currentY + j)) {
                                     returner[h][l] = "W";
                                     canSee[j + 1] = false;
 
@@ -239,9 +240,9 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else if(canSee[1]&&middleisNotWall){
-                            if (explored.containsKey(currentX -i)) {
-                                if (!explored.get(currentX -i).contains(currentY + j)) {
+                        } else if (canSee[1] && middleisNotWall) {
+                            if (explored.containsKey(currentX - i)) {
+                                if (!explored.get(currentX - i).contains(currentY + j)) {
                                     returner[h][l] = " ";
 
                                 }
@@ -249,8 +250,8 @@ public class ReverseTreeNode {
                                 returner[h][l] = " ";
 
                             }
-                            if (walls.containsKey(currentX -i)) {
-                                if (walls.get(currentX -i).contains(currentY + j)) {
+                            if (walls.containsKey(currentX - i)) {
+                                if (walls.get(currentX - i).contains(currentY + j)) {
                                     returner[h][l] = "W";
                                     canSee[j + 1] = false;
 
@@ -261,22 +262,22 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else{
-                            returner[h][l]="X";
+                        } else {
+                            returner[h][l] = "X";
                         }
 
                     }
                     case RIGHT -> {
-                        if(j==-1) {
-                            if(walls.containsKey(currentX+i)){
-                                if (walls.get(currentX+i).contains(currentY)){
-                                    middleisNotWall=false;
+                        if (j == -1) {
+                            if (walls.containsKey(currentX + i)) {
+                                if (walls.get(currentX + i).contains(currentY)) {
+                                    middleisNotWall = false;
                                 }
                             }
                         }
                         if (canSee[j + 1]) {
-                            if (explored.containsKey(currentX+i)) {
-                                if (!explored.get(currentX+i).contains(currentY - j)) {
+                            if (explored.containsKey(currentX + i)) {
+                                if (!explored.get(currentX + i).contains(currentY - j)) {
                                     returner[h][l] = " ";
 
                                 }
@@ -284,8 +285,8 @@ public class ReverseTreeNode {
                                 returner[h][l] = " ";
 
                             }
-                            if (walls.containsKey(currentX +i)) {
-                                if (walls.get(currentX +i).contains(currentY - j)) {
+                            if (walls.containsKey(currentX + i)) {
+                                if (walls.get(currentX + i).contains(currentY - j)) {
                                     returner[h][l] = "W";
                                     canSee[j + 1] = false;
 
@@ -296,9 +297,9 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else if(canSee[1]&&middleisNotWall){
-                            if (explored.containsKey(currentX+i)) {
-                                if (!explored.get(currentX +i).contains(currentY - j)) {
+                        } else if (canSee[1] && middleisNotWall) {
+                            if (explored.containsKey(currentX + i)) {
+                                if (!explored.get(currentX + i).contains(currentY - j)) {
                                     returner[h][l] = " ";
 
                                 }
@@ -306,8 +307,8 @@ public class ReverseTreeNode {
                                 returner[h][l] = " ";
 
                             }
-                            if (walls.containsKey(currentX +i)) {
-                                if (walls.get(currentX +i).contains(currentY - j)) {
+                            if (walls.containsKey(currentX + i)) {
+                                if (walls.get(currentX + i).contains(currentY - j)) {
                                     returner[h][l] = "W";
                                     canSee[j + 1] = false;
 
@@ -318,8 +319,8 @@ public class ReverseTreeNode {
                             } else {
                                 returner[h][l] = " ";
                             }
-                        }else{
-                            returner[h][l]="X";
+                        } else {
+                            returner[h][l] = "X";
                         }
                     }
                 }
@@ -328,25 +329,29 @@ public class ReverseTreeNode {
         return returner;
 
     }
+
     public Rotations turnLeft(Rotations rot) {
-        switch(rot){
+        switch (rot) {
             case BACK -> {
-                return(Rotations.RIGHT);
+                return (Rotations.RIGHT);
             }
             case LEFT -> {
-                return(Rotations.BACK);
+                return (Rotations.BACK);
             }
             case FORWARD -> {
-                return(Rotations.LEFT);
+                return (Rotations.LEFT);
             }
             case RIGHT -> {
-                return(Rotations.FORWARD);
+                return (Rotations.FORWARD);
             }
-            default -> {return Rotations.LEFT; }
+            default -> {
+                return Rotations.LEFT;
+            }
         }
     }
-    public int[] walk(int[]xy, Rotations rot,HashMap<Integer,ArrayList<Integer>> walls) {
-        int[] origin = {xy[0],xy[1]};
+
+    public int[] walk(int[] xy, Rotations rot, HashMap<Integer, ArrayList<Integer>> walls) {
+        int[] origin = {xy[0], xy[1]};
         switch (rot) {
             case FORWARD -> {
                 xy[1]++;
@@ -365,168 +370,175 @@ public class ReverseTreeNode {
             }
 
         }
-        if (walls.containsKey(xy[0])){
-            if(walls.get(xy[0]).contains(xy[1])){
+        if (walls.containsKey(xy[0])) {
+            if (walls.get(xy[0]).contains(xy[1])) {
                 return origin;
             }
         }
         return xy;
     }
+
     public Rotations turnRight(Rotations rot) {
-        switch(rot) {
+        switch (rot) {
             case FORWARD -> {
-                return(Rotations.RIGHT);
+                return (Rotations.RIGHT);
             }
             case RIGHT -> {
-                return(Rotations.BACK);
+                return (Rotations.BACK);
             }
             case LEFT -> {
-                return(Rotations.FORWARD);
+                return (Rotations.FORWARD);
             }
             case BACK -> {
-                return(Rotations.LEFT);
+                return (Rotations.LEFT);
             }
-            default -> {return Rotations.LEFT; }
+            default -> {
+                return Rotations.LEFT;
+            }
         }
     }
+
     public Rotations turnAround(Rotations rot) {
-        switch(rot){
+        switch (rot) {
             case FORWARD -> {
-                return(Rotations.BACK);
+                return (Rotations.BACK);
             }
             case RIGHT -> {
-                return(Rotations.LEFT);
+                return (Rotations.LEFT);
             }
             case LEFT -> {
-                return(Rotations.RIGHT);
+                return (Rotations.RIGHT);
             }
             case BACK -> {
-                return(Rotations.FORWARD);
+                return (Rotations.FORWARD);
             }
-            default -> {return Rotations.LEFT; }
+            default -> {
+                return Rotations.LEFT;
+            }
         }
     }
-    public int updateExploration(String[][]vision,int[] xy, Rotations rot){
-        int informationGain=0;
-        int eyeRange=vision.length;
-        int currentX=xy[0];
-        int currentY=xy[1];
-        for(int i=0;i<5;i++){ //i= upfront
-            for(int j=-1;j<2;j++){ //j==sideways
-                int h=eyeRange-(i+1);
-                int l=j+1;
-                switch(rot){
+
+    public int updateExploration(String[][] vision, int[] xy, Rotations rot) {
+        int informationGain = 0;
+        int eyeRange = vision.length;
+        int currentX = xy[0];
+        int currentY = xy[1];
+        for (int i = 0; i < 5; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                switch (rot) {
                     case FORWARD -> {
-                        if (vision[h][l]!="X") {
+                        if (vision[h][l] != "X") {
                             if (vision[h][l] != "W") {
                                 if (explored.containsKey(currentX + j)) {
-                                    if (!explored.get(currentX + j).contains(currentY+i)) {
-                                        explored.get(currentX + j).add(currentY+i);
+                                    if (!explored.get(currentX + j).contains(currentY + i)) {
+                                        explored.get(currentX + j).add(currentY + i);
                                         informationGain++;
                                     }
 
                                 } else {
                                     explored.put(currentX + j, new ArrayList<Integer>());
-                                    explored.get(currentX + j).add(currentY+i);
+                                    explored.get(currentX + j).add(currentY + i);
                                     informationGain++;
                                 }
                             } else {
                                 if (walls.containsKey(currentX + j)) {
-                                    if (!walls.get(currentX + j).contains(currentY+i)) {
-                                        walls.get(currentX + j).add(currentY+i);
+                                    if (!walls.get(currentX + j).contains(currentY + i)) {
+                                        walls.get(currentX + j).add(currentY + i);
                                         informationGain++;
                                     }
 
                                 } else {
                                     walls.put(currentX + j, new ArrayList<Integer>());
-                                    walls.get(currentX + j).add(currentY+i);
+                                    walls.get(currentX + j).add(currentY + i);
                                     informationGain++;
                                 }
                             }
                         }
                     }
                     case BACK -> {
-                        if (vision[h][l]!="X") {
+                        if (vision[h][l] != "X") {
                             if (vision[h][l] != "W") {
                                 if (explored.containsKey(currentX - j)) {
-                                    if (!explored.get(currentX - j).contains(currentY-i)) {
-                                        explored.get(currentX - j).add(currentY-i);
+                                    if (!explored.get(currentX - j).contains(currentY - i)) {
+                                        explored.get(currentX - j).add(currentY - i);
                                         informationGain++;
                                     }
 
                                 } else {
                                     explored.put(currentX - j, new ArrayList<Integer>());
-                                    explored.get(currentX - j).add(currentY-i);
+                                    explored.get(currentX - j).add(currentY - i);
                                     informationGain++;
                                 }
                             } else {
                                 if (walls.containsKey(currentX - j)) {
-                                    if (!walls.get(currentX - j).contains(currentY-i)) {
-                                        walls.get(currentX - j).add(currentY-i);
+                                    if (!walls.get(currentX - j).contains(currentY - i)) {
+                                        walls.get(currentX - j).add(currentY - i);
                                         informationGain++;
                                     }
 
                                 } else {
                                     walls.put(currentX - j, new ArrayList<Integer>());
-                                    walls.get(currentX - j).add(currentY-i);
+                                    walls.get(currentX - j).add(currentY - i);
                                     informationGain++;
                                 }
                             }
                         }
                     }
                     case LEFT -> {
-                        if (vision[h][l]!="X") {
+                        if (vision[h][l] != "X") {
                             if (vision[h][l] != "W") {
-                                if (explored.containsKey(currentX-i)) {
-                                    if (!explored.get(currentX-i).contains(currentY+j)) {
-                                        explored.get(currentX-i).add(currentY+j);
+                                if (explored.containsKey(currentX - i)) {
+                                    if (!explored.get(currentX - i).contains(currentY + j)) {
+                                        explored.get(currentX - i).add(currentY + j);
                                         informationGain++;
                                     }
 
                                 } else {
-                                    explored.put(currentX-i, new ArrayList<Integer>());
-                                    explored.get(currentX-i).add(currentY+j);
+                                    explored.put(currentX - i, new ArrayList<Integer>());
+                                    explored.get(currentX - i).add(currentY + j);
                                     informationGain++;
                                 }
                             } else {
-                                if (walls.containsKey(currentX-i)) {
-                                    if (!walls.get(currentX-i).contains(currentY+j)) {
-                                        walls.get(currentX-i).add(currentY+j);
+                                if (walls.containsKey(currentX - i)) {
+                                    if (!walls.get(currentX - i).contains(currentY + j)) {
+                                        walls.get(currentX - i).add(currentY + j);
                                         informationGain++;
                                     }
 
                                 } else {
-                                    walls.put(currentX-i, new ArrayList<Integer>());
-                                    walls.get(currentX-i).add(currentY+j);
+                                    walls.put(currentX - i, new ArrayList<Integer>());
+                                    walls.get(currentX - i).add(currentY + j);
                                     informationGain++;
                                 }
                             }
                         }
                     }
                     case RIGHT -> {
-                        if (vision[h][l]!="X") {
+                        if (vision[h][l] != "X") {
                             if (vision[h][l] != "W") {
-                                if (explored.containsKey(currentX+i)) {
-                                    if (!explored.get(currentX+i).contains(currentY-j)) {
-                                        explored.get(currentX+i).add(currentY-j);
+                                if (explored.containsKey(currentX + i)) {
+                                    if (!explored.get(currentX + i).contains(currentY - j)) {
+                                        explored.get(currentX + i).add(currentY - j);
                                         informationGain++;
                                     }
 
                                 } else {
-                                    explored.put(currentX+i, new ArrayList<Integer>());
-                                    explored.get(currentX+i).add(currentY-j);
+                                    explored.put(currentX + i, new ArrayList<Integer>());
+                                    explored.get(currentX + i).add(currentY - j);
                                     informationGain++;
                                 }
                             } else {
-                                if (walls.containsKey(currentX+i)) {
-                                    if (!walls.get(currentX+i).contains(currentY-j)) {
-                                        walls.get(currentX+i).add(currentY-j);
+                                if (walls.containsKey(currentX + i)) {
+                                    if (!walls.get(currentX + i).contains(currentY - j)) {
+                                        walls.get(currentX + i).add(currentY - j);
                                         informationGain++;
                                     }
 
                                 } else {
-                                    walls.put(currentX+i, new ArrayList<Integer>());
-                                    walls.get(currentX+i).add(currentY-j);
+                                    walls.put(currentX + i, new ArrayList<Integer>());
+                                    walls.get(currentX + i).add(currentY - j);
                                     informationGain++;
                                 }
                             }
@@ -539,11 +551,13 @@ public class ReverseTreeNode {
         }
         return informationGain;
     }
-    private HashMap<Integer,ArrayList<Integer>> deepClone(HashMap<Integer,ArrayList<Integer>> maptoCopy){
+
+    private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
         Gson gson = new Gson();
         String jsonString = gson.toJson(maptoCopy);
-        Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>(){}.getType();
-        HashMap<Integer,ArrayList<Integer>> cloned = gson.fromJson(jsonString,type);
+        Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>() {
+        }.getType();
+        HashMap<Integer, ArrayList<Integer>> cloned = gson.fromJson(jsonString, type);
         return cloned;
     }
 }

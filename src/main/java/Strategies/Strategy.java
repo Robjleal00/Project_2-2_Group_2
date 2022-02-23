@@ -4,8 +4,11 @@ import Enums.Moves;
 import Enums.Rotations;
 
 public class Strategy {
-    public Moves decideOnMove(String[][] vision, int[] yx, Rotations rot){
+    public Moves decideOnMove(String[][] vision, int[] yx, Rotations rot) {
         return Moves.WALK;
     }
-    public void printMappings(){};
+
+    public void printMappings() {
+    }
+
 }

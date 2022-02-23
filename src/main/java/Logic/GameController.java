@@ -22,7 +22,7 @@ public class GameController {
     private ArrayList<Integer> allUnseenTiles;
 
     public GameController(int height, int length, int eyeRange) {
-        allUnseenTiles=new ArrayList<>();
+        allUnseenTiles = new ArrayList<>();
         this.mapLength = length;
         this.mapHeight = height;
         this.map = makeMap(height, length);
@@ -35,19 +35,21 @@ public class GameController {
         queuedMoves = new HashMap<Entity, Moves>();
 
     }
-    public GameController(){};
+
+    public GameController() {
+    }
 
     public void init() throws InterruptedException {
-        int turns =0;
+        int turns = 0;
         while (isRunning) {//gameloop
             for (Entity e : entities) {
                 Moves currentMove = e.getMove();
                 queuedMoves.put(e, currentMove);
             }
             for (Entity e : entities) {
-                if (executeMove(e, queuedMoves.get(e))){
+                if (executeMove(e, queuedMoves.get(e))) {
                     Moves move = queuedMoves.get(e);
-                    switch(move){
+                    switch (move) {
                         case WALK -> e.walk();
                         case TURN_AROUND -> e.turnAround();
                         case TURN_RIGHT -> e.turnRight();
@@ -56,7 +58,7 @@ public class GameController {
                 }
             }
             for (Entity e : entities) {
-              //  e.printMappings();
+                //  e.printMappings();
             }
             printMap();
             turns++;
@@ -64,7 +66,7 @@ public class GameController {
             System.out.println(allUnseenTiles.toString());
             Thread.sleep(1000);
         }
-        System.out.println("EXPLORATION DONE IN "+turns+" TURNS!");
+        System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
         for (Entity e : entities) {
             e.printMappings();
         }
@@ -75,7 +77,7 @@ public class GameController {
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < length; j++) {
                 mappy[i][j] = " ";
-                allUnseenTiles.add(coordsToNumber(i,j));
+                allUnseenTiles.add(coordsToNumber(i, j));
             }
         }
         return mappy;
@@ -104,7 +106,7 @@ public class GameController {
         Rotations rot = entityRotationsHashMap.get(e);
         String[][] vision = new String[eyeRange][3];
         int[] position = locations.get(e);
-        boolean canSee[] = {true, true, true};
+        boolean[] canSee = {true, true, true};
         switch (rot) {
             case UP -> {
                 for (int i = 0; i < eyeRange; i++) {
@@ -124,8 +126,8 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it={lookingAt[0],lookingAt[1]+1};
-                                if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
+                                int[] pos_of_it = {lookingAt[0], lookingAt[1] + 1};
+                                if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
@@ -161,8 +163,8 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
-                                if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
+                                int[] pos_of_it = {lookingAt[0] + 1, lookingAt[1]};
+                                if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
@@ -197,8 +199,8 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it={lookingAt[0]-1,lookingAt[1]};
-                                if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
+                                int[] pos_of_it = {lookingAt[0] - 1, lookingAt[1]};
+                                if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
@@ -230,12 +232,11 @@ public class GameController {
                                     if (symbol == "W") {
                                         canSee[j + 1] = false;
                                     }
-
                                 }
                             } else {
                                 if (j != 0 && canSee[1]) {
-                                    int[] pos_of_it={lookingAt[0],lookingAt[1]-1};
-                                    if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
+                                    int[] pos_of_it = {lookingAt[0], lookingAt[1] - 1};
+                                    if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
                                         vision[eyeRange - (i + 1)][j + 1] = "X";
                                     } else {
                                         {
@@ -244,15 +245,12 @@ public class GameController {
                                             if (symbol == "W") {
                                                 canSee[j + 1] = false;
                                             }
-
                                         }
                                     }
-
                                 } else {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 }
                             }
-
                         } else {
                             vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
@@ -340,8 +338,8 @@ public class GameController {
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
                                 return true;
-                            }else return false;
-                        }else return false;
+                            } else return false;
+                        } else return false;
                     }
                     case DOWN -> {
                         int[] targetlocation = {pos[0] + 1, pos[1]};
@@ -351,8 +349,8 @@ public class GameController {
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
                                 return true;
-                            }else return false;
-                        }else return false;
+                            } else return false;
+                        } else return false;
                     }
                     case RIGHT -> {
                         int[] targetlocation = {pos[0], pos[1] + 1};
@@ -362,8 +360,8 @@ public class GameController {
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
                                 return true;
-                            }else return false;
-                        }else return false;
+                            } else return false;
+                        } else return false;
                     }
                     case LEFT -> {
                         int[] targetlocation = {pos[0], pos[1] - 1};
@@ -373,8 +371,8 @@ public class GameController {
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
                                 return true;
-                            }else return false;
-                        }else return false;
+                            } else return false;
+                        } else return false;
                     }
                 }
             }
@@ -402,15 +400,15 @@ public class GameController {
     public void makeBorders(int length, int height) {
         for (int i = 0; i < length; i++) {
             putOnMap("W", 0, i);
-            allUnseenTiles.remove((Object)coordsToNumber(0,i));
+            allUnseenTiles.remove((Object) coordsToNumber(0, i));
             putOnMap("W", height - 1, i);
-            allUnseenTiles.remove((Object)coordsToNumber(height-1,i));
+            allUnseenTiles.remove((Object) coordsToNumber(height - 1, i));
         }
         for (int j = 0; j < height; j++) {
             putOnMap("W", j, 0);
-            allUnseenTiles.remove((Object)coordsToNumber(j,0));
+            allUnseenTiles.remove((Object) coordsToNumber(j, 0));
             putOnMap("W", j, length - 1);
-            allUnseenTiles.remove((Object)coordsToNumber(j,length-1));
+            allUnseenTiles.remove((Object) coordsToNumber(j, length - 1));
         }
     }
 
@@ -444,14 +442,17 @@ public class GameController {
     private boolean existsInBoard(int[] pos) {
         return (pos[0] > -1 && pos[0] < mapHeight && pos[1] > -1 && pos[1] < mapLength);
     }
-    private int coordsToNumber(int h, int l){
-        return ((h*mapLength)+l);
+
+    private int coordsToNumber(int h, int l) {
+        return ((h * mapLength) + l);
     }
-    private int coordsToNumber(int []yx){
-        return ((yx[0]*mapLength)+yx[1]);
+
+    private int coordsToNumber(int[] yx) {
+        return ((yx[0] * mapLength) + yx[1]);
     }
-    private void checkWin(){
-        if(allUnseenTiles.isEmpty()) isRunning=false;
+
+    private void checkWin() {
+        if (allUnseenTiles.isEmpty()) isRunning = false;
     }
 
 
