@@ -57,9 +57,12 @@ public class GameController {
                     }
                 }
             }
-            for (Entity e : entities) {
-                //  e.printMappings();
+            if(turns%5==0){
+                for (Entity e : entities) {
+                    e.printMappings();
+                }
             }
+
             printMap();
             turns++;
             checkWin();
@@ -70,6 +73,7 @@ public class GameController {
         for (Entity e : entities) {
             e.printMappings();
         }
+
     }
 
     private String[][] makeMap(int height, int length) {

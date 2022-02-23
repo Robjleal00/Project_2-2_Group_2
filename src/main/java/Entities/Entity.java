@@ -26,6 +26,9 @@ public class Entity {
 
     public void printMappings() {
     }
+    public void showMeWhatUSaw(){
+
+    }
 
 
 }

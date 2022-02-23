@@ -37,9 +37,7 @@ public class TreeRoot {
         int result = max(values);
         // System.out.println(result);
         if (result == 0) {
-            //System.out.println(" I EXPLORED EVERYHTING APPARENTLY");
-            //System.out.println(explored);
-            //System.out.println(walls);
+            // HE NEEDS TO ENTER HIS MAP AND FIND THE QUESTION MARKS -> ALREAD IN THE GETMAPPINGS METHOD!! ( GOTTA REMOVE 2 FROM EACH COORD ON THE MAP CAUSE OF THE TRICK WITH BORDERS)
         }
         boolean allTheSame = true;
         for (int i = 0; i < values.size(); i++) {

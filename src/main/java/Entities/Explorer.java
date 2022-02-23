@@ -104,6 +104,10 @@ public class Explorer extends Entity {
             }
         }
     }
+    @Override
+    public void showMeWhatUSaw(){
+        st.printMappings();
+    }
 
     public int getX() {
         return x;
