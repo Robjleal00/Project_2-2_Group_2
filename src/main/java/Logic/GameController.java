@@ -119,7 +119,8 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                if (j == -1 && (map[lookingAt[0] + 1][lookingAt[1]]) == "W") {
+                                int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
+                                if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
@@ -155,7 +156,8 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                if (j == -1 && (map[lookingAt[0] + 1][lookingAt[1]]) == "W") {
+                                int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
+                                if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
@@ -190,7 +192,8 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                if (j == -1 && (map[lookingAt[0] + 1][lookingAt[1]]) == "W") {
+                                int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
+                                if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
@@ -226,7 +229,8 @@ public class GameController {
                                 }
                             } else {
                                 if (j != 0 && canSee[1]) {
-                                    if (j == -1 && (map[lookingAt[0] + 1][lookingAt[1]]) == "W") {
+                                    int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
+                                    if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
                                         vision[eyeRange - (i + 1)][j + 1] = "X";
                                     } else {
                                         {

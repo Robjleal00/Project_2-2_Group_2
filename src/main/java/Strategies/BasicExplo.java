@@ -21,7 +21,7 @@ public class BasicExplo extends Strategy{
         updateExploration(vision,xy,rot);
         //System.out.println(explored);
         //System.out.println(walls);
-        TreeRoot root = new TreeRoot((HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,6,vision.length);
+        TreeRoot root = new TreeRoot((HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,9,vision.length);
         Moves decision = root.getMove();
         return decision;
     }

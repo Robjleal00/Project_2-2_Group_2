@@ -31,6 +31,12 @@ public class TreeRoot {
             values.add(new TreeNode(avaliableMoves[i],(HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,eyeRange).getValue(depth));
         }
             int result = max(values);
+            System.out.println(result);
+            if(result==0){
+                System.out.println(" I EXPLORED EVERYHTING APPARENTLY");
+                System.out.println(explored);
+                System.out.println(walls);
+            }
             return avaliableMoves[values.indexOf(result)];
 
     }
