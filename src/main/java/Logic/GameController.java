@@ -59,7 +59,7 @@ public class GameController {
             }
             if(turns%5==0){
                 for (Entity e : entities) {
-                    e.printMappings();
+                    e.showMeWhatUSaw();
                 }
             }
 
@@ -71,7 +71,7 @@ public class GameController {
         }
         System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
         for (Entity e : entities) {
-            e.printMappings();
+            e.showMeWhatUSaw();
         }
 
     }

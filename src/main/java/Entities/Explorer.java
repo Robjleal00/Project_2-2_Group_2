@@ -64,10 +64,6 @@ public class Explorer extends Entity {
         }
     }
 
-    @Override
-    public void printMappings() {
-        st.printMappings();
-    }
 
     @Override
     public void turnRight() {
