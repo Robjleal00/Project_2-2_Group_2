@@ -45,24 +45,29 @@ public class GameController {
                 queuedMoves.put(e, currentMove);
             }
             for (Entity e : entities) {
-                executeMove(e, queuedMoves.get(e));
-            }
-            for(Entity e:entities){
-                Moves move = queuedMoves.get(e);
-                switch(move){
-                    case WALK -> e.walk();
-                    case TURN_AROUND -> e.turnAround();
-                    case TURN_RIGHT -> e.turnRight();
-                    case TURN_LEFT -> e.turnLeft();
+                if (executeMove(e, queuedMoves.get(e))){
+                    Moves move = queuedMoves.get(e);
+                    switch(move){
+                        case WALK -> e.walk();
+                        case TURN_AROUND -> e.turnAround();
+                        case TURN_RIGHT -> e.turnRight();
+                        case TURN_LEFT -> e.turnLeft();
+                    }
                 }
+            }
+            for (Entity e : entities) {
+              //  e.printMappings();
             }
             printMap();
             turns++;
             checkWin();
             System.out.println(allUnseenTiles.toString());
-           // Thread.sleep(1000);
+            Thread.sleep(1000);
         }
         System.out.println("EXPLORATION DONE IN "+turns+" TURNS!");
+        for (Entity e : entities) {
+            e.printMappings();
+        }
     }
 
     private String[][] makeMap(int height, int length) {
@@ -119,7 +124,7 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
+                                int[] pos_of_it={lookingAt[0],lookingAt[1]+1};
                                 if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
@@ -192,7 +197,7 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
+                                int[] pos_of_it={lookingAt[0]-1,lookingAt[1]};
                                 if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
@@ -229,7 +234,7 @@ public class GameController {
                                 }
                             } else {
                                 if (j != 0 && canSee[1]) {
-                                    int[] pos_of_it={lookingAt[0]+1,lookingAt[1]};
+                                    int[] pos_of_it={lookingAt[0],lookingAt[1]-1};
                                     if(existsInBoard(pos_of_it)&&j==-1&&map[pos_of_it[0]][pos_of_it[1]]=="W"){
                                         vision[eyeRange - (i + 1)][j + 1] = "X";
                                     } else {
@@ -256,26 +261,31 @@ public class GameController {
             }
 
         }
-        System.out.println(rot);
+        //System.out.println(rot);
         return vision;
     }
 
-    private void executeMove(Entity e, Moves m) {
+    private boolean executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
         switch (m) {
             case TURN_LEFT -> {
                 switch (rotation) {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
+                        return true;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
+                        return true;
+
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
+                        return true;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
+                        return true;
                     }
                 }
             }
@@ -283,15 +293,19 @@ public class GameController {
                 switch (rotation) {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
+                        return true;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
+                        return true;
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
+                        return true;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
+                        return true;
                     }
                 }
             }
@@ -299,15 +313,19 @@ public class GameController {
                 switch (rotation) {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
+                        return true;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
+                        return true;
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
+                        return true;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
+                        return true;
                     }
                 }
             }
@@ -321,8 +339,9 @@ public class GameController {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
-                            }
-                        }
+                                return true;
+                            }else return false;
+                        }else return false;
                     }
                     case DOWN -> {
                         int[] targetlocation = {pos[0] + 1, pos[1]};
@@ -331,8 +350,9 @@ public class GameController {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
-                            }
-                        }
+                                return true;
+                            }else return false;
+                        }else return false;
                     }
                     case RIGHT -> {
                         int[] targetlocation = {pos[0], pos[1] + 1};
@@ -341,8 +361,9 @@ public class GameController {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
-                            }
-                        }
+                                return true;
+                            }else return false;
+                        }else return false;
                     }
                     case LEFT -> {
                         int[] targetlocation = {pos[0], pos[1] - 1};
@@ -351,12 +372,14 @@ public class GameController {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 locations.put(e, targetlocation);
-                            }
-                        }
+                                return true;
+                            }else return false;
+                        }else return false;
                     }
                 }
             }
         }
+        return false;
     }
 
 

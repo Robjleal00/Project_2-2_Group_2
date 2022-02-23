@@ -14,6 +14,7 @@ public class Entity {
     public void turnRight(){};
     public void turnAround(){};
     public void walk(){};
+    public void printMappings(){};
 
 
 }

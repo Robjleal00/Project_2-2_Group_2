@@ -4,9 +4,15 @@ import Enums.Moves;
 import Enums.Rotations;
 import OptimalSearch.TreeNode;
 import OptimalSearch.TreeRoot;
+import com.google.gson.Gson;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import com.google.gson.*;
+import com.google.gson.reflect.TypeToken;
+
 
 public class BasicExplo extends Strategy{
     private Moves[] moves = {Moves.WALK, Moves.TURN_AROUND,Moves.TURN_LEFT,Moves.TURN_RIGHT};
@@ -21,7 +27,7 @@ public class BasicExplo extends Strategy{
         updateExploration(vision,xy,rot);
         //System.out.println(explored);
         //System.out.println(walls);
-        TreeRoot root = new TreeRoot((HashMap<Integer,ArrayList>)explored.clone(),(HashMap<Integer,ArrayList>)walls.clone(),xy.clone(),rot,9,vision.length);
+        TreeRoot root = new TreeRoot(deepClone(explored),deepClone(walls),xy.clone(),rot,8,vision.length);
         Moves decision = root.getMove();
         return decision;
     }
@@ -158,4 +164,18 @@ public class BasicExplo extends Strategy{
         }
         return informationGain;
     }
+    private HashMap<Integer,ArrayList<Integer>> deepClone(HashMap<Integer,ArrayList<Integer>> maptoCopy){
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(maptoCopy);
+        Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>(){}.getType();
+        HashMap<Integer,ArrayList<Integer>> cloned = gson.fromJson(jsonString,type);
+        return cloned;
+    }
+    @Override
+    public void printMappings(){
+        System.out.println(explored);
+        System.out.println(walls);
+    }
+
 }
+

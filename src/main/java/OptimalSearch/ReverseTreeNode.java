@@ -2,17 +2,16 @@ package OptimalSearch;
 
 import Enums.Moves;
 import Enums.Rotations;
-import Logic.GameController;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import static java.util.Collections.max;
+import static java.util.Collections.min;
 
-public class TreeNode {
+public class ReverseTreeNode {
     private Moves move;
     private HashMap<Integer, ArrayList<Integer>> explored;
     private HashMap<Integer,ArrayList<Integer>> walls;
@@ -20,50 +19,73 @@ public class TreeNode {
     private Rotations rot;
     private int eyeRange;
     private Moves[] avaliableMoves = {Moves.WALK,Moves.TURN_RIGHT,Moves.TURN_LEFT,Moves.TURN_AROUND};
-    public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot,int eyeRange){
-            this.move=move;
-            this.rot=rot;
-            this.explored=explored;
-            this.walls=walls;
-            this.xy=xy;
-            this.eyeRange=eyeRange;
+    private int target;
+    private int parentValue;
+    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot,int eyeRange,int target,int parentValue){
+        this.move=move;
+        this.rot=rot;
+        this.explored=explored;
+        this.walls=walls;
+        this.xy=xy;
+        this.eyeRange=eyeRange;
+        this.target=target;
+        this.parentValue=parentValue;
     }
-    public int getValue(int depth){
-        switch(move){
-            case TURN_AROUND -> {rot=turnAround(rot);}
-            case WALK -> {xy=walk(xy,rot,walls);}
-            case TURN_RIGHT -> {rot=turnRight(rot);}
-            case TURN_LEFT -> {rot=turnLeft(rot);}
+    public int getValue(int depth) {
+        switch (move) {
+            case TURN_AROUND -> {
+                rot = turnAround(rot);
+            }
+            case WALK -> {
+                xy = walk(xy, rot, walls);
+            }
+            case TURN_RIGHT -> {
+                rot = turnRight(rot);
+            }
+            case TURN_LEFT -> {
+                rot = turnLeft(rot);
+            }
         }
-        String[][] vision = predictVision(xy,rot,walls,explored);
+        String[][] vision = predictVision(xy, rot, walls, explored);
         /*
         VISION TESTING
         GameController printer = new GameController();
         printer.printArray(vision);
         printer.print("---------------------");
         */
-        int value = updateExploration(vision,xy,rot);
-        /*
-        if (value==1){
-            GameController printer = new GameController();
-            printer.print(" PRINTING THE VISION AT POSITION THAT GAVE ME RESULT OF 1");
-            printer.printArray(vision);
-            printer.print(" AT POSITION");
-            System.out.println(xy);
-            printer.print(" LOOKING");
-            System.out.println(rot);
+        int value = updateExploration(vision, xy, rot);
+        value+=parentValue;
+        //if(depth==0)return Integer.MAX_VALUE;
+        if(value == target) {
+            return depth;
         }
-         */
-        if(depth==0) {
-            return value;
-        }else {
-            ArrayList<Integer> values = new ArrayList<Integer>();
-            for (int i=0;i<avaliableMoves.length;i++){
-                values.add(new TreeNode(avaliableMoves[i],deepClone(explored),deepClone(walls),xy.clone(),rot,eyeRange).getValue(depth-1));
+        else {
+              /*
+            if (value == 1) {
+
+                GameController printer = new GameController();
+                printer.print(" PRINTING THE VISION AT POSITION THAT GAVE ME RESULT OF 1");
+                printer.printArray(vision);
+                printer.print(" AT POSITION");
+                System.out.println(xy);
+                printer.print(" LOOKING");
+                System.out.println(rot);
+
+
             }
-            return value + max(values);
+         */
+            if (depth == 0) {
+                return Integer.MIN_VALUE;
+            } else {
+                ArrayList<Integer> values = new ArrayList<Integer>();
+                for (int i = 0; i < avaliableMoves.length; i++) {
+                    values.add(new ReverseTreeNode(avaliableMoves[i], deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,target,value).getValue(depth - 1));
+                }
+                return max(values);
+            }
         }
     }
+
     private String[][] predictVision(int[]xy,Rotations rot,HashMap<Integer, ArrayList<Integer>>walls,HashMap<Integer, ArrayList<Integer>>explored){
         String[][] returner = new String[eyeRange][3];
         int currentX=xy[0];

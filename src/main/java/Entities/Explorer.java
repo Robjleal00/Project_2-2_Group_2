@@ -33,7 +33,7 @@ public class Explorer extends Entity {
     public Moves getMove() {
         String[][] vision = gm.giveVision(this);
         int[] xy={x,y};
-        gm.printArray(vision);
+        //gm.printArray(vision);
         return st.decideOnMove(vision,xy,currentRotation);
     }
 
@@ -63,6 +63,11 @@ public class Explorer extends Entity {
             case RIGHT -> x++;
             case LEFT -> x--;
         }
+    }
+
+    @Override
+    public void printMappings() {
+        st.printMappings();
     }
 
     @Override
