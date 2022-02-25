@@ -22,6 +22,7 @@ public class TreeRoot {
     private final int[] xy;
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
     private final int eyeRange;
+    boolean TESTING=true;
 
     public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, int eyeRange) {
         this.explored = explored;
@@ -39,21 +40,27 @@ public class TreeRoot {
         }
         int result = max(values);
         // System.out.println(result);
-        if (result == 0) {
+        //if (result == 0) {
+        if(TESTING){
             String[][]mindMap=giveMappings();
             HashMap<Integer,ArrayList<Integer>> explorationPoints=new HashMap<Integer,ArrayList<Integer>>();
+            int fix=Integer.parseInt(mindMap[0][0]);
+            int totalY=Integer.parseInt(mindMap[0][1]);
+            int totalX=Integer.parseInt(mindMap[0][2]);
+
             for(int i=0;i<mindMap.length;i++){
                 for(int j=0;j<mindMap[0].length;j++){
                     if(mindMap[i][j]=="?"){
-                        if(explorationPoints.containsKey(i-2)){
-                                explorationPoints.get(i-2).add(j-2);
+                        if(explorationPoints.containsKey(j+fix)){
+                                explorationPoints.get(j+fix).add((i+fix)*-1);
                         }else{
-                            explorationPoints.put(i-2,new ArrayList<Integer>());
-                            explorationPoints.get(i-2).add(j-2);
+                            explorationPoints.put(j+fix,new ArrayList<Integer>());
+                            explorationPoints.get(j+fix).add((i+fix)*-1);
                         }
                     }
                 }
             }
+            System.out.println(explorationPoints);
             //Now explorationPoints has all Quesiton marks transformed back into agents mapping
             //gotta add some kind of A* for him to get the shortest path and which move to output to go follow that
         }
@@ -124,22 +131,22 @@ public class TreeRoot {
         int highestYTotal=Math.max(highestYWalls,highestYExplored);
         int spanX=highestXTotal-lowestXTotal;
         int spanY=highestYTotal-lowestYTotal;
-        String[][]mindMap=new String[spanY+3][spanX+3];
+        String[][]mindMap=new String[spanY+5][spanX+5];
         for(int i :exploredX){
             ArrayList<Integer> array=explored.get(i);
             for(int j=0;j<array.size();j++){
-                mindMap[array.get(j)-lowestYTotal+1][i-lowestXTotal+1]=" ";
+                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]=" ";
             }
         }
         for(int i :wallX){
             ArrayList<Integer> array=walls.get(i);
             for(int j=0;j<array.size();j++){
-                mindMap[array.get(j)-lowestYTotal+1][i-lowestXTotal+1]="W";
+                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]="W";
             }
         }
-       // GameController printer=new GameController();
-        for(int i=0;i<=spanY+2;i++){
-            for(int j=0;j<=spanX+2;j++){
+        GameController printer=new GameController();
+        for(int i=0;i<=spanY+4;i++){
+            for(int j=0;j<=spanX+4;j++){
                 boolean connected=false;
                 if(mindMap[i][j]==null){
                     if(i>0){
@@ -161,6 +168,9 @@ public class TreeRoot {
 
             }
         }
+        mindMap[0][0]="-3";
+        mindMap[0][1]=Integer.toString(highestYTotal);
+        mindMap[0][2]=Integer.toString(highestXTotal);
         return mindMap;
         //printer.printArray(mindMap);
         //FIRST ONE IN MATRIX IS Y

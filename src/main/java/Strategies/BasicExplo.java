@@ -31,7 +31,7 @@ public class BasicExplo extends Strategy {
         updateExploration(vision, xy, rot);
         //System.out.println(explored);
         //System.out.println(walls);
-        TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 2, vision.length);
+        TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length);
         Moves decision = root.getMove();
         return decision;
     }
@@ -221,22 +221,22 @@ public class BasicExplo extends Strategy {
         int highestYTotal=Math.max(highestYWalls,highestYExplored);
         int spanX=highestXTotal-lowestXTotal;
         int spanY=highestYTotal-lowestYTotal;
-        String[][]mindMap=new String[spanY+3][spanX+3];
+        String[][]mindMap=new String[spanY+5][spanX+5];
         for(int i :exploredX){
             ArrayList<Integer> array=explored.get(i);
             for(int j=0;j<array.size();j++){
-                mindMap[array.get(j)-lowestYTotal+1][i-lowestXTotal+1]=" ";
+                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]=" ";
             }
         }
         for(int i :wallX){
             ArrayList<Integer> array=walls.get(i);
             for(int j=0;j<array.size();j++){
-                mindMap[array.get(j)-lowestYTotal+1][i-lowestXTotal+1]="W";
+                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]="W";
             }
         }
         GameController printer=new GameController();
-        for(int i=0;i<=spanY+2;i++){
-            for(int j=0;j<=spanX+2;j++){
+        for(int i=0;i<=spanY+4;i++){
+            for(int j=0;j<=spanX+4;j++){
                 boolean connected=false;
                 if(mindMap[i][j]==null){
                     if(i>0){
@@ -258,6 +258,7 @@ public class BasicExplo extends Strategy {
 
             }
         }
+        mindMap[0][0]="-3";
         printer.printArray(mindMap);
         //FIRST ONE IN MATRIX IS Y
         // SECOND ONE IN MATRIX IS X

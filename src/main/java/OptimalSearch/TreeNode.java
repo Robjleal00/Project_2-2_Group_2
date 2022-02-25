@@ -18,7 +18,8 @@ public class TreeNode {
     private int[] xy;
     private Rotations rot;
     private final int eyeRange;
-    private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
+    private final Moves[] movess = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
+    private  ArrayList<Moves> avaliableMoves = new ArrayList<Moves>();
 
     public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange) {
         this.move = move;
@@ -27,6 +28,14 @@ public class TreeNode {
         this.walls = walls;
         this.xy = xy;
         this.eyeRange = eyeRange;
+        for(Moves m :movess){
+            avaliableMoves.add(m);
+        }
+        switch(move){
+            case TURN_AROUND ->avaliableMoves.remove(Moves.TURN_AROUND);
+            case TURN_LEFT -> avaliableMoves.remove(Moves.TURN_RIGHT);
+            case TURN_RIGHT -> avaliableMoves.remove(Moves.TURN_LEFT);
+        }
     }
 
     public int getValue(int depth) {
@@ -67,8 +76,8 @@ public class TreeNode {
             return value;
         } else {
             ArrayList<Integer> values = new ArrayList<Integer>();
-            for (int i = 0; i < avaliableMoves.length; i++) {
-                values.add(new TreeNode(avaliableMoves[i], deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange).getValue(depth - 1));
+            for (int i = 0; i < avaliableMoves.size(); i++) {
+                values.add(new TreeNode(avaliableMoves.get(i), deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange).getValue(depth - 1));
             }
             return value + max(values);
         }

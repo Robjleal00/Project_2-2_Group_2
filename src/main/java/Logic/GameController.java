@@ -67,7 +67,7 @@ public class GameController {
             turns++;
             checkWin();
             System.out.println(allUnseenTiles.toString());
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
         System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
         for (Entity e : entities) {
@@ -231,7 +231,6 @@ public class GameController {
                             if (canSee[j + 1]) {
                                 {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
-
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
                                     if (symbol == "W") {
                                         canSee[j + 1] = false;

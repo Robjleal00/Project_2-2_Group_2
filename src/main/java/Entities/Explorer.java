@@ -32,7 +32,7 @@ public class Explorer extends Entity {
     public Moves getMove() {
         String[][] vision = gm.giveVision(this);
         int[] xy = {x, y};
-        //gm.printArray(vision);
+       // gm.printArray(vision);
         return st.decideOnMove(vision, xy, currentRotation);
     }
 
