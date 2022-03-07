@@ -12,54 +12,51 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 
-public class MainApp extends Application implements EventHandler<ActionEvent>{
+public class MainApp extends Application {
     Button launchButton;
+    Button playButton;
+    Button backButton;
     Scene launchScene, mainScene;
     Label welcome;
-    Window window;
+    Label menu;
 
     public static void main(String[] args) {
         launch(args);
     }
 
     @Override
-    public void start(Stage primaryStage) {
-        Button button = new Button("Hello, World!");
-        button.setOnAction(e -> System.out.println("Button is Pressed"));
+    public void start(Stage primaryStage) throws Exception {
 
-        window = primaryStage;
+        welcome = new Label("WELCOME!");
 
-        welcome = new Label("Welcome!");
+        launchButton = new Button("LAUNCH GAME");
+        launchButton.setOnAction(e -> primaryStage.setScene(mainScene));
 
-        launchButton = new Button("Launch Game");
-        launchButton.setOnAction(this);
+        //Layout for Launch Scene
+        VBox launchPane = new VBox(20);
+        launchPane.setStyle("-fx-background-color: #383838");
+        welcome.setStyle("-fx-background-color: #FFFFFF");
+        launchPane.getChildren().addAll(welcome, launchButton);
+        launchScene = new Scene(launchPane, 800, 600);
 
-        StackPane layout = new StackPane();
-        layout.getChildren().add(launchButton);
-        layout.getChildren().add(welcome);
+        menu = new Label("MENU");
+        
+        playButton = new Button("PLAY");
+        playButton.setOnAction(e -> System.out.println("Game is Played"));
+        
+        backButton = new Button("BACK TO LAUNCH");
+        backButton.setOnAction(e -> primaryStage.setScene(launchScene));
 
-        Scene scene = new Scene(button, 800, 600);
+        //Layout for Main Scene
+        HBox mainSceneLayout = new HBox(20);
+        mainSceneLayout.getChildren().addAll(menu, playButton, backButton);
 
-        launchScene = new Scene(layout, 800, 600);
+        mainScene = new Scene(mainSceneLayout, 800, 600);
 
-        //mainScene = new Scene(layout, 800, 600);
-
-        VBox pane = new VBox(10);
-        pane.setStyle("-fx-background-color: #383838");
-
-
-        primaryStage.setScene(scene);
         primaryStage.setScene(launchScene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Surveillance Game");
         primaryStage.show();
-    }
-
-    @Override
-    public void handle(ActionEvent event) {
-        if (event.getSource() == launchButton) {
-            System.out.println("Game Launched");
-        }
     }
 
 }
