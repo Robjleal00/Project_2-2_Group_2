@@ -42,7 +42,7 @@ public class MainApp extends Application implements EventHandler<ActionEvent>{
 
         launchScene = new Scene(layout, 800, 600);
 
-        mainScene = new Scene(layout, 800, 600);
+        //mainScene = new Scene(layout, 800, 600);
 
         VBox pane = new VBox(10);
         pane.setStyle("-fx-background-color: #383838");
