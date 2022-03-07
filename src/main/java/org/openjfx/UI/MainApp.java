@@ -50,13 +50,12 @@ public class MainApp extends Application {
 
         exitButton = new Button("EXIT APPLICATION");
         exitButton.setOnAction(e -> {
-            boolean result = exitAppHandler.exitApp("EXIT APPLICATION", "ARE YOU SURE YOU WANT TO CLOSE THE APPLICATION?");
-            //Printing the result but we can remove this later
-            System.out.println(result);
-            if(result == true){
-                System.out.println("Goodbye!");
-                primaryStage.close();
-            }
+            closeProgram(primaryStage);
+        });
+
+        primaryStage.setOnCloseRequest(e -> {
+            e.consume();
+            closeProgram(primaryStage);
         });
 
         //Layout for Main Scene
@@ -69,6 +68,21 @@ public class MainApp extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("Surveillance Game");
         primaryStage.show();
+    }
+
+
+    public void closeProgram(Stage primaryStage) {
+        // TODO
+        // What we need to do is to properly save the state that the user is in when playing the game
+        // That way if we they actually leave the game, we have some states saved for progress.
+        System.out.println("FILE IS SAVED!");
+
+        boolean result = exitAppHandler.exitApp("EXIT APPLICATION", "ARE YOU SURE YOU WANT TO CLOSE THE APPLICATION?");
+        System.out.println(result);
+        if(result == true){
+            System.out.println("Goodbye!");
+            primaryStage.close();
+        }
     }
 
 }
