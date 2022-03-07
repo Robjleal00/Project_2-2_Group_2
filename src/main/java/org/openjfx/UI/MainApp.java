@@ -16,6 +16,7 @@ public class MainApp extends Application {
     Button launchButton;
     Button playButton;
     Button backButton;
+    Button exitButton;
     Scene launchScene, mainScene;
     Label welcome;
     Label menu;
@@ -40,16 +41,27 @@ public class MainApp extends Application {
         launchScene = new Scene(launchPane, 800, 600);
 
         menu = new Label("MENU");
-        
+
         playButton = new Button("PLAY");
         playButton.setOnAction(e -> System.out.println("Game is Played"));
         
         backButton = new Button("BACK TO LAUNCH");
         backButton.setOnAction(e -> primaryStage.setScene(launchScene));
 
+        exitButton = new Button("EXIT APPLICATION");
+        exitButton.setOnAction(e -> {
+            boolean result = exitAppHandler.exitApp("EXIT APPLICATION", "ARE YOU SURE YOU WANT TO CLOSE THE APPLICATION?");
+            //Printing the result but we can remove this later
+            System.out.println(result);
+            if(result == true){
+                System.out.println("Goodbye!");
+                primaryStage.close();
+            }
+        });
+
         //Layout for Main Scene
         HBox mainSceneLayout = new HBox(20);
-        mainSceneLayout.getChildren().addAll(menu, playButton, backButton);
+        mainSceneLayout.getChildren().addAll(menu, playButton, backButton, exitButton);
 
         mainScene = new Scene(mainSceneLayout, 800, 600);
 
