@@ -7,7 +7,9 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Objects;
 
 import static java.util.Collections.max;
 
@@ -18,8 +20,7 @@ public class TreeNode {
     private int[] xy;
     private Rotations rot;
     private final int eyeRange;
-    private final Moves[] movess = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
-    private  ArrayList<Moves> avaliableMoves = new ArrayList<Moves>();
+    private final ArrayList<Moves> avaliableMoves = new ArrayList<>();
 
     public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange) {
         this.move = move;
@@ -28,9 +29,8 @@ public class TreeNode {
         this.walls = walls;
         this.xy = xy;
         this.eyeRange = eyeRange;
-        for(Moves m :movess){
-            avaliableMoves.add(m);
-        }
+        Moves[] movess = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
+        Collections.addAll(avaliableMoves, movess);
         switch(move){
             case TURN_AROUND ->avaliableMoves.remove(Moves.TURN_AROUND);
             case TURN_LEFT -> avaliableMoves.remove(Moves.TURN_RIGHT);
@@ -40,18 +40,10 @@ public class TreeNode {
 
     public int getValue(int depth) {
         switch (move) {
-            case TURN_AROUND -> {
-                rot = turnAround(rot);
-            }
-            case WALK -> {
-                xy = walk(xy, rot, walls);
-            }
-            case TURN_RIGHT -> {
-                rot = turnRight(rot);
-            }
-            case TURN_LEFT -> {
-                rot = turnLeft(rot);
-            }
+            case TURN_AROUND -> rot = turnAround(rot);
+            case WALK -> xy = walk(xy, rot, walls);
+            case TURN_RIGHT -> rot = turnRight(rot);
+            case TURN_LEFT -> rot = turnLeft(rot);
         }
         String[][] vision = predictVision(xy, rot, walls, explored);
         /*
@@ -75,9 +67,9 @@ public class TreeNode {
         if (depth == 0) {
             return value;
         } else {
-            ArrayList<Integer> values = new ArrayList<Integer>();
-            for (int i = 0; i < avaliableMoves.size(); i++) {
-                values.add(new TreeNode(avaliableMoves.get(i), deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange).getValue(depth - 1));
+            ArrayList<Integer> values = new ArrayList<>();
+            for (Moves avaliableMove : avaliableMoves) {
+                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange).getValue(depth - 1));
             }
             return value + max(values);
         }
@@ -135,7 +127,6 @@ public class TreeNode {
                             if (walls.containsKey(currentX + j)) {
                                 if (walls.get(currentX + j).contains(currentY + i)) {
                                     returner[h][l] = "W";
-                                    canSee[j + 1] = false;
 
                                 } else {
                                     returner[h][l] = " ";
@@ -192,7 +183,6 @@ public class TreeNode {
                             if (walls.containsKey(currentX - j)) {
                                 if (walls.get(currentX - j).contains(currentY - i)) {
                                     returner[h][l] = "W";
-                                    canSee[j + 1] = false;
 
                                 } else {
                                     returner[h][l] = " ";
@@ -249,7 +239,6 @@ public class TreeNode {
                             if (walls.containsKey(currentX - i)) {
                                 if (walls.get(currentX - i).contains(currentY + j)) {
                                     returner[h][l] = "W";
-                                    canSee[j + 1] = false;
 
                                 } else {
                                     returner[h][l] = " ";
@@ -306,7 +295,6 @@ public class TreeNode {
                             if (walls.containsKey(currentX + i)) {
                                 if (walls.get(currentX + i).contains(currentY - j)) {
                                     returner[h][l] = "W";
-                                    canSee[j + 1] = false;
 
                                 } else {
                                     returner[h][l] = " ";
@@ -349,21 +337,10 @@ public class TreeNode {
     public int[] walk(int[] xy, Rotations rot, HashMap<Integer, ArrayList<Integer>> walls) {
         int[] origin = {xy[0], xy[1]};
         switch (rot) {
-            case FORWARD -> {
-                xy[1]++;
-            }
-            case BACK -> {
-                xy[1]--;
-
-            }
-            case RIGHT -> {
-                xy[0]++;
-
-            }
-            case LEFT -> {
-                xy[0]--;
-
-            }
+            case FORWARD -> xy[1]++;
+            case BACK -> xy[1]--;
+            case RIGHT -> xy[0]++;
+            case LEFT -> xy[0]--;
 
         }
         if (walls.containsKey(xy[0])) {
@@ -425,8 +402,8 @@ public class TreeNode {
                 int l = j + 1;
                 switch (rot) {
                     case FORWARD -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX + j)) {
                                     if (!explored.get(currentX + j).contains(currentY + i)) {
                                         explored.get(currentX + j).add(currentY + i);
@@ -434,7 +411,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    explored.put(currentX + j, new ArrayList<Integer>());
+                                    explored.put(currentX + j, new ArrayList<>());
                                     explored.get(currentX + j).add(currentY + i);
                                     informationGain++;
                                 }
@@ -446,7 +423,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    walls.put(currentX + j, new ArrayList<Integer>());
+                                    walls.put(currentX + j, new ArrayList<>());
                                     walls.get(currentX + j).add(currentY + i);
                                     informationGain++;
                                 }
@@ -454,8 +431,8 @@ public class TreeNode {
                         }
                     }
                     case BACK -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX - j)) {
                                     if (!explored.get(currentX - j).contains(currentY - i)) {
                                         explored.get(currentX - j).add(currentY - i);
@@ -463,7 +440,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    explored.put(currentX - j, new ArrayList<Integer>());
+                                    explored.put(currentX - j, new ArrayList<>());
                                     explored.get(currentX - j).add(currentY - i);
                                     informationGain++;
                                 }
@@ -475,7 +452,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    walls.put(currentX - j, new ArrayList<Integer>());
+                                    walls.put(currentX - j, new ArrayList<>());
                                     walls.get(currentX - j).add(currentY - i);
                                     informationGain++;
                                 }
@@ -483,8 +460,8 @@ public class TreeNode {
                         }
                     }
                     case LEFT -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX - i)) {
                                     if (!explored.get(currentX - i).contains(currentY + j)) {
                                         explored.get(currentX - i).add(currentY + j);
@@ -492,7 +469,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    explored.put(currentX - i, new ArrayList<Integer>());
+                                    explored.put(currentX - i, new ArrayList<>());
                                     explored.get(currentX - i).add(currentY + j);
                                     informationGain++;
                                 }
@@ -504,7 +481,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    walls.put(currentX - i, new ArrayList<Integer>());
+                                    walls.put(currentX - i, new ArrayList<>());
                                     walls.get(currentX - i).add(currentY + j);
                                     informationGain++;
                                 }
@@ -512,8 +489,8 @@ public class TreeNode {
                         }
                     }
                     case RIGHT -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX + i)) {
                                     if (!explored.get(currentX + i).contains(currentY - j)) {
                                         explored.get(currentX + i).add(currentY - j);
@@ -521,7 +498,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    explored.put(currentX + i, new ArrayList<Integer>());
+                                    explored.put(currentX + i, new ArrayList<>());
                                     explored.get(currentX + i).add(currentY - j);
                                     informationGain++;
                                 }
@@ -533,7 +510,7 @@ public class TreeNode {
                                     }
 
                                 } else {
-                                    walls.put(currentX + i, new ArrayList<Integer>());
+                                    walls.put(currentX + i, new ArrayList<>());
                                     walls.get(currentX + i).add(currentY - j);
                                     informationGain++;
                                 }
@@ -553,8 +530,7 @@ public class TreeNode {
         String jsonString = gson.toJson(maptoCopy);
         Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>() {
         }.getType();
-        HashMap<Integer, ArrayList<Integer>> cloned = gson.fromJson(jsonString, type);
-        return cloned;
+        return gson.fromJson(jsonString, type);
     }
 }
 

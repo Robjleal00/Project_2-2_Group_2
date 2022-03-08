@@ -10,6 +10,7 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Collections.max;
@@ -17,27 +18,21 @@ import static java.util.Collections.min;
 
 
 public class BasicExplo extends Strategy {
-    private final Moves[] moves = {Moves.WALK, Moves.TURN_AROUND, Moves.TURN_LEFT, Moves.TURN_RIGHT};
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
 
     public BasicExplo() {
-        explored = new HashMap<Integer, ArrayList<Integer>>();
-        walls = new HashMap<Integer, ArrayList<Integer>>();
+        explored = new HashMap<>();
+        walls = new HashMap<>();
     }
-
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot) {
         updateExploration(vision, xy, rot);
-        //System.out.println(explored);
-        //System.out.println(walls);
         TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length);
-        Moves decision = root.getMove();
-        return decision;
+        return root.getMove();
     }
 
-    public int updateExploration(String[][] vision, int[] xy, Rotations rot) {
-        int informationGain = 0;
+    public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
         int eyeRange = vision.length;
         int currentX = xy[0];
         int currentY = xy[1];
@@ -47,117 +42,101 @@ public class BasicExplo extends Strategy {
                 int l = j + 1;
                 switch (rot) {
                     case FORWARD -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX + j)) {
                                     if (!explored.get(currentX + j).contains(currentY + i)) {
                                         explored.get(currentX + j).add(currentY + i);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    explored.put(currentX + j, new ArrayList<Integer>());
+                                    explored.put(currentX + j, new ArrayList<>());
                                     explored.get(currentX + j).add(currentY + i);
-                                    informationGain++;
                                 }
                             } else {
                                 if (walls.containsKey(currentX + j)) {
                                     if (!walls.get(currentX + j).contains(currentY + i)) {
                                         walls.get(currentX + j).add(currentY + i);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    walls.put(currentX + j, new ArrayList<Integer>());
+                                    walls.put(currentX + j, new ArrayList<>());
                                     walls.get(currentX + j).add(currentY + i);
-                                    informationGain++;
                                 }
                             }
                         }
                     }
                     case BACK -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX - j)) {
                                     if (!explored.get(currentX - j).contains(currentY - i)) {
                                         explored.get(currentX - j).add(currentY - i);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    explored.put(currentX - j, new ArrayList<Integer>());
+                                    explored.put(currentX - j, new ArrayList<>());
                                     explored.get(currentX - j).add(currentY - i);
-                                    informationGain++;
                                 }
                             } else {
                                 if (walls.containsKey(currentX - j)) {
                                     if (!walls.get(currentX - j).contains(currentY - i)) {
                                         walls.get(currentX - j).add(currentY - i);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    walls.put(currentX - j, new ArrayList<Integer>());
+                                    walls.put(currentX - j, new ArrayList<>());
                                     walls.get(currentX - j).add(currentY - i);
-                                    informationGain++;
                                 }
                             }
                         }
                     }
                     case LEFT -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX - i)) {
                                     if (!explored.get(currentX - i).contains(currentY + j)) {
                                         explored.get(currentX - i).add(currentY + j);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    explored.put(currentX - i, new ArrayList<Integer>());
+                                    explored.put(currentX - i, new ArrayList<>());
                                     explored.get(currentX - i).add(currentY + j);
-                                    informationGain++;
                                 }
                             } else {
                                 if (walls.containsKey(currentX - i)) {
                                     if (!walls.get(currentX - i).contains(currentY + j)) {
                                         walls.get(currentX - i).add(currentY + j);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    walls.put(currentX - i, new ArrayList<Integer>());
+                                    walls.put(currentX - i, new ArrayList<>());
                                     walls.get(currentX - i).add(currentY + j);
-                                    informationGain++;
                                 }
                             }
                         }
                     }
                     case RIGHT -> {
-                        if (vision[h][l] != "X") {
-                            if (vision[h][l] != "W") {
+                        if (!Objects.equals(vision[h][l], "X")) {
+                            if (!Objects.equals(vision[h][l], "W")) {
                                 if (explored.containsKey(currentX + i)) {
                                     if (!explored.get(currentX + i).contains(currentY - j)) {
                                         explored.get(currentX + i).add(currentY - j);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    explored.put(currentX + i, new ArrayList<Integer>());
+                                    explored.put(currentX + i, new ArrayList<>());
                                     explored.get(currentX + i).add(currentY - j);
-                                    informationGain++;
                                 }
                             } else {
                                 if (walls.containsKey(currentX + i)) {
                                     if (!walls.get(currentX + i).contains(currentY - j)) {
                                         walls.get(currentX + i).add(currentY - j);
-                                        informationGain++;
                                     }
 
                                 } else {
-                                    walls.put(currentX + i, new ArrayList<Integer>());
+                                    walls.put(currentX + i, new ArrayList<>());
                                     walls.get(currentX + i).add(currentY - j);
-                                    informationGain++;
                                 }
                             }
                         }
@@ -167,7 +146,6 @@ public class BasicExplo extends Strategy {
                 }
             }
         }
-        return informationGain;
     }
 
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
@@ -175,45 +153,42 @@ public class BasicExplo extends Strategy {
         String jsonString = gson.toJson(maptoCopy);
         Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>() {
         }.getType();
-        HashMap<Integer, ArrayList<Integer>> cloned = gson.fromJson(jsonString, type);
-        return cloned;
+        return gson.fromJson(jsonString, type);
     }
 
     @Override
     public void printMappings() {
         Set<Integer> keySet= explored.keySet();
-        Integer[] exploredX=keySet.toArray(new Integer[keySet.size()]);
+        Integer[] exploredX=keySet.toArray(new Integer[0]);
         int lowestXExplored= Integer.MAX_VALUE;
         int highestXExplored=Integer.MIN_VALUE;
-        for(int i=0;i<exploredX.length;i++){
-            int val=exploredX[i];
-            if(val>highestXExplored)highestXExplored=val;
-            if(val<lowestXExplored)lowestXExplored=val;
+        for (int val : exploredX) {
+            if (val > highestXExplored) highestXExplored = val;
+            if (val < lowestXExplored) lowestXExplored = val;
         }
         Set<Integer> wallkeySet= walls.keySet();
-        Integer[] wallX=wallkeySet.toArray(new Integer[wallkeySet.size()]);
+        Integer[] wallX=wallkeySet.toArray(new Integer[0]);
         int highestXWalls= Integer.MIN_VALUE;
         int lowestXWalls=Integer.MAX_VALUE;
-        for(int i=0;i<wallX.length;i++){
-            int val=wallX[i];
-            if(val<lowestXWalls)lowestXWalls=val;
-            if(val>highestXWalls)highestXWalls=val;
+        for (int val : wallX) {
+            if (val < lowestXWalls) lowestXWalls = val;
+            if (val > highestXWalls) highestXWalls = val;
         }
         int lowestYExplored=Integer.MAX_VALUE;
         int highestYExplored=Integer.MIN_VALUE;
-        for(int i=0;i<exploredX.length;i++){
-            int lowest=min(explored.get(exploredX[i]));
-            int highest=max(explored.get(exploredX[i]));
-            if (lowest<lowestYExplored)lowestYExplored=lowest;
-            if(highest>highestYExplored)highestYExplored=highest;
+        for (Integer x : exploredX) {
+            int lowest = min(explored.get(x));
+            int highest = max(explored.get(x));
+            if (lowest < lowestYExplored) lowestYExplored = lowest;
+            if (highest > highestYExplored) highestYExplored = highest;
         }
         int lowestYWalls=Integer.MAX_VALUE;
         int highestYWalls=Integer.MIN_VALUE;
-        for(int i=0;i<wallX.length;i++){
-            int lowest=min(walls.get(wallX[i]));
-            int highest=max(walls.get(wallX[i]));
-            if (lowest<lowestYWalls)lowestYWalls=lowest;
-            if(highest>highestYWalls)highestYWalls=highest;
+        for (Integer x : wallX) {
+            int lowest = min(walls.get(x));
+            int highest = max(walls.get(x));
+            if (lowest < lowestYWalls) lowestYWalls = lowest;
+            if (highest > highestYWalls) highestYWalls = highest;
         }
         int lowestXTotal=Math.min(lowestXExplored,lowestXWalls);
         int lowestYTotal=Math.min(lowestYWalls,lowestYExplored);
@@ -224,14 +199,14 @@ public class BasicExplo extends Strategy {
         String[][]mindMap=new String[spanY+5][spanX+5];
         for(int i :exploredX){
             ArrayList<Integer> array=explored.get(i);
-            for(int j=0;j<array.size();j++){
-                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]=" ";
+            for (Integer integer : array) {
+                mindMap[((integer - highestYTotal) * -1) + 2][i - lowestXTotal + 2] = " ";
             }
         }
         for(int i :wallX){
             ArrayList<Integer> array=walls.get(i);
-            for(int j=0;j<array.size();j++){
-                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]="W";
+            for (Integer integer : array) {
+                mindMap[((integer - highestYTotal) * -1) + 2][i - lowestXTotal + 2] = "W";
             }
         }
         GameController printer=new GameController();
@@ -240,16 +215,16 @@ public class BasicExplo extends Strategy {
                 boolean connected=false;
                 if(mindMap[i][j]==null){
                     if(i>0){
-                        if(mindMap[i-1][j]==" ")connected=true;
+                        if(Objects.equals(mindMap[i - 1][j], " "))connected=true;
                     }
                     if(i<spanY){
-                            if(mindMap[i+1][j]==" ")connected=true;
+                            if(Objects.equals(mindMap[i + 1][j], " "))connected=true;
                     }
                     if(j>0){
-                        if(mindMap[i][j-1]==" ")connected=true;
+                        if(Objects.equals(mindMap[i][j - 1], " "))connected=true;
                     }
                     if(j<spanX){
-                        if(mindMap[i][j+1]==" ")connected=true;
+                        if(Objects.equals(mindMap[i][j + 1], " "))connected=true;
                     }
                     if(connected){
                         mindMap[i][j]="?";

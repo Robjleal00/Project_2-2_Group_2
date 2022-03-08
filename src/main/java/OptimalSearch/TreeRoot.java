@@ -2,13 +2,13 @@ package OptimalSearch;
 
 import Enums.Moves;
 import Enums.Rotations;
-import Logic.GameController;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
 import java.util.Set;
 
 import static java.util.Collections.max;
@@ -34,45 +34,48 @@ public class TreeRoot {
     }
 
     public Moves getMove() {
-        ArrayList<Integer> values = new ArrayList<Integer>();
-        for (int i = 0; i < avaliableMoves.length; i++) {
-            values.add(new TreeNode(avaliableMoves[i], deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange).getValue(depth));
+        ArrayList<Integer> values = new ArrayList<>();
+        for (Moves avaliableMove : avaliableMoves) {
+            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange).getValue(depth));
         }
         int result = max(values);
         // System.out.println(result);
         //if (result == 0) {
         if(TESTING){
             String[][]mindMap=giveMappings();
-            HashMap<Integer,ArrayList<Integer>> explorationPoints=new HashMap<Integer,ArrayList<Integer>>();
+            HashMap<Integer,ArrayList<Integer>> explorationPoints= new HashMap<>();
             int fix=Integer.parseInt(mindMap[0][0]);
             int totalY=Integer.parseInt(mindMap[0][1]);
             int totalX=Integer.parseInt(mindMap[0][2]);
 
             for(int i=0;i<mindMap.length;i++){
                 for(int j=0;j<mindMap[0].length;j++){
-                    if(mindMap[i][j]=="?"){
+                    if(Objects.equals(mindMap[i][j], "?")){
                         if(explorationPoints.containsKey(j+fix)){
                                 explorationPoints.get(j+fix).add((i+fix)*-1);
                         }else{
-                            explorationPoints.put(j+fix,new ArrayList<Integer>());
+                            explorationPoints.put(j+fix, new ArrayList<>());
                             explorationPoints.get(j+fix).add((i+fix)*-1);
                         }
                     }
                 }
             }
             System.out.println(explorationPoints);
-            //Now explorationPoints has all Quesiton marks transformed back into agents mapping
-            //gotta add some kind of A* for him to get the shortest path and which move to output to go follow that
+            //Now explorationPoints has all question marks transformed back into agents mapping
+            //gotta add some kind of path-finding for him to get the shortest path and which move to output to go follow that
         }
         boolean allTheSame = true;
-        for (int i = 0; i < values.size(); i++) {
-            if (values.get(i) != result) allTheSame = false;
+        for (Integer value : values) {
+            if (value != result) {
+                allTheSame = false;
+                break;
+            }
         }
         if (allTheSame) {
             // System.out.println("ALL THE SAME AAAAAA");
-            ArrayList<Integer> Reversevalues = new ArrayList<Integer>();
-            for (int i = 0; i < avaliableMoves.length; i++) {
-                Reversevalues.add(new ReverseTreeNode(avaliableMoves[i], deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, result, 0).getValue(depth));
+            ArrayList<Integer> Reversevalues = new ArrayList<>();
+            for (Moves avaliableMove : avaliableMoves) {
+                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, result, 0).getValue(depth));
             }
             int Reverseresult = max(Reversevalues);
             //System.out.println(Reversevalues);
@@ -87,43 +90,40 @@ public class TreeRoot {
         String jsonString = gson.toJson(maptoCopy);
         Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>() {
         }.getType();
-        HashMap<Integer, ArrayList<Integer>> cloned = gson.fromJson(jsonString, type);
-        return cloned;
+        return gson.fromJson(jsonString, type);
     }
     public String[][] giveMappings() {
         Set<Integer> keySet= explored.keySet();
-        Integer[] exploredX=keySet.toArray(new Integer[keySet.size()]);
+        Integer[] exploredX=keySet.toArray(new Integer[0]);
         int lowestXExplored= Integer.MAX_VALUE;
         int highestXExplored=Integer.MIN_VALUE;
-        for(int i=0;i<exploredX.length;i++){
-            int val=exploredX[i];
-            if(val>highestXExplored)highestXExplored=val;
-            if(val<lowestXExplored)lowestXExplored=val;
+        for (int val : exploredX) {
+            if (val > highestXExplored) highestXExplored = val;
+            if (val < lowestXExplored) lowestXExplored = val;
         }
         Set<Integer> wallkeySet= walls.keySet();
-        Integer[] wallX=wallkeySet.toArray(new Integer[wallkeySet.size()]);
+        Integer[] wallX=wallkeySet.toArray(new Integer[0]);
         int highestXWalls= Integer.MIN_VALUE;
         int lowestXWalls=Integer.MAX_VALUE;
-        for(int i=0;i<wallX.length;i++){
-            int val=wallX[i];
-            if(val<lowestXWalls)lowestXWalls=val;
-            if(val>highestXWalls)highestXWalls=val;
+        for (int val : wallX) {
+            if (val < lowestXWalls) lowestXWalls = val;
+            if (val > highestXWalls) highestXWalls = val;
         }
         int lowestYExplored=Integer.MAX_VALUE;
         int highestYExplored=Integer.MIN_VALUE;
-        for(int i=0;i<exploredX.length;i++){
-            int lowest=min(explored.get(exploredX[i]));
-            int highest=max(explored.get(exploredX[i]));
-            if (lowest<lowestYExplored)lowestYExplored=lowest;
-            if(highest>highestYExplored)highestYExplored=highest;
+        for (Integer x : exploredX) {
+            int lowest = min(explored.get(x));
+            int highest = max(explored.get(x));
+            if (lowest < lowestYExplored) lowestYExplored = lowest;
+            if (highest > highestYExplored) highestYExplored = highest;
         }
         int lowestYWalls=Integer.MAX_VALUE;
         int highestYWalls=Integer.MIN_VALUE;
-        for(int i=0;i<wallX.length;i++){
-            int lowest=min(walls.get(wallX[i]));
-            int highest=max(walls.get(wallX[i]));
-            if (lowest<lowestYWalls)lowestYWalls=lowest;
-            if(highest>highestYWalls)highestYWalls=highest;
+        for (Integer x : wallX) {
+            int lowest = min(walls.get(x));
+            int highest = max(walls.get(x));
+            if (lowest < lowestYWalls) lowestYWalls = lowest;
+            if (highest > highestYWalls) highestYWalls = highest;
         }
         int lowestXTotal=Math.min(lowestXExplored,lowestXWalls);
         int lowestYTotal=Math.min(lowestYWalls,lowestYExplored);
@@ -134,32 +134,31 @@ public class TreeRoot {
         String[][]mindMap=new String[spanY+5][spanX+5];
         for(int i :exploredX){
             ArrayList<Integer> array=explored.get(i);
-            for(int j=0;j<array.size();j++){
-                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]=" ";
+            for (Integer integer : array) {
+                mindMap[((integer - highestYTotal) * -1) + 2][i - lowestXTotal + 2] = " ";
             }
         }
         for(int i :wallX){
             ArrayList<Integer> array=walls.get(i);
-            for(int j=0;j<array.size();j++){
-                mindMap[((array.get(j)-highestYTotal)*-1)+2][i-lowestXTotal+2]="W";
+            for (Integer integer : array) {
+                mindMap[((integer - highestYTotal) * -1) + 2][i - lowestXTotal + 2] = "W";
             }
         }
-        GameController printer=new GameController();
         for(int i=0;i<=spanY+4;i++){
             for(int j=0;j<=spanX+4;j++){
                 boolean connected=false;
                 if(mindMap[i][j]==null){
                     if(i>0){
-                        if(mindMap[i-1][j]==" ")connected=true;
+                        if(Objects.equals(mindMap[i - 1][j], " "))connected=true;
                     }
                     if(i<spanY){
-                        if(mindMap[i+1][j]==" ")connected=true;
+                        if(Objects.equals(mindMap[i + 1][j], " "))connected=true;
                     }
                     if(j>0){
-                        if(mindMap[i][j-1]==" ")connected=true;
+                        if(Objects.equals(mindMap[i][j - 1], " "))connected=true;
                     }
                     if(j<spanX){
-                        if(mindMap[i][j+1]==" ")connected=true;
+                        if(Objects.equals(mindMap[i][j + 1], " "))connected=true;
                     }
                     if(connected){
                         mindMap[i][j]="?";

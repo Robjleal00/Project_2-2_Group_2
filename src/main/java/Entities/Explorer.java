@@ -39,18 +39,10 @@ public class Explorer extends Entity {
     @Override
     public void turnLeft() {
         switch (currentRotation) {
-            case BACK -> {
-                setCurrentRotation(Rotations.RIGHT);
-            }
-            case LEFT -> {
-                setCurrentRotation(Rotations.BACK);
-            }
-            case FORWARD -> {
-                setCurrentRotation(Rotations.LEFT);
-            }
-            case RIGHT -> {
-                setCurrentRotation(Rotations.FORWARD);
-            }
+            case BACK -> setCurrentRotation(Rotations.RIGHT);
+            case LEFT -> setCurrentRotation(Rotations.BACK);
+            case FORWARD -> setCurrentRotation(Rotations.LEFT);
+            case RIGHT -> setCurrentRotation(Rotations.FORWARD);
         }
     }
 
@@ -68,43 +60,26 @@ public class Explorer extends Entity {
     @Override
     public void turnRight() {
         switch (currentRotation) {
-            case FORWARD -> {
-                setCurrentRotation(Rotations.RIGHT);
-            }
-            case RIGHT -> {
-                setCurrentRotation(Rotations.BACK);
-            }
-            case LEFT -> {
-                setCurrentRotation(Rotations.FORWARD);
-            }
-            case BACK -> {
-                setCurrentRotation(Rotations.LEFT);
-            }
+            case FORWARD -> setCurrentRotation(Rotations.RIGHT);
+            case RIGHT -> setCurrentRotation(Rotations.BACK);
+            case LEFT -> setCurrentRotation(Rotations.FORWARD);
+            case BACK -> setCurrentRotation(Rotations.LEFT);
         }
     }
 
     @Override
     public void turnAround() {
         switch (currentRotation) {
-            case FORWARD -> {
-                setCurrentRotation(Rotations.BACK);
-            }
-            case RIGHT -> {
-                setCurrentRotation(Rotations.LEFT);
-            }
-            case LEFT -> {
-                setCurrentRotation(Rotations.RIGHT);
-            }
-            case BACK -> {
-                setCurrentRotation(Rotations.FORWARD);
-            }
+            case FORWARD -> setCurrentRotation(Rotations.BACK);
+            case RIGHT -> setCurrentRotation(Rotations.LEFT);
+            case LEFT -> setCurrentRotation(Rotations.RIGHT);
+            case BACK -> setCurrentRotation(Rotations.FORWARD);
         }
     }
     @Override
     public void showMeWhatUSaw(){
         st.printMappings();
     }
-
     public int getX() {
         return x;
     }

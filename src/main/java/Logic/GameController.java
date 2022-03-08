@@ -7,6 +7,9 @@ import Enums.Rotations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Objects;
+
+import Config.*;
 
 
 public class GameController {
@@ -20,6 +23,10 @@ public class GameController {
     private HashMap<Entity, Rotations> entityRotationsHashMap;
     private HashMap<Entity, Moves> queuedMoves;
     private ArrayList<Integer> allUnseenTiles;
+    private boolean PRINTMAPPINGS ;
+    public boolean PRINTVISION;
+    public boolean GUI;
+    private boolean DEBUG_EPXLO;
 
     public GameController(int height, int length, int eyeRange) {
         allUnseenTiles = new ArrayList<>();
@@ -29,11 +36,15 @@ public class GameController {
         makeBorders(length, height);
         isRunning = true;
         this.eyeRange = eyeRange;
-        entities = new ArrayList<Entity>();
-        locations = new HashMap<Entity, int[]>();
-        entityRotationsHashMap = new HashMap<Entity, Rotations>();
-        queuedMoves = new HashMap<Entity, Moves>();
-
+        entities = new ArrayList<>();
+        locations = new HashMap<>();
+        entityRotationsHashMap = new HashMap<>();
+        queuedMoves = new HashMap<>();
+        Config con = new Config();
+        PRINTMAPPINGS=con.PRINTMIND;
+        PRINTVISION=con.PRINTVISION;
+        GUI=con.GUI;
+        DEBUG_EPXLO=con.DEBUG_EXPLO;
     }
 
     public GameController() {
@@ -57,23 +68,25 @@ public class GameController {
                     }
                 }
             }
-            if(turns%5==0){
+            if(PRINTMAPPINGS){
                 for (Entity e : entities) {
                     e.showMeWhatUSaw();
                 }
             }
+            if(GUI){
 
-            printMap();
+            }
+            else{
+                printMap();
+            }
+            if(DEBUG_EPXLO){
+                System.out.println(allUnseenTiles.toString());
+            }
             turns++;
             checkWin();
-            System.out.println(allUnseenTiles.toString());
             Thread.sleep(100);
         }
         System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
-        for (Entity e : entities) {
-            e.showMeWhatUSaw();
-        }
-
     }
 
     private String[][] makeMap(int height, int length) {
@@ -93,14 +106,13 @@ public class GameController {
     }
 
     public void printArray(String[][] thing) {
-        int height = thing.length;
         int lenght = thing[0].length;
-        for (int i = 0; i < height; i++) {
+        for (String[] strings : thing) {
             for (int j = 0; j < lenght; j++) {
                 if (j == lenght - 1) {
-                    print(thing[i][j]);
+                    print(strings[j]);
                 } else {
-                    System.out.print(thing[i][j] + "-");
+                    System.out.print(strings[j] + "-");
                 }
             }
         }
@@ -123,7 +135,7 @@ public class GameController {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                    if (symbol == "W") {
+                                    if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
                                     }
                                 }
@@ -131,14 +143,14 @@ public class GameController {
                         } else {
                             if (j != 0 && canSee[1]) {
                                 int[] pos_of_it = {lookingAt[0], lookingAt[1] + 1};
-                                if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
+                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
                                         if (existsInBoard(lookingAt)) {
                                             String symbol = map[lookingAt[0]][lookingAt[1]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                            if (symbol == "W") {
+                                            if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
                                             }
                                         }
@@ -160,7 +172,7 @@ public class GameController {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                    if (symbol == "W") {
+                                    if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
                                     }
                                 }
@@ -168,14 +180,14 @@ public class GameController {
                         } else {
                             if (j != 0 && canSee[1]) {
                                 int[] pos_of_it = {lookingAt[0] + 1, lookingAt[1]};
-                                if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
+                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
                                         if (existsInBoard(lookingAt)) {
                                             String symbol = map[lookingAt[0]][lookingAt[1]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                            if (symbol == "W") {
+                                            if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
                                             }
                                         }
@@ -196,7 +208,7 @@ public class GameController {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                    if (symbol == "W") {
+                                    if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
                                     }
                                 }
@@ -204,14 +216,14 @@ public class GameController {
                         } else {
                             if (j != 0 && canSee[1]) {
                                 int[] pos_of_it = {lookingAt[0] - 1, lookingAt[1]};
-                                if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
+                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
                                         if (existsInBoard(lookingAt)) {
                                             String symbol = map[lookingAt[0]][lookingAt[1]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                            if (symbol == "W") {
+                                            if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
                                             }
                                         }
@@ -232,20 +244,20 @@ public class GameController {
                                 {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                    if (symbol == "W") {
+                                    if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
                                     }
                                 }
                             } else {
                                 if (j != 0 && canSee[1]) {
                                     int[] pos_of_it = {lookingAt[0], lookingAt[1] - 1};
-                                    if (existsInBoard(pos_of_it) && j == -1 && map[pos_of_it[0]][pos_of_it[1]] == "W") {
+                                    if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
                                         vision[eyeRange - (i + 1)][j + 1] = "X";
                                     } else {
                                         {
                                             String symbol = map[lookingAt[0]][lookingAt[1]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                            if (symbol == "W") {
+                                            if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
                                             }
                                         }
@@ -439,7 +451,7 @@ public class GameController {
     }
 
     private boolean canBePutThere(int h, int l) {
-        return map[h][l] == " ";
+        return Objects.equals(map[h][l], " ");
     }
 
     private boolean existsInBoard(int[] pos) {
@@ -457,17 +469,4 @@ public class GameController {
     private void checkWin() {
         if (allUnseenTiles.isEmpty()) isRunning = false;
     }
-
-
-
-    /*
-    public String symbol(int i){
-        if (walls.contains(i)){
-            return"W";
-        }
-        else return" ";
-    }
-    */
-
-
 }

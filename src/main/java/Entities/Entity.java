@@ -23,9 +23,6 @@ public class Entity {
 
     public void walk() {
     }
-
-    public void printMappings() {
-    }
     public void showMeWhatUSaw(){
 
     }
