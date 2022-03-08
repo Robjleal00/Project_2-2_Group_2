@@ -60,7 +60,7 @@ public class TreeRoot {
                     }
                 }
             }
-            System.out.println(explorationPoints);
+            //System.out.println(explorationPoints);
             //Now explorationPoints has all question marks transformed back into agents mapping
             //gotta add some kind of path-finding for him to get the shortest path and which move to output to go follow that
         }
