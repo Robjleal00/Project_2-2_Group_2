@@ -1,11 +1,10 @@
 package org.openjfx.UI;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
-import javafx.scene.layout.StackPane;
+import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
@@ -20,6 +19,11 @@ public class MainApp extends Application {
     Scene launchScene, mainScene;
     Label welcome;
     Label menu;
+    GridPane gridPane;
+    BorderPane borderPane;
+
+    private static int height = 80;
+    private static int width = 120;
 
     public static void main(String[] args) {
         launch(args);
@@ -38,7 +42,7 @@ public class MainApp extends Application {
         launchPane.setStyle("-fx-background-color: #383838");
         welcome.setStyle("-fx-background-color: #FFFFFF");
         launchPane.getChildren().addAll(welcome, launchButton);
-        launchScene = new Scene(launchPane, 800, 600);
+        launchScene = new Scene(launchPane, 200, 200);
 
         menu = new Label("MENU");
 
@@ -58,15 +62,63 @@ public class MainApp extends Application {
             closeProgram(primaryStage);
         });
 
-        //Layout for Main Scene
-        HBox mainSceneLayout = new HBox(20);
-        mainSceneLayout.getChildren().addAll(menu, playButton, backButton, exitButton);
+        //Layout for Main Scene ------------------------------------------------------------
 
-        mainScene = new Scene(mainSceneLayout, 800, 600);
 
+        HBox mainSceneTopMenu = new HBox(20);
+        mainSceneTopMenu.getChildren().addAll(menu, playButton, backButton, exitButton);
+
+        //----------------------
+
+
+        gridPane =  new GridPane();
+
+        for(int i = 0; i < width; i++){
+            for(int j = 0; j < height; j++){
+
+            }
+        }
+
+        for(int i = 0; i < width; i++) {
+            ColumnConstraints column = new ColumnConstraints(10);
+            gridPane.getColumnConstraints().add(column);
+        }
+
+        for(int i = 0; i < height; i++) {
+            RowConstraints row = new RowConstraints(10);
+            gridPane.getRowConstraints().add(row);
+        }
+
+        gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
+
+        borderPane = new BorderPane();
+
+        borderPane.setTop(mainSceneTopMenu);
+        borderPane.setCenter(gridPane);
+
+
+        gridPane =  new GridPane();
+        //gridPane.addColumn(width,);
+        //gridPane.addRow(height, );
+        for(int i = 0; i < width; i++) {
+            ColumnConstraints column = new ColumnConstraints(40);
+            gridPane.getColumnConstraints().add(column);
+        }
+
+        for(int i = 0; i < height; i++) {
+            RowConstraints row = new RowConstraints(40);
+            gridPane.getRowConstraints().add(row);
+        }
+
+        //----------------------
+
+
+        mainScene = new Scene(borderPane, 1300, 1000);
         primaryStage.setScene(launchScene);
         primaryStage.setResizable(false);
         primaryStage.setTitle("Surveillance Game");
+
+
         primaryStage.show();
     }
 
@@ -84,5 +136,8 @@ public class MainApp extends Application {
             primaryStage.close();
         }
     }
+
+
+
 
 }
