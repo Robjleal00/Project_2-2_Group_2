@@ -12,6 +12,7 @@ import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+import org.w3c.dom.css.Rect;
 
 import java.awt.*;
 
@@ -25,6 +26,9 @@ public class MainApp extends Application {
     Label menu;
     GridPane gridPane;
     BorderPane borderPane;
+    //Colors
+    javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 255,255, 1);
+    javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
 
     private static int height = 80;
     private static int width = 120;
@@ -81,9 +85,7 @@ public class MainApp extends Application {
 
         Rectangle[][] rectArray = new Rectangle[width][height];
 
-        //Colors
-        javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 255,255, 1);
-        javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
+
 
 
 
@@ -112,7 +114,7 @@ public class MainApp extends Application {
         borderPane.setTop(mainSceneTopMenu);
         borderPane.setCenter(gridPane);
 
-
+        gridPane.setOnMouseClicked(event -> colorRect(rectArray));
 
 
         //----------------------
@@ -140,6 +142,16 @@ public class MainApp extends Application {
             System.out.println("Goodbye!");
             primaryStage.close();
         }
+    }
+
+    //Colors a rectangle as a wall when clicked on
+    public void colorRect(Rectangle[][] rectArray)
+    {
+        //Find out which rectangle is pressed on by dividing location by width/height of map
+        int xPos = (int) (MouseInfo.getPointerInfo().getLocation().getX()/1300*width);
+        int yPos = (int) (MouseInfo.getPointerInfo().getLocation().getY()/1000*height);
+        System.out.println("x: "+xPos+"  y: "+yPos);
+        rectArray[xPos][yPos].setFill(black);
     }
 
 
