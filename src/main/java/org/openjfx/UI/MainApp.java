@@ -117,7 +117,6 @@ public class MainApp extends Application {
         borderPane.setTop(mainSceneTopMenu);
         borderPane.setCenter(gridPane);
 
-        //gridPane.setOnMouseClicked(event -> colorRect(rectArray));
         gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
 
         //----------------------
@@ -160,6 +159,16 @@ public class MainApp extends Application {
     }
 
     //Sets a clicked grid square as a wall
+
+    /**
+     *
+     * @param event event given as parameter in LINE 120 covers the mouse related event of the specified action type
+     *              here: onMouseClicked, need to pass it on so that the position information is also passed on
+     * @param rectArray to modify the grid itself we need to pass the rectangle array to the method so that it sets the
+     *                  color accordingly
+     * GridPane (not the object, the class) allows identification of the column and row intrinsically as long as an EVENT
+     *                  type is passed as parameter, returns an integer
+     */
     public void clickGrid(javafx.scene.input.MouseEvent event, Rectangle[][] rectArray) {
         Node clickedNode = event.getPickResult().getIntersectedNode();
         if (clickedNode != gridPane) {
