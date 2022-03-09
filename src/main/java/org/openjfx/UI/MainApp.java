@@ -3,8 +3,10 @@ package org.openjfx.UI;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -15,6 +17,7 @@ import javafx.stage.Window;
 import org.w3c.dom.css.Rect;
 
 import java.awt.*;
+import java.nio.charset.StandardCharsets;
 
 public class MainApp extends Application {
     Button launchButton;
@@ -114,8 +117,8 @@ public class MainApp extends Application {
         borderPane.setTop(mainSceneTopMenu);
         borderPane.setCenter(gridPane);
 
-        gridPane.setOnMouseClicked(event -> colorRect(rectArray));
-
+        //gridPane.setOnMouseClicked(event -> colorRect(rectArray));
+        gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
 
         //----------------------
 
@@ -144,15 +147,30 @@ public class MainApp extends Application {
         }
     }
 
-    //Colors a rectangle as a wall when clicked on
+    //Antiquated, functionality taken over by clickGrid
     public void colorRect(Rectangle[][] rectArray)
     {
+        /* Left for posterity
         //Find out which rectangle is pressed on by dividing location by width/height of map
-        int xPos = (int) (MouseInfo.getPointerInfo().getLocation().getX()/1300*width);
+        int xPos = (int) (MouseInfo.getPointerInfo().getLocation().getX())/1300*width;
         int yPos = (int) (MouseInfo.getPointerInfo().getLocation().getY()/1000*height);
         System.out.println("x: "+xPos+"  y: "+yPos);
         rectArray[xPos][yPos].setFill(black);
+        */
     }
+
+    //Sets a clicked grid square as a wall
+    public void clickGrid(javafx.scene.input.MouseEvent event, Rectangle[][] rectArray) {
+        Node clickedNode = event.getPickResult().getIntersectedNode();
+        if (clickedNode != gridPane) {
+            // click on descendant node
+            Integer colIndex = GridPane.getColumnIndex(clickedNode);
+            Integer rowIndex = GridPane.getRowIndex(clickedNode);
+            System.out.println("Mouse clicked cell: " + colIndex + " And: " + rowIndex);
+            rectArray[colIndex][rowIndex].setFill(black);
+        }
+    }
+
 
 
 
