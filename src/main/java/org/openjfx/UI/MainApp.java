@@ -86,30 +86,13 @@ public class MainApp extends Application {
         javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
 
 
-        /*
-        //Nested loop to create rectangle
-        for(int i = 0; i < width; i++){
-            for(int j = 0; j < height; j++){
-                Rectangle rec = new Rectangle(i*10, j*10, 10, 10);
-
-                rec.setX(400);
-                rec.setY(300);
-
-
-                rec.setFill(white);
-                rec.setStroke(black);
-
-                gridPane.getChildren().add(rec);
-;            }
-        }
-        */
 
         for(int i = 0; i < rectArray.length; i++)
         {
 
             for(int j = 0; j < rectArray[0].length; j++)
             {
-                rectArray[i][j] = new Rectangle(800/width,700/height);
+                rectArray[i][j] = new Rectangle(1300/width,1000/height);
                 rectArray[i][j].setStroke(black);
                 rectArray[i][j].setFill(white);
                 GridPane.setConstraints(rectArray[i][j],i,j);
