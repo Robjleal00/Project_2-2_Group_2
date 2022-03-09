@@ -75,33 +75,52 @@ public class MainApp extends Application {
         //----------------------
 
         gridPane =  new GridPane();
+        gridPane.setMinWidth(width);
+        gridPane.setMinHeight(height);
 
 
+        Rectangle[][] rectArray = new Rectangle[width][height];
 
+        //Colors
+        javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 255,255, 1);
+        javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
+
+
+        /*
+        //Nested loop to create rectangle
         for(int i = 0; i < width; i++){
             for(int j = 0; j < height; j++){
-                javafx.scene.shape.Rectangle rec = new Rectangle(i, j, 10, 10);
-                javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 0,0, 1);
-                javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
+                Rectangle rec = new Rectangle(i*10, j*10, 10, 10);
+
+                rec.setX(400);
+                rec.setY(300);
+
+
                 rec.setFill(white);
                 rec.setStroke(black);
+
                 gridPane.getChildren().add(rec);
-
-                System.out.println("j value:" + j);
-
 ;            }
-            System.out.println("i value" +i);
+        }
+        */
+
+        for(int i = 0; i < rectArray.length; i++)
+        {
+
+            for(int j = 0; j < rectArray[0].length; j++)
+            {
+                rectArray[i][j] = new Rectangle(800/width,700/height);
+                rectArray[i][j].setStroke(black);
+                rectArray[i][j].setFill(white);
+                GridPane.setConstraints(rectArray[i][j],i,j);
+                gridPane.getChildren().add(rectArray[i][j]);
+            }
+
         }
 
-        /*for(int i = 0; i < width; i++) {
-            ColumnConstraints column = new ColumnConstraints(10);
-            gridPane.getColumnConstraints().add(column);
-        }
+        //Tests that the gridPane does indeed extend further than the singular red rectangle
+        gridPane.setOnMouseEntered(event -> System.out.println("Mouse entered!"));
 
-        for(int i = 0; i < height; i++) {
-            RowConstraints row = new RowConstraints(10);
-            gridPane.getRowConstraints().add(row);
-        }*/
 
         gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
 
