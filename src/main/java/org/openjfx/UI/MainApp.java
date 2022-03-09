@@ -2,14 +2,18 @@ package org.openjfx.UI;
 
 import javafx.application.Application;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 import javafx.stage.Window;
+
+import java.awt.*;
 
 public class MainApp extends Application {
     Button launchButton;
@@ -70,16 +74,26 @@ public class MainApp extends Application {
 
         //----------------------
 
-
         gridPane =  new GridPane();
+
+
 
         for(int i = 0; i < width; i++){
             for(int j = 0; j < height; j++){
+                javafx.scene.shape.Rectangle rec = new Rectangle(i, j, 10, 10);
+                javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 0,0, 1);
+                javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
+                rec.setFill(white);
+                rec.setStroke(black);
+                gridPane.getChildren().add(rec);
 
-            }
+                System.out.println("j value:" + j);
+
+;            }
+            System.out.println("i value" +i);
         }
 
-        for(int i = 0; i < width; i++) {
+        /*for(int i = 0; i < width; i++) {
             ColumnConstraints column = new ColumnConstraints(10);
             gridPane.getColumnConstraints().add(column);
         }
@@ -87,7 +101,7 @@ public class MainApp extends Application {
         for(int i = 0; i < height; i++) {
             RowConstraints row = new RowConstraints(10);
             gridPane.getRowConstraints().add(row);
-        }
+        }*/
 
         gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
 
@@ -97,18 +111,7 @@ public class MainApp extends Application {
         borderPane.setCenter(gridPane);
 
 
-        gridPane =  new GridPane();
-        //gridPane.addColumn(width,);
-        //gridPane.addRow(height, );
-        for(int i = 0; i < width; i++) {
-            ColumnConstraints column = new ColumnConstraints(40);
-            gridPane.getColumnConstraints().add(column);
-        }
 
-        for(int i = 0; i < height; i++) {
-            RowConstraints row = new RowConstraints(40);
-            gridPane.getRowConstraints().add(row);
-        }
 
         //----------------------
 
