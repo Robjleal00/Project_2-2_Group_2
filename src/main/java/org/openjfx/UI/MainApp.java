@@ -32,9 +32,12 @@ public class MainApp extends Application {
     //Colors
     javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 255,255, 1);
     javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
+    javafx.scene.paint.Color yellow = javafx.scene.paint.Color.rgb(255,255,0,1);
 
-    private static int height = 80;
-    private static int width = 120;
+    FileReader fileReader = new FileReader();
+    private static int height;
+    private static int width;
+    private Integer[] targetArea;
 
     public static void main(String[] args) {
         launch(args);
@@ -42,6 +45,15 @@ public class MainApp extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
+        //TODO: format problem Sys.out returns Head: name, Value: =, then proceeds to give an error for targetArea and presumable walls too as = is not valid input
+        /*
+        fileReader.readFile("src/main/java/map/testmap.txt");
+        height = fileReader.getHeight();
+        width = fileReader.getWidth();
+        targetArea = fileReader.getTargetArea();
+        */
+        height = 80;
+        width = 120;
 
         welcome = new Label("WELCOME!");
 
@@ -87,11 +99,6 @@ public class MainApp extends Application {
 
 
         Rectangle[][] rectArray = new Rectangle[width][height];
-
-
-
-
-
         for(int i = 0; i < rectArray.length; i++)
         {
 
@@ -106,18 +113,48 @@ public class MainApp extends Application {
 
         }
 
-        //Tests that the gridPane does indeed extend further than the singular red rectangle
-        gridPane.setOnMouseEntered(event -> System.out.println("Mouse entered!"));
+        //marks target area
+        //TODO: replace this code to work with areas, writing this rn it's kinda dumb, I should've made it work with areas to begin with
+        /*
+        int x1 = targetArea[0];
+        int y1 = targetArea[1];
+        int xDist = targetArea[2]-targetArea[0];
+        int yDist = targetArea[3]-targetArea[1];
+        for(int i = x1; i < xDist ;i++)
+        {
+            for(int j = y1; j < yDist; j++)
+            {
+                rectArray[i][j].setFill(yellow);
+            }
+        }
+        Placeholder below with hardcoded targetArea
+        */
+        int x1 = 20;
+        int y1 = 25;
+        int xDist = 25-20; //this is 5...
+        int yDist = 45-40;
+        //so i = x1= 20 is already > 5....
+        for(int i = 0; i < xDist ;i++)
+        {
+            for(int j = 0; j < yDist; j++)
+            {
+                rectArray[x1+i][y1+j].setFill(yellow);
+            }
+        }
+
+
 
 
         gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
 
         borderPane = new BorderPane();
-
         borderPane.setTop(mainSceneTopMenu);
         borderPane.setCenter(gridPane);
-
         gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
+
+
+
+
 
         //----------------------
 
@@ -146,18 +183,6 @@ public class MainApp extends Application {
         }
     }
 
-    //Antiquated, functionality taken over by clickGrid
-    public void colorRect(Rectangle[][] rectArray)
-    {
-        /* Left for posterity
-        //Find out which rectangle is pressed on by dividing location by width/height of map
-        int xPos = (int) (MouseInfo.getPointerInfo().getLocation().getX())/1300*width;
-        int yPos = (int) (MouseInfo.getPointerInfo().getLocation().getY()/1000*height);
-        System.out.println("x: "+xPos+"  y: "+yPos);
-        rectArray[xPos][yPos].setFill(black);
-        */
-    }
-
     //Sets a clicked grid square as a wall
 
     /**
@@ -179,9 +204,6 @@ public class MainApp extends Application {
             rectArray[colIndex][rowIndex].setFill(black);
         }
     }
-
-
-
 
 
 }
