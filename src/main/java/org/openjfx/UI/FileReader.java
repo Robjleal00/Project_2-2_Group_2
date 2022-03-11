@@ -20,10 +20,8 @@ public class FileReader {
     double baseSpeedGuard;
     int gamemode;
 
-    //high school level code, but I don't know how to do it else
-    //TODO: convert these to Areas, and not arrays
-    ArrayList<Integer[]> walls = new ArrayList<Integer[]>();
-    Integer[] targetArea;
+    ArrayList<Area> walls = new ArrayList<>();
+    Area targetArea;
 
     public void readFile(String path)
     {
@@ -47,18 +45,20 @@ public class FileReader {
         {
             if (scan.hasNext())
             {
+                String fullLine = scan.nextLine();
+                String[] parts = fullLine.split("=");
                 //seperate string into header and value
-                String check = scan.next();
-                String value = scan.next();
+                String id = parts[0];
+                String value = parts[1];
                 //trims lead and trailing spaces
-                check = check.trim();
+                id = id.trim();
                 value = value.trim();
-                System.out.println("Head: "+check+", Value: "+value);
 
+                System.out.println("Head: "+id+", Value: "+value);
 
-                //Handles array values
-                String[] locations = value.split(" ");
-                switch (check) {
+                //Handles array values, not necessary I think
+                //String[] locations = value.split(" ");
+                switch (id) {
                     case "height":
                         height = Integer.parseInt(value);
                         break;
@@ -84,24 +84,19 @@ public class FileReader {
                         baseSpeedGuard = Double.parseDouble(value);
                         break;
                     case "gameMode":
+                        //TODO: This is strange, getting a NumberFormatException
                         gamemode = Integer.parseInt(value);
-                        /**
-                         * didn't really get coordinate system, but the dimensions is 4 entries
-                         * create wall of dimensions
-                         * how to get the height and width, check 3rd and 4th dimensions.
-                         */
                     case "targetArea":
-                        //I don't think it's necessary for this to be a for loop, but what if they add more targetAreas?
-                        for(int i = 0; i < 3;i++)
-                        {
-                            targetArea[i] = Integer.parseInt(locations[i]);
-                        }
+                        //TODO: doesn't reach this at all
+                        System.out.println("Value: "+value); //this just returns 0 (?)
+                        targetArea = new Area(value);
+                        System.out.println(targetArea.toString());
                         break;
                     case "wall":
-                        Integer[] wall = {Integer.parseInt(locations[0]),Integer.parseInt(locations[1]),
-                                Integer.parseInt(locations[2]),Integer.parseInt(locations[3])};
+                        Area wall = new Area(value);
                         walls.add(wall);
                         break;
+
                 }
             }
     }
@@ -116,11 +111,11 @@ public class FileReader {
         return width;
     }
 
-    public ArrayList<Integer[]> getWalls() {
+    public ArrayList<Area> getWalls() {
         return walls;
     }
 
-    public Integer[] getTargetArea() {
+    public Area getTargetArea() {
         return targetArea;
     }
 }

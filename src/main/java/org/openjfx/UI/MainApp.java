@@ -18,6 +18,7 @@ import org.w3c.dom.css.Rect;
 
 import java.awt.*;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class MainApp extends Application {
     Button launchButton;
@@ -37,7 +38,8 @@ public class MainApp extends Application {
     FileReader fileReader = new FileReader();
     private static int height;
     private static int width;
-    private Integer[] targetArea;
+    private Area targetArea;
+    private ArrayList<Area> walls;
 
     public static void main(String[] args) {
         launch(args);
@@ -46,12 +48,13 @@ public class MainApp extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception {
         //TODO: format problem Sys.out returns Head: name, Value: =, then proceeds to give an error for targetArea and presumable walls too as = is not valid input
-        /*
+
         fileReader.readFile("src/main/java/map/testmap.txt");
         height = fileReader.getHeight();
         width = fileReader.getWidth();
         targetArea = fileReader.getTargetArea();
-        */
+        walls = fileReader.getWalls();
+
         height = 80;
         width = 120;
 
@@ -115,20 +118,24 @@ public class MainApp extends Application {
 
         //marks target area
         //TODO: replace this code to work with areas, writing this rn it's kinda dumb, I should've made it work with areas to begin with
+
         /*
-        int x1 = targetArea[0];
-        int y1 = targetArea[1];
-        int xDist = targetArea[2]-targetArea[0];
-        int yDist = targetArea[3]-targetArea[1];
-        for(int i = x1; i < xDist ;i++)
+        int x1 = targetArea.getLeftBoundary();
+        int y1 = targetArea.getTopBoundary();
+        int xDist = targetArea.getRightBoundary()- targetArea.getLeftBoundary();
+        int yDist = targetArea.getBottomBoundary()- targetArea.getTopBoundary();
+        for(int i = 0; i < xDist ;i++)
         {
-            for(int j = y1; j < yDist; j++)
+            for(int j = 0; j < yDist; j++)
             {
-                rectArray[i][j].setFill(yellow);
+                rectArray[x1+i][y1+j].setFill(yellow);
             }
         }
-        Placeholder below with hardcoded targetArea
-        */
+
+         */
+
+
+        /*
         int x1 = 20;
         int y1 = 25;
         int xDist = 25-20; //this is 5...
@@ -141,7 +148,7 @@ public class MainApp extends Application {
                 rectArray[x1+i][y1+j].setFill(yellow);
             }
         }
-
+*/
 
 
 

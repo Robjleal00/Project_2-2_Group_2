@@ -30,6 +30,15 @@ public class Area {
         bottomBoundary=Math.min(y1,y2);
     }
 
+    //TODO: verify legitimacy
+    //Going to create a constructor with string as param for the FileReader
+    public Area(String input)
+    {
+        String[] values = input.split(" ");
+        //calls other constructor
+        new Area(Integer.valueOf(values[0]),Integer.valueOf(values[1]),Integer.valueOf(values[2]),Integer.valueOf(values[3]));
+    }
+
     /*
         Check whether a point is in the target area
     */
@@ -43,5 +52,27 @@ public class Area {
     */
     public boolean isHit(double x,double y,double radius){
         return false;
+    }
+
+
+    public int getLeftBoundary() {
+        return leftBoundary;
+    }
+
+    public int getRightBoundary() {
+        return rightBoundary;
+    }
+
+    public int getTopBoundary() {
+        return topBoundary;
+    }
+
+    public int getBottomBoundary() {
+        return bottomBoundary;
+    }
+
+    public String toString()
+    {
+       return leftBoundary+" "+rightBoundary;
     }
 }
