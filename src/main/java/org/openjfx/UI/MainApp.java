@@ -55,8 +55,6 @@ public class MainApp extends Application {
         targetArea = fileReader.getTargetArea();
         walls = fileReader.getWalls();
 
-        height = 80;
-        width = 120;
 
         welcome = new Label("WELCOME!");
 
@@ -119,7 +117,7 @@ public class MainApp extends Application {
         //marks target area
         //TODO: replace this code to work with areas, writing this rn it's kinda dumb, I should've made it work with areas to begin with
 
-        /*
+
         int x1 = targetArea.getLeftBoundary();
         int y1 = targetArea.getTopBoundary();
         int xDist = targetArea.getRightBoundary()- targetArea.getLeftBoundary();
@@ -132,7 +130,7 @@ public class MainApp extends Application {
             }
         }
 
-         */
+
 
 
         /*
