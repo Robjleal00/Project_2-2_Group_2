@@ -84,11 +84,9 @@ public class FileReader {
                         baseSpeedGuard = Double.parseDouble(value);
                         break;
                     case "gameMode":
-                        //TODO: This is strange, getting a NumberFormatException
                         gamemode = Integer.parseInt(value);
                         break;
                     case "targetArea":
-                        //TODO: doesn't reach this at all
                         //System.out.println("Value: "+value); //this just returns 0 (?)
                         targetArea = new Area(value);
                         System.out.println(targetArea.toString());
