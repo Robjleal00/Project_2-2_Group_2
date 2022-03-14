@@ -10,6 +10,7 @@ import java.util.Scanner;
 // -Kaiwei
 public class FileReader {
 
+    private Area area ;
     int height;
     int width;
     double scaling;
@@ -54,7 +55,7 @@ public class FileReader {
                 id = id.trim();
                 value = value.trim();
 
-                System.out.println("Head: "+id+", Value: "+value);
+                //System.out.println("Head: "+id+", Value: "+value);
 
                 //Handles array values, not necessary I think
                 //String[] locations = value.split(" ");
@@ -90,11 +91,11 @@ public class FileReader {
                     case "targetArea":
                         //TODO: doesn't reach this at all
                         //System.out.println("Value: "+value); //this just returns 0 (?)
-                        targetArea = new Area(value);
+                        targetArea = createArea(value);
                         System.out.println(targetArea.toString());
                         break;
                     case "wall":
-                        Area wall = new Area(value);
+                        Area wall = createArea(value);
                         walls.add(wall);
                         break;
 
@@ -118,5 +119,14 @@ public class FileReader {
 
     public Area getTargetArea() {
         return targetArea;
+    }
+
+    public Area createArea(String input)
+    {
+        String[] values = input.split(" ");
+        //calls other constructor
+        Area mapArea = new Area(Integer.valueOf(values[0]),Integer.valueOf(values[1]),Integer.valueOf(values[2]),Integer.valueOf(values[3]));
+        System.out.println("new area " + mapArea.toString());
+        return mapArea;
     }
 }

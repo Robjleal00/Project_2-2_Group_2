@@ -35,7 +35,8 @@ public class Area {
 
     //TODO: verify legitimacy
     //Going to create a constructor with string as param for the FileReader
-    public Area(String input)
+    /*
+    public Area createArea(String input)
     {
         String[] values = input.split(" ");
         //calls other constructor
@@ -78,6 +79,6 @@ public class Area {
 
     public String toString()
     {
-       return leftBoundary+" "+rightBoundary;
+       return leftBoundary+" "+rightBoundary+" "+topBoundary+" "+bottomBoundary;
     }
 }
