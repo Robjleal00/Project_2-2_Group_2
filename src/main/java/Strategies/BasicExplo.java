@@ -2,6 +2,7 @@ package Strategies;
 
 import Enums.Moves;
 import Enums.Rotations;
+import Fixes.Constraints;
 import Logic.GameController;
 import OptimalSearch.TreeRoot;
 import com.google.gson.Gson;
@@ -20,15 +21,17 @@ import static java.util.Collections.min;
 public class BasicExplo extends Strategy {
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
+    private final Constraints constraints;
 
     public BasicExplo() {
         explored = new HashMap<>();
         walls = new HashMap<>();
+        constraints=new Constraints();
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot) {
         updateExploration(vision, xy, rot);
-        TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length);
+        TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length,constraints);
         return root.getMove();
     }
 
@@ -40,10 +43,16 @@ public class BasicExplo extends Strategy {
             for (int j = -1; j < 2; j++) { //j==sideways
                 int h = eyeRange - (i + 1);
                 int l = j + 1;
+                final String lookingAt = vision[h][l];
                 switch (rot) {
                     case FORWARD -> {
-                        if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                        if(Objects.equals(lookingAt,"E")){
+                            if(i!=0){
+                                constraints.setMAX_X(currentX+i);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")) {
                                 if (explored.containsKey(currentX + j)) {
                                     if (!explored.get(currentX + j).contains(currentY + i)) {
                                         explored.get(currentX + j).add(currentY + i);
@@ -67,8 +76,13 @@ public class BasicExplo extends Strategy {
                         }
                     }
                     case BACK -> {
-                        if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                        if(Objects.equals(lookingAt,"E")) {
+                            if (i != 0) {
+                                constraints.setMAX_X(currentX - i);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")) {
                                 if (explored.containsKey(currentX - j)) {
                                     if (!explored.get(currentX - j).contains(currentY - i)) {
                                         explored.get(currentX - j).add(currentY - i);
@@ -92,8 +106,13 @@ public class BasicExplo extends Strategy {
                         }
                     }
                     case LEFT -> {
-                        if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                        if(Objects.equals(lookingAt,"E")) {
+                            if (i != 0) {
+                                constraints.setMIN_Y(currentY - i);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")) {
                                 if (explored.containsKey(currentX - i)) {
                                     if (!explored.get(currentX - i).contains(currentY + j)) {
                                         explored.get(currentX - i).add(currentY + j);
@@ -117,8 +136,13 @@ public class BasicExplo extends Strategy {
                         }
                     }
                     case RIGHT -> {
-                        if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                        if(Objects.equals(lookingAt,"E")) {
+                            if (i != 0) {
+                                constraints.setMAX_Y(currentY + i);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")) {
                                 if (explored.containsKey(currentX + i)) {
                                     if (!explored.get(currentX + i).contains(currentY - j)) {
                                         explored.get(currentX + i).add(currentY - j);

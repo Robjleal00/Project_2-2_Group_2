@@ -2,6 +2,7 @@ package OptimalSearch;
 
 import Enums.Moves;
 import Enums.Rotations;
+import Fixes.Constraints;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -23,24 +24,32 @@ public class TreeRoot {
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
     private final int eyeRange;
     boolean TESTING=true;
+    private Constraints constraints;
 
-    public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, int eyeRange) {
+    public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, int eyeRange,Constraints constraints) {
         this.explored = explored;
         this.walls = walls;
         this.xy = xy;
         this.rot = rot;
         this.depth = depth;
         this.eyeRange = eyeRange;
+        this.constraints=constraints;
     }
 
     public Moves getMove() {
         ArrayList<Integer> values = new ArrayList<>();
         for (Moves avaliableMove : avaliableMoves) {
-            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange).getValue(depth));
+            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(depth));
         }
         int result = max(values);
         // System.out.println(result);
-        //if (result == 0) {
+        if(result==0){
+            constraints.reset();
+            ArrayList<Integer> values2 = new ArrayList<>();
+            for (Moves avaliableMove : avaliableMoves) {
+                values2.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(depth));
+            }
+        }
         if(TESTING){
             String[][]mindMap=giveMappings();
             HashMap<Integer,ArrayList<Integer>> explorationPoints= new HashMap<>();
