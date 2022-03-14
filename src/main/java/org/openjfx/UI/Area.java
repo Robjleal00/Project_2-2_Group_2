@@ -15,6 +15,7 @@ public class Area {
     protected int rightBoundary;
     protected int topBoundary;
     protected int bottomBoundary;
+    protected Area mapArea;
 
     public Area(){
         leftBoundary=0;
@@ -30,14 +31,18 @@ public class Area {
         bottomBoundary=Math.min(y1,y2);
     }
 
+
+
     //TODO: verify legitimacy
     //Going to create a constructor with string as param for the FileReader
     public Area(String input)
     {
         String[] values = input.split(" ");
         //calls other constructor
-        new Area(Integer.valueOf(values[0]),Integer.valueOf(values[1]),Integer.valueOf(values[2]),Integer.valueOf(values[3]));
-    }
+        mapArea = new Area(Integer.valueOf(values[0]),Integer.valueOf(values[1]),Integer.valueOf(values[2]),Integer.valueOf(values[3]));
+        System.out.println("new area " + mapArea.toString());
+        return mapArea;
+    }*/
 
     /*
         Check whether a point is in the target area
