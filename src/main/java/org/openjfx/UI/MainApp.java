@@ -106,7 +106,8 @@ public class MainApp extends Application {
             for(int j = 0; j < rectArray[0].length; j++)
             {
                 rectArray[i][j] = new Rectangle(1300/width,1000/height);
-                rectArray[i][j].setStroke(black);
+                rectArray[i][j].setStroke(white);
+                rectArray[i][j].setStrokeWidth(0);
                 rectArray[i][j].setFill(white);
                 GridPane.setConstraints(rectArray[i][j],i,j);
                 gridPane.getChildren().add(rectArray[i][j]);
@@ -115,11 +116,10 @@ public class MainApp extends Application {
         }
 
         //marks target area
-        //TODO: replace this code to work with areas, writing this rn it's kinda dumb, I should've made it work with areas to begin with
 
         int x1 = targetArea.getLeftBoundary();
         System.out.println(x1);
-        int y1 = targetArea.getTopBoundary();
+        int y1 = targetArea.getBottomBoundary();
         System.out.println(y1);
         int xDist = targetArea.getRightBoundary()- targetArea.getLeftBoundary();
         System.out.println(xDist);
@@ -133,23 +133,29 @@ public class MainApp extends Application {
             }
         }
 
+
+        Area current;
+        int startX;
+        int startY;
+        int xDistWall;
+        int yDistWall;
         for(int i = 0; i < walls.size() ; i++){
-            Area current = walls.get(i);
-            int startX = current.getLeftBoundary();
-            System.out.println(x1);
-            int startY = current.getTopBoundary();
-            System.out.println(y1);
-            int xDistWall = current.getRightBoundary()- current.getLeftBoundary();
-            System.out.println(xDist);
-            int yDistWall = current.getTopBoundary()- current.getBottomBoundary();
-            System.out.println(yDist);
-            /*for(int j = 0; j < xDistWall ;j++)
+            current = walls.get(i);
+            startX = current.getLeftBoundary();
+
+            startY = current.getBottomBoundary();
+
+            xDistWall = current.getRightBoundary()- current.getLeftBoundary();
+
+            yDistWall = current.getTopBoundary()- current.getBottomBoundary();
+
+            for(int j = 0; j < xDistWall ;j++)
             {
                 for(int z = 0; z < yDistWall; z++)
                 {
                     rectArray[startX+j][startY+z].setFill(black);
                 }
-            }*/
+            }
         }
 
 

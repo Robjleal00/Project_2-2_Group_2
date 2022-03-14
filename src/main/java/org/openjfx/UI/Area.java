@@ -43,7 +43,7 @@ public class Area {
         mapArea = new Area(Integer.valueOf(values[0]),Integer.valueOf(values[1]),Integer.valueOf(values[2]),Integer.valueOf(values[3]));
         System.out.println("new area " + mapArea.toString());
         return mapArea;
-    }*/
+    }
 
     /*
         Check whether a point is in the target area
