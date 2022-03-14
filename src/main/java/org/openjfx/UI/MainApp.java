@@ -117,11 +117,14 @@ public class MainApp extends Application {
         //marks target area
         //TODO: replace this code to work with areas, writing this rn it's kinda dumb, I should've made it work with areas to begin with
 
-
         int x1 = targetArea.getLeftBoundary();
+        System.out.println(x1);
         int y1 = targetArea.getTopBoundary();
+        System.out.println(y1);
         int xDist = targetArea.getRightBoundary()- targetArea.getLeftBoundary();
-        int yDist = targetArea.getBottomBoundary()- targetArea.getTopBoundary();
+        System.out.println(xDist);
+        int yDist = targetArea.getTopBoundary()- targetArea.getBottomBoundary();
+        System.out.println(yDist);
         for(int i = 0; i < xDist ;i++)
         {
             for(int j = 0; j < yDist; j++)
@@ -130,23 +133,28 @@ public class MainApp extends Application {
             }
         }
 
-
-
-
-        /*
-        int x1 = 20;
-        int y1 = 25;
-        int xDist = 25-20; //this is 5...
-        int yDist = 45-40;
-        //so i = x1= 20 is already > 5....
-        for(int i = 0; i < xDist ;i++)
-        {
-            for(int j = 0; j < yDist; j++)
+        for(int i = 0; i < walls.size() ; i++){
+            Area current = walls.get(i);
+            int startX = current.getLeftBoundary();
+            System.out.println(x1);
+            int startY = current.getTopBoundary();
+            System.out.println(y1);
+            int xDistWall = current.getRightBoundary()- current.getLeftBoundary();
+            System.out.println(xDist);
+            int yDistWall = current.getTopBoundary()- current.getBottomBoundary();
+            System.out.println(yDist);
+            /*for(int j = 0; j < xDistWall ;j++)
             {
-                rectArray[x1+i][y1+j].setFill(yellow);
-            }
+                for(int z = 0; z < yDistWall; z++)
+                {
+                    rectArray[startX+j][startY+z].setFill(black);
+                }
+            }*/
         }
-*/
+
+
+
+
 
 
 
