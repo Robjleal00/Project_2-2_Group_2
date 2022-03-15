@@ -12,6 +12,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -19,9 +20,13 @@ import org.w3c.dom.css.Rect;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.text.Font;
 
 public class MainApp extends Application {
     Button chooseMap, start;
@@ -29,12 +34,13 @@ public class MainApp extends Application {
     Button backButton;
     Button exitButton;
     Scene launchScene, mainScene;
-    Label welcome;
     Label menu;
     GridPane gridPane;
     BorderPane borderPane;
-    Label warning;
+    Label game;
     VBox launchPane;
+
+    protected Image surveillanceIMG1, selectIMG, startIMG;
 
     File fileMap;
     String filePath;
@@ -64,10 +70,22 @@ public class MainApp extends Application {
         //TODO: format problem Sys.out returns Head: name, Value: =, then proceeds to give an error for targetArea and presumable walls too as = is not valid input
 
 
-        welcome = new Label("WELCOME!");
+        //chooseMap = new Button("Select a map");
+
+        //FINISH THIS --------------------------------------------------
+        game = new Label("Surveillance game");
+        game.setFont(new Font("Arial", 40));
+        game.setAlignment(Pos.CENTER_RIGHT);
+        //game.setTextAlignment(TextAlignment.CENTER);
+
+        FileInputStream input_stream1 = new FileInputStream("src/main/java/Images/surveillanceImage.png");
+        surveillanceIMG1 = new Image(input_stream1);
+        ImageView imageView1 = new ImageView();
+        imageView1.setImage(surveillanceIMG1);
+
+
+
         chooseMap = new Button("Select a map");
-
-
         chooseMap.setOnAction(e -> {
             fileMap = fileChooser.showOpenDialog(primaryStage);
             if (fileMap != null){
@@ -77,8 +95,8 @@ public class MainApp extends Application {
             }
         });
 
-
-        start = new Button("Start");
+        start = new Button("Start program");
+        start.setAlignment(Pos.CENTER);
         start.setOnAction(e -> {
             primaryStage.setScene(mainScene);
         });
@@ -86,10 +104,11 @@ public class MainApp extends Application {
 
         //Layout for Launch Scene
         launchPane = new VBox(20);
-        launchPane.setStyle("-fx-background-color: #383838");
-        welcome.setStyle("-fx-background-color: #FFFFFF");
-        launchPane.getChildren().addAll(welcome, chooseMap, start);
-        launchScene = new Scene(launchPane, 200, 200);
+        launchPane.setStyle("-fx-background-color: white");
+        launchPane.getChildren().addAll(game, imageView1, chooseMap, start);
+        launchPane.setAlignment(Pos.CENTER);
+        launchScene = new Scene(launchPane, 400, 350);
+
 
 
         //Layout for Main Scene ------------------------------------------------------------
@@ -114,6 +133,7 @@ public class MainApp extends Application {
 
         HBox mainSceneTopMenu = new HBox(20);
         mainSceneTopMenu.getChildren().addAll(menu, playButton, backButton, exitButton);
+        mainSceneTopMenu.setAlignment(Pos.CENTER_RIGHT);
 
         borderPane = new BorderPane();
         borderPane.setTop(mainSceneTopMenu);
@@ -168,14 +188,14 @@ public class MainApp extends Application {
 
     /**
      *
-     * @param event event given as parameter in LINE 120 covers the mouse related event of the specified action type
+     *  event event given as parameter in LINE 120 covers the mouse related event of the specified action type
      *              here: onMouseClicked, need to pass it on so that the position information is also passed on
-     * @param rectArray to modify the grid itself we need to pass the rectangle array to the method so that it sets the
+     *rectArray to modify the grid itself we need to pass the rectangle array to the method so that it sets the
      *                  color accordingly
      * GridPane (not the object, the class) allows identification of the column and row intrinsically as long as an EVENT
      *                  type is passed as parameter, returns an integer
      */
-    public void clickGrid(javafx.scene.input.MouseEvent event, Rectangle[][] rectArray) {
+    /*public void clickGrid(javafx.scene.input.MouseEvent event, Rectangle[][] rectArray) {
         Node clickedNode = event.getPickResult().getIntersectedNode();
         if (clickedNode != gridPane) {
             // click on descendant node
@@ -184,7 +204,7 @@ public class MainApp extends Application {
             System.out.println("Mouse clicked cell: " + colIndex + " And: " + rowIndex);
             rectArray[colIndex][rowIndex].setFill(black);
         }
-    }
+    }*/
 
     public GridPane createGrid(String path){
         fileReader.readFile(path);
@@ -258,7 +278,7 @@ public class MainApp extends Application {
         }
 
         gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: false");
-        gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
+        //gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
         return gridPane;
     }
 
