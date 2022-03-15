@@ -22,17 +22,28 @@ public class BasicExplo extends Strategy {
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final Constraints constraints;
+    boolean firstPhase;
 
     public BasicExplo() {
         explored = new HashMap<>();
         walls = new HashMap<>();
         constraints=new Constraints();
+        firstPhase=true;
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot) {
         updateExploration(vision, xy, rot);
-        TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length,constraints);
-        return root.getMove();
+        if(firstPhase) {
+            if (!Objects.equals(vision[3][1], " ")) {
+                //System.out.println("FOUND A WALL");
+                firstPhase=false;
+            }else return Moves.WALK;
+        }
+        if(!firstPhase) {
+            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length, constraints);
+            return root.getMove();
+        }
+        return Moves.WALK;
     }
 
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
@@ -48,7 +59,7 @@ public class BasicExplo extends Strategy {
                     case FORWARD -> {
                         if(Objects.equals(lookingAt,"E")){
                             if(i!=0){
-                                constraints.setMAX_X(currentX+i);
+                                constraints.setMAX_X(currentX+1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
@@ -78,7 +89,7 @@ public class BasicExplo extends Strategy {
                     case BACK -> {
                         if(Objects.equals(lookingAt,"E")) {
                             if (i != 0) {
-                                constraints.setMAX_X(currentX - i);
+                                constraints.setMAX_X(currentX - 1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
@@ -108,7 +119,7 @@ public class BasicExplo extends Strategy {
                     case LEFT -> {
                         if(Objects.equals(lookingAt,"E")) {
                             if (i != 0) {
-                                constraints.setMIN_Y(currentY - i);
+                                constraints.setMIN_Y(currentY - 1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
@@ -138,7 +149,7 @@ public class BasicExplo extends Strategy {
                     case RIGHT -> {
                         if(Objects.equals(lookingAt,"E")) {
                             if (i != 0) {
-                                constraints.setMAX_Y(currentY + i);
+                                constraints.setMAX_Y(currentY + 1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {

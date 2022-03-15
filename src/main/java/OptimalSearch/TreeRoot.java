@@ -45,9 +45,9 @@ public class TreeRoot {
         // System.out.println(result);
         if(result==0){
             constraints.reset();
-            ArrayList<Integer> values2 = new ArrayList<>();
+            values.clear();
             for (Moves avaliableMove : avaliableMoves) {
-                values2.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(depth));
+                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(depth));
             }
         }
         if(TESTING){
