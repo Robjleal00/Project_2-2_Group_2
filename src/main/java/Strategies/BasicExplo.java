@@ -88,7 +88,7 @@ public class BasicExplo extends Strategy {
                     case BACK -> {
                         if(Objects.equals(lookingAt,"E")) {
                             if (i != 0) {
-                                constraints.setMAX_X(currentX - 1);
+                                constraints.setMIN_X(currentX - 1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
