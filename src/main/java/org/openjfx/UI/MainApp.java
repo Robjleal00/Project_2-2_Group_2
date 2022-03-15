@@ -19,6 +19,7 @@ import org.w3c.dom.css.Rect;
 
 import java.awt.*;
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
@@ -60,24 +61,27 @@ public class MainApp extends Application {
         //TODO: format problem Sys.out returns Head: name, Value: =, then proceeds to give an error for targetArea and presumable walls too as = is not valid input
 
         // IF THIS IS COMMENTED OUT THE PROGRAM WON'T WORK
-        fileReader.readFile("src/main/java/map/testmap.txt");
+        /*fileReader.readFile("src/main/java/map/testmap.txt");
         height = fileReader.getHeight();
         width = fileReader.getWidth();
         targetArea = fileReader.getTargetArea();
-        walls = fileReader.getWalls();
+        walls = fileReader.getWalls();*/
 
 
         welcome = new Label("WELCOME!");
 
         chooseMap = new Button("Select a map");
+
+
         chooseMap.setOnAction(e -> {
             fileMap = fileChooser.showOpenDialog(primaryStage);
-            if (fileMap != null) {
-                System.out.println(fileMap.getAbsolutePath());
-                filePath = fileMap.getAbsolutePath();
-                //fileReader.readFile(filePath); THIS CAUSES TROUBLE
+            if (fileMap != null){
+                    System.out.println(fileMap.getAbsolutePath());
+                    filePath = fileMap.getAbsolutePath();
+                //fileReader.readFile(filePath); //THIS CAUSES TROUBLE
             }
         });
+
 
         start = new Button("Start");
         start.setOnAction(e -> {
@@ -92,11 +96,16 @@ public class MainApp extends Application {
         launchPane.getChildren().addAll(welcome, chooseMap, start);
         launchScene = new Scene(launchPane, 200, 200);
 
+
+
+
+
+        //Layout for Main Scene ------------------------------------------------------------
         menu = new Label("MENU");
 
         playButton = new Button("PLAY");
         playButton.setOnAction(e -> System.out.println("Game is Played"));
-        
+
         backButton = new Button("BACK TO LAUNCH");
         backButton.setOnAction(e -> primaryStage.setScene(launchScene));
 
@@ -110,16 +119,14 @@ public class MainApp extends Application {
             closeProgram(primaryStage);
         });
 
-        //Layout for Main Scene ------------------------------------------------------------
-
 
         HBox mainSceneTopMenu = new HBox(20);
         mainSceneTopMenu.getChildren().addAll(menu, playButton, backButton, exitButton);
 
-        //----------------------
 
 
-        gridPane =  new GridPane();
+
+        /*gridPane =  new GridPane();
         gridPane.setMinWidth(width);
         gridPane.setMinHeight(height);
 
@@ -189,14 +196,18 @@ public class MainApp extends Application {
 
 
 
-        gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
+        gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");*/
+
+
 
         borderPane = new BorderPane();
         borderPane.setTop(mainSceneTopMenu);
-        borderPane.setCenter(gridPane);
-        gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
+        //borderPane.setCenter(gridPane);
+        //gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
 
-
+        playButton.setOnAction(e -> {
+            borderPane.setCenter(createGrid(filePath));
+        });
 
 
 
@@ -210,6 +221,8 @@ public class MainApp extends Application {
 
 
         primaryStage.show();
+
+
     }
 
 
@@ -257,6 +270,86 @@ public class MainApp extends Application {
             rectArray[colIndex][rowIndex].setFill(black);
         }
     }
+
+    public GridPane createGrid(String path){
+        fileReader.readFile(path);
+        height = fileReader.getHeight();
+        width = fileReader.getWidth();
+        targetArea = fileReader.getTargetArea();
+        walls = fileReader.getWalls();
+
+        gridPane =  new GridPane();
+        gridPane.setMinWidth(width);
+        gridPane.setMinHeight(height);
+
+
+        Rectangle[][] rectArray = new Rectangle[width][height];
+        for(int i = 0; i < rectArray.length; i++)
+        {
+
+            for(int j = 0; j < rectArray[0].length; j++)
+            {
+                rectArray[i][j] = new Rectangle(1300/width,1000/height);
+                rectArray[i][j].setStroke(white);
+                rectArray[i][j].setStrokeWidth(0);
+                rectArray[i][j].setFill(white);
+                GridPane.setConstraints(rectArray[i][j],i,j);
+                gridPane.getChildren().add(rectArray[i][j]);
+            }
+
+        }
+
+        //marks target area
+        if(targetArea != null){
+            int x1 = targetArea.getLeftBoundary();
+            System.out.println(x1);
+            int y1 = targetArea.getBottomBoundary();
+            System.out.println(y1);
+            int xDist = targetArea.getRightBoundary()- targetArea.getLeftBoundary();
+            System.out.println(xDist);
+            int yDist = targetArea.getTopBoundary()- targetArea.getBottomBoundary();
+            System.out.println(yDist);
+            for(int i = 0; i < xDist ;i++)
+            {
+                for(int j = 0; j < yDist; j++)
+                {
+                    rectArray[x1+i][y1+j].setFill(yellow);
+                }
+            }
+        }
+
+
+
+        Area current;
+        int startX;
+        int startY;
+        int xDistWall;
+        int yDistWall;
+        for(int i = 0; i < walls.size() ; i++){
+            current = walls.get(i);
+            startX = current.getLeftBoundary();
+
+            startY = current.getBottomBoundary();
+
+            xDistWall = current.getRightBoundary()- current.getLeftBoundary();
+
+            yDistWall = current.getTopBoundary()- current.getBottomBoundary();
+
+            for(int j = 0; j < xDistWall ;j++)
+            {
+                for(int z = 0; z < yDistWall; z++)
+                {
+                    rectArray[startX+j][startY+z].setFill(black);
+                }
+            }
+        }
+
+        gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
+        gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
+        return gridPane;
+    }
+
+
 
 
 }
