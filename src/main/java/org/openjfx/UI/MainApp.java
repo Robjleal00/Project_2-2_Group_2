@@ -262,9 +262,9 @@ public class MainApp extends Application {
         return gridPane;
     }
 
-    public void spawnIntruder(int numIntruders) {
-        int intruderWidth = 200;
-        int intruderHeight = 200;
+    /* public void spawnIntruder(int numIntruders) {
+        int intruderWidth = 10;
+        int intruderHeight = 10;
 
         Rectangle[][] agent = new Rectangle[intruderWidth][intruderHeight];
 
@@ -276,6 +276,21 @@ public class MainApp extends Application {
             }
         }
         gridPane.getChildren().add(agent[intruderWidth][intruderHeight]);
+    }
+    */
+
+
+    public void spawnIntruder(int numIntruders) {
+        int i;
+        //TODO Here we need to create however many agents we choose there to be and spawn them randomly
+        for (i = 0; i <= numIntruders; i++ ){
+            System.out.println("Number of Agents = " + i);
+        }
+        Rectangle agent = new Rectangle(100, 100, 20, 20);
+
+        agent.setFill(red);
+
+        gridPane.getChildren().add(agent);
     }
 
 
