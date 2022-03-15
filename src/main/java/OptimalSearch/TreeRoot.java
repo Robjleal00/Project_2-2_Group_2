@@ -1,7 +1,9 @@
 package OptimalSearch;
 
+import Config.Config;
 import Enums.Moves;
 import Enums.Rotations;
+import Logic.GameController;
 import Strategies.Constraints;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -24,6 +26,7 @@ public class TreeRoot {
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
     private final int eyeRange;
     boolean TESTING=true;
+    boolean DEBUG_DECISIONS;
     private Constraints constraints;
 
     public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, int eyeRange,Constraints constraints) {
@@ -34,24 +37,28 @@ public class TreeRoot {
         this.depth = depth;
         this.eyeRange = eyeRange;
         this.constraints=constraints;
+        Config cf= new Config();
+        this.DEBUG_DECISIONS = cf.DEBUG_DECISIONS;;
     }
 
     public Moves getMove() {
-        ArrayList<Integer> values = new ArrayList<>();
+        ArrayList<Double> values = new ArrayList<>();
         for (Moves avaliableMove : avaliableMoves) {
-            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(depth));
+            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(1,depth));
         }
-        int result = max(values);
-        // System.out.println(result);
+        double result = max(values);
+        if(DEBUG_DECISIONS) System.out.println(values);
         if(result==0){
             constraints.reset();
             values.clear();
             for (Moves avaliableMove : avaliableMoves) {
-                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(depth));
+                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(1,depth));
             }
         }
-        if(TESTING){
+        if(TESTING&&result==0){
+            GameController printer = new GameController();
             String[][]mindMap=giveMappings();
+            printer.printArray(mindMap);
             HashMap<Integer,ArrayList<Integer>> explorationPoints= new HashMap<>();
             int fix=Integer.parseInt(mindMap[0][0]);
             int totalY=Integer.parseInt(mindMap[0][1]);
@@ -74,7 +81,7 @@ public class TreeRoot {
             //gotta add some kind of path-finding for him to get the shortest path and which move to output to go follow that
         }
         boolean allTheSame = true;
-        for (Integer value : values) {
+        for (Double value : values) {
             if (value != result) {
                 allTheSame = false;
                 break;
@@ -84,9 +91,9 @@ public class TreeRoot {
             // System.out.println("ALL THE SAME AAAAAA");
             ArrayList<Integer> Reversevalues = new ArrayList<>();
             for (Moves avaliableMove : avaliableMoves) {
-                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, result, 0).getValue(depth));
+                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, result, 0).getValue(1,depth));
             }
-            int Reverseresult = max(Reversevalues);
+            int Reverseresult = min(Reversevalues);
             //System.out.println(Reversevalues);
             return avaliableMoves[Reversevalues.indexOf(Reverseresult)];
 

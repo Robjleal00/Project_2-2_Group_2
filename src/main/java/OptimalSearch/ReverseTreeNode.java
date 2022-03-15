@@ -20,10 +20,10 @@ public class ReverseTreeNode {
     private Rotations rot;
     private final int eyeRange;
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
-    private final int target;
-    private final int parentValue;
+    private final double target;
+    private final double parentValue;
 
-    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, int target, int parentValue) {
+    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, double target, double parentValue) {
         this.move = move;
         this.rot = rot;
         this.explored = explored;
@@ -34,7 +34,7 @@ public class ReverseTreeNode {
         this.parentValue = parentValue;
     }
 
-    public int getValue(int depth) {
+    public int getValue(int depth,int maxDepth) {
         switch (move) {
             case TURN_AROUND -> rot = turnAround(rot);
             case WALK -> xy = walk(xy, rot, walls);
@@ -48,7 +48,8 @@ public class ReverseTreeNode {
         printer.printArray(vision);
         printer.print("---------------------");
         */
-        int value = updateExploration(vision, xy, rot);
+        int valued = updateExploration(vision, xy, rot);
+        double value = valued/depth;
         value += parentValue;
         //if(depth==0)return Integer.MAX_VALUE;
         if (value == target) {
@@ -68,12 +69,12 @@ public class ReverseTreeNode {
 
             }
          */
-            if (depth == 0) {
+            if (depth == maxDepth) {
                 return Integer.MIN_VALUE;
             } else {
                 ArrayList<Integer> values = new ArrayList<>();
                 for (Moves avaliableMove : avaliableMoves) {
-                    values.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, target, value).getValue(depth - 1));
+                    values.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, target, value).getValue(depth+1,maxDepth));
                 }
                 return max(values);
             }

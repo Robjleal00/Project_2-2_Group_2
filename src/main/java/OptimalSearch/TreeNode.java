@@ -41,7 +41,7 @@ public class TreeNode {
         }
     }
 
-    public int getValue(int depth) {
+    public double getValue(int currentDepth,int maxDepth) {
         switch (move) {
             case TURN_AROUND -> rot = turnAround(rot);
             case WALK -> xy = walk(xy, rot, walls);
@@ -55,7 +55,8 @@ public class TreeNode {
         printer.printArray(vision);
         printer.print("---------------------");
         */
-        int value = updateExploration(vision, xy, rot);
+        int valued = updateExploration(vision, xy, rot);
+        double value = (double)valued/Math.pow(currentDepth,3);
         /*
         if (value==1){
             GameController printer = new GameController();
@@ -67,12 +68,12 @@ public class TreeNode {
             System.out.println(rot);
         }
          */
-        if (depth == 0) {
+        if (currentDepth == maxDepth) {
             return value;
         } else {
-            ArrayList<Integer> values = new ArrayList<>();
+            ArrayList<Double> values = new ArrayList<>();
             for (Moves avaliableMove : avaliableMoves) {
-                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(depth - 1));
+                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(currentDepth +1,maxDepth));
             }
             return value + max(values);
         }
