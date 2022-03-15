@@ -1,4 +1,4 @@
-package Fixes;
+package Strategies;
 
 public class Constraints {
     private int MAX_Y;

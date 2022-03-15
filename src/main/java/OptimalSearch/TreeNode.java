@@ -2,7 +2,7 @@ package OptimalSearch;
 
 import Enums.Moves;
 import Enums.Rotations;
-import Fixes.Constraints;
+import Strategies.Constraints;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
