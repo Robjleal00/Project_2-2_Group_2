@@ -49,6 +49,7 @@ public class MainApp extends Application {
     javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 255,255, 1);
     javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
     javafx.scene.paint.Color yellow = javafx.scene.paint.Color.rgb(255,255,0,1);
+    javafx.scene.paint.Color red = javafx.scene.paint.Color.rgb(255, 0, 0, 1);
 
 
 
@@ -207,6 +208,7 @@ public class MainApp extends Application {
 
         playButton.setOnAction(e -> {
             borderPane.setCenter(createGrid(filePath));
+            spawnIntruder(1);
         });
 
 
@@ -347,6 +349,22 @@ public class MainApp extends Application {
         gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: true");
         gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
         return gridPane;
+    }
+
+    public void spawnIntruder(int numIntruders) {
+        int intruderWidth = 200;
+        int intruderHeight = 200;
+
+        Rectangle[][] agent = new Rectangle[intruderWidth][intruderHeight];
+
+        for(int i = 0; i < intruderWidth ;i++)
+        {
+            for(int j = 0; j < intruderHeight; j++)
+            {
+                agent[intruderWidth+i][intruderHeight+j].setFill(red);
+            }
+        }
+        gridPane.getChildren().add(agent[intruderWidth][intruderHeight]);
     }
 
 
