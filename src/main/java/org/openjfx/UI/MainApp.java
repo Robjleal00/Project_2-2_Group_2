@@ -12,16 +12,18 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import javafx.stage.Window;
 import org.w3c.dom.css.Rect;
 
 import java.awt.*;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class MainApp extends Application {
-    Button launchButton;
+    Button chooseMap, start;
     Button playButton;
     Button backButton;
     Button exitButton;
@@ -30,16 +32,24 @@ public class MainApp extends Application {
     Label menu;
     GridPane gridPane;
     BorderPane borderPane;
+
+    File fileMap;
+    String filePath;
+    FileChooser fileChooser = new FileChooser();
+    FileReader fileReader = new FileReader();
+
+    private static int height;
+    private static int width;
+    private Area targetArea;
+    private ArrayList<Area> walls;
+
+
     //Colors
     javafx.scene.paint.Color white = javafx.scene.paint.Color.rgb(255, 255,255, 1);
     javafx.scene.paint.Color black = javafx.scene.paint.Color.rgb(0, 0,0, 1);
     javafx.scene.paint.Color yellow = javafx.scene.paint.Color.rgb(255,255,0,1);
 
-    FileReader fileReader = new FileReader();
-    private static int height;
-    private static int width;
-    private Area targetArea;
-    private ArrayList<Area> walls;
+
 
     public static void main(String[] args) {
         launch(args);
@@ -49,6 +59,7 @@ public class MainApp extends Application {
     public void start(Stage primaryStage) throws Exception {
         //TODO: format problem Sys.out returns Head: name, Value: =, then proceeds to give an error for targetArea and presumable walls too as = is not valid input
 
+        // IF THIS IS COMMENTED OUT THE PROGRAM WON'T WORK
         fileReader.readFile("src/main/java/map/testmap.txt");
         height = fileReader.getHeight();
         width = fileReader.getWidth();
@@ -58,14 +69,27 @@ public class MainApp extends Application {
 
         welcome = new Label("WELCOME!");
 
-        launchButton = new Button("LAUNCH GAME");
-        launchButton.setOnAction(e -> primaryStage.setScene(mainScene));
+        chooseMap = new Button("Select a map");
+        chooseMap.setOnAction(e -> {
+            fileMap = fileChooser.showOpenDialog(primaryStage);
+            if (fileMap != null) {
+                System.out.println(fileMap.getAbsolutePath());
+                filePath = fileMap.getAbsolutePath();
+                //fileReader.readFile(filePath); THIS CAUSES TROUBLE
+            }
+        });
+
+        start = new Button("Start");
+        start.setOnAction(e -> {
+            primaryStage.setScene(mainScene);
+        });
+
 
         //Layout for Launch Scene
         VBox launchPane = new VBox(20);
         launchPane.setStyle("-fx-background-color: #383838");
         welcome.setStyle("-fx-background-color: #FFFFFF");
-        launchPane.getChildren().addAll(welcome, launchButton);
+        launchPane.getChildren().addAll(welcome, chooseMap, start);
         launchScene = new Scene(launchPane, 200, 200);
 
         menu = new Label("MENU");
@@ -93,6 +117,7 @@ public class MainApp extends Application {
         mainSceneTopMenu.getChildren().addAll(menu, playButton, backButton, exitButton);
 
         //----------------------
+
 
         gridPane =  new GridPane();
         gridPane.setMinWidth(width);
@@ -185,6 +210,15 @@ public class MainApp extends Application {
 
 
         primaryStage.show();
+    }
+
+
+    public void readMapFile(String path){
+        fileReader.readFile(path);
+        height = fileReader.getHeight();
+        width = fileReader.getWidth();
+        targetArea = fileReader.getTargetArea();
+        walls = fileReader.getWalls();
     }
 
 
