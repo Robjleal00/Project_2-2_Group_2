@@ -86,7 +86,7 @@ public class ReverseTreeNode {
         int currentX = xy[0];
         int currentY = xy[1];
         boolean[] canSee = {true, true, true};
-        for (int i = 0; i < 5; i++) { //i= upfront
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
                 int h = eyeRange - (i + 1);
                 int l = j + 1;
@@ -402,7 +402,7 @@ public class ReverseTreeNode {
         int eyeRange = vision.length;
         int currentX = xy[0];
         int currentY = xy[1];
-        for (int i = 0; i < 5; i++) { //i= upfront
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
                 int h = eyeRange - (i + 1);
                 int l = j + 1;

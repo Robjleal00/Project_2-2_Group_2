@@ -20,20 +20,24 @@ import static java.util.Collections.min;
 public class BasicExplo extends Strategy {
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
+    private final HashMap<Integer,HashMap<Integer,ArrayList<Integer>>> objects;
     private final Constraints constraints;
     boolean firstPhase;
 
     public BasicExplo() {
         explored = new HashMap<>();
         walls = new HashMap<>();
+        objects = new HashMap<>();
         constraints=new Constraints();
         firstPhase=true;
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot) {
         updateExploration(vision, xy, rot);
+        int eyeRange=vision.length;
+        int check = eyeRange-2;
         if(firstPhase) {
-            if (!Objects.equals(vision[3][1], " ")) {
+            if (!Objects.equals(vision[check][1], " ")) {
                 //System.out.println("FOUND A WALL");
                 firstPhase=false;
             }else return Moves.WALK;
@@ -49,7 +53,7 @@ public class BasicExplo extends Strategy {
         int eyeRange = vision.length;
         int currentX = xy[0];
         int currentY = xy[1];
-        for (int i = 0; i < 5; i++) { //i= upfront
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
                 int h = eyeRange - (i + 1);
                 int l = j + 1;

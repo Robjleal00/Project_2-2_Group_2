@@ -7,10 +7,10 @@ import Enums.Rotations;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Objects;
 
 import Config.*;
-
+import ObjectsOnMap.ObjectOnMap;
+import java.util.Objects;
 
 public class GameController {
     private String[][] map;
@@ -19,7 +19,9 @@ public class GameController {
     private boolean isRunning;
     private int eyeRange;
     private ArrayList<Entity> entities;
-    private HashMap<Entity, int[]> locations;
+    private ArrayList<ObjectOnMap> objects;
+    private HashMap<Entity, int[]> entityLocations;
+    private HashMap<ObjectOnMap, int[]> objectsLocations;
     private HashMap<Entity, Rotations> entityRotationsHashMap;
     private HashMap<Entity, Moves> queuedMoves;
     private ArrayList<Integer> allUnseenTiles;
@@ -37,7 +39,9 @@ public class GameController {
         isRunning = true;
         this.eyeRange = eyeRange;
         entities = new ArrayList<>();
-        locations = new HashMap<>();
+        objects=new ArrayList<>();
+        entityLocations = new HashMap<>();
+        objectsLocations = new HashMap<>();
         entityRotationsHashMap = new HashMap<>();
         queuedMoves = new HashMap<>();
         Config con = new Config();
@@ -121,7 +125,7 @@ public class GameController {
     public String[][] giveVision(Entity e) {
         Rotations rot = entityRotationsHashMap.get(e);
         String[][] vision = new String[eyeRange][3];
-        int[] position = locations.get(e);
+        int[] position = entityLocations.get(e);
         boolean[] canSee = {true, true, true};
         switch (rot) {
             case UP -> {
@@ -274,7 +278,7 @@ public class GameController {
             }
 
         }
-        //System.out.println(rot);
+        if(PRINTVISION)printArray(vision);
         return vision;
     }
 
@@ -343,7 +347,7 @@ public class GameController {
                 }
             }
             case WALK -> {
-                int[] pos = locations.get(e);
+                int[] pos = entityLocations.get(e);
                 switch (rotation) {
                     case UP -> {
                         int[] targetlocation = {pos[0] - 1, pos[1]};
@@ -351,7 +355,7 @@ public class GameController {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
-                                locations.put(e, targetlocation);
+                                entityLocations.put(e, targetlocation);
                                 return true;
                             } else return false;
                         } else return false;
@@ -362,7 +366,7 @@ public class GameController {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
-                                locations.put(e, targetlocation);
+                                entityLocations.put(e, targetlocation);
                                 return true;
                             } else return false;
                         } else return false;
@@ -373,7 +377,7 @@ public class GameController {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
-                                locations.put(e, targetlocation);
+                                entityLocations.put(e, targetlocation);
                                 return true;
                             } else return false;
                         } else return false;
@@ -384,7 +388,7 @@ public class GameController {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
-                                locations.put(e, targetlocation);
+                                entityLocations.put(e, targetlocation);
                                 return true;
                             } else return false;
                         } else return false;
@@ -399,9 +403,33 @@ public class GameController {
     public void addEntity(Entity e, int h, int l, Rotations rot) {
         entities.add(e);
         int[] yx = {h, l};
-        locations.put(e, yx);
+        entityLocations.put(e, yx);
         entityRotationsHashMap.put(e, rot);
         putOnMap(symbol(e), h, l);
+    }
+    public void addObject(ObjectOnMap o) {
+        objects.add(o);
+        int[] yx = o.getXy();
+        objectsLocations.put(o, yx);
+        putObjectOnMap(o);
+    }
+    public void putObjectOnMap(ObjectOnMap o){
+        String symbol=o.getSymbol();
+        int[] firstCorner=o.getFirstCorner();
+        int[] secondCorner = o.getSecondCorner();
+        int yGrow=(secondCorner[0]-firstCorner[0]);
+        int xGrow=(secondCorner[1]-firstCorner[1]);
+        int yFix;
+        int xFix;
+        if(yGrow>0){yFix=1;}else yFix=-1;
+        if(xGrow>0){xFix=1;}else xFix=-1;
+        for(int i=0;i<=Math.abs(yGrow);i++){
+            for(int j=0;j<=Math.abs(xGrow);j++){
+                putOnMap(symbol,firstCorner[0]+i*yFix,firstCorner[1]+j*xFix);
+            }
+        }
+
+
     }
 
     public void print(String s) {
