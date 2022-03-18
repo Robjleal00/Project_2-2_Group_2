@@ -47,12 +47,12 @@ public class Explorer extends Entity {
     }
 
     @Override
-    public void walk() {
+    public void walk(int d) {
         switch (currentRotation) {
-            case FORWARD -> y++;
-            case BACK -> y--;
-            case RIGHT -> x++;
-            case LEFT -> x--;
+            case FORWARD -> y+=d;
+            case BACK -> y-=d;
+            case RIGHT -> x+=d;
+            case LEFT -> x-=d;
         }
     }
 

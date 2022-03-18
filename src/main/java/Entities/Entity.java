@@ -21,7 +21,7 @@ public class Entity {
     public void turnAround() {
     }
 
-    public void walk() {
+    public void walk(int d) {
     }
     public void showMeWhatUSaw(){
 

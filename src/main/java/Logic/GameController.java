@@ -30,6 +30,7 @@ public class GameController {
     public boolean GUI;
     private boolean DEBUG_EPXLO;
     private int maxExploNum;
+    private int walkSpeed;
 
     public GameController(int height, int length, int eyeRange) {
         allUnseenTiles = new ArrayList<>();
@@ -51,6 +52,7 @@ public class GameController {
         GUI=con.GUI;
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         this.maxExploNum=allUnseenTiles.size();
+        walkSpeed=4;
     }
 
     public GameController() {
@@ -65,13 +67,14 @@ public class GameController {
                 Moves currentMove = e.getMove();
                 queuedMoves.put(e, currentMove);
             }
+            Moves lastmove=Moves.STUCK;
             for (Entity e : entities) {
-                if (executeMove(e, queuedMoves.get(e))) {
+                int tester=executeMove(e, queuedMoves.get(e));
+                if (tester!=-1) {
                     Moves move = queuedMoves.get(e);
-                    Moves lastmove=Moves.STUCK;
                     switch (move) {
                         case WALK -> {
-                            e.walk();
+                            e.walk(tester);
                             lastmove=move;
                         }
                         case TURN_AROUND ->{e.turnAround();lastmove=move;}
@@ -107,7 +110,7 @@ public class GameController {
             }
             turns++;
             checkWin();
-            Thread.sleep(100);
+            Thread.sleep(1000);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
@@ -303,30 +306,30 @@ public class GameController {
         return vision;
     }
 
-    private boolean executeMove(Entity e, Moves m) {
+    private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
         switch (m) {
             case STUCK -> {
-                return true;
+                return 1;
             }
             case TURN_LEFT -> {
                 switch (rotation) {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
-                        return true;
+                        return 1;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
-                        return true;
+                        return 1;
 
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
-                        return true;
+                        return 1;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
-                        return true;
+                        return 1;
                     }
                 }
             }
@@ -334,19 +337,19 @@ public class GameController {
                 switch (rotation) {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
-                        return true;
+                        return 1;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
-                        return true;
+                        return 1;
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
-                        return true;
+                        return 1;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
-                        return true;
+                        return 1;
                     }
                 }
             }
@@ -354,19 +357,19 @@ public class GameController {
                 switch (rotation) {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
-                        return true;
+                        return 1;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
-                        return true;
+                        return 1;
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
-                        return true;
+                        return 1;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
-                        return true;
+                        return 1;
                     }
                 }
             }
@@ -374,53 +377,113 @@ public class GameController {
                 int[] pos = entityLocations.get(e);
                 switch (rotation) {
                     case UP -> {
-                        int[] targetlocation = {pos[0] - 1, pos[1]};
+                        int[] targetlocation = {pos[0] - walkSpeed, pos[1]};
                         if (existsInBoard(targetlocation)) {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
-                                return true;
-                            } else return false;
-                        } else return false;
+                                return walkSpeed;
+                            } else {
+                                if(walkSpeed>1){
+                                    for(int i=walkSpeed;i>0;i--){
+                                        int[] nexttargetlocation = {pos[0] - i, pos[1]};
+                                        if(existsInBoard(nexttargetlocation)){
+                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                                putOnMap(symbol(e), nexttargetlocation);
+                                                removeFromMap(pos);
+                                                entityLocations.put(e, nexttargetlocation);
+                                                return i;
+                                            }
+                                        }
+
+                                    }
+                                }else return -1;
+                            }
+                        } else return -1;
                     }
                     case DOWN -> {
-                        int[] targetlocation = {pos[0] + 1, pos[1]};
+                        int[] targetlocation = {pos[0] + walkSpeed, pos[1]};
                         if (existsInBoard(targetlocation)) {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
-                                return true;
-                            } else return false;
-                        } else return false;
+                                return walkSpeed;
+                            } else {
+                                if(walkSpeed>1){
+                                    for(int i=walkSpeed;i>0;i--){
+                                        int[] nexttargetlocation = {pos[0] + i, pos[1]};
+                                        if(existsInBoard(nexttargetlocation)){
+                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                                putOnMap(symbol(e), nexttargetlocation);
+                                                removeFromMap(pos);
+                                                entityLocations.put(e, nexttargetlocation);
+                                                return i;
+                                            }
+                                        }
+
+                                    }
+                                }else return -1;
+                            }
+                        } else return -1;
                     }
                     case RIGHT -> {
-                        int[] targetlocation = {pos[0], pos[1] + 1};
+                        int[] targetlocation = {pos[0], pos[1] + walkSpeed};
                         if (existsInBoard(targetlocation)) {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
-                                return true;
-                            } else return false;
-                        } else return false;
+                                return walkSpeed;
+                            } else {
+                                if(walkSpeed>1){
+                                    for(int i=walkSpeed;i>0;i--){
+                                        int[] nexttargetlocation = {pos[0] , pos[1]+i};
+                                        if(existsInBoard(nexttargetlocation)){
+                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                                putOnMap(symbol(e), nexttargetlocation);
+                                                removeFromMap(pos);
+                                                entityLocations.put(e, nexttargetlocation);
+                                                return i;
+                                            }
+                                        }
+
+                                    }
+                                }else return -1;
+                            }
+                        } else return -1;
                     }
                     case LEFT -> {
-                        int[] targetlocation = {pos[0], pos[1] - 1};
+                        int[] targetlocation = {pos[0], pos[1] - walkSpeed};
                         if (existsInBoard(targetlocation)) {
                             if (canBePutThere(targetlocation[0], targetlocation[1])) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
-                                return true;
-                            } else return false;
-                        } else return false;
+                                return walkSpeed;
+                            } else {
+                                if(walkSpeed>1){
+                                    for(int i=walkSpeed;i>0;i--){
+                                        int[] nexttargetlocation = {pos[0], pos[1]-i};
+                                        if(existsInBoard(nexttargetlocation)){
+                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                                putOnMap(symbol(e), nexttargetlocation);
+                                                removeFromMap(pos);
+                                                entityLocations.put(e, nexttargetlocation);
+                                                return i;
+                                            }
+                                        }
+
+                                    }
+                                }else return -1;
+                            }
+                        } else return -1;
                     }
                 }
             }
         }
-        return false;
+        return -1;
     }
 
 
