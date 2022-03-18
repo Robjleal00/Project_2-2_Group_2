@@ -88,6 +88,7 @@ public class TreeRoot {
             }
         }
         if (allTheSame) {
+            if(result!=0){
             // System.out.println("ALL THE SAME AAAAAA");
             ArrayList<Integer> Reversevalues = new ArrayList<>();
             for (Moves avaliableMove : avaliableMoves) {
@@ -97,7 +98,8 @@ public class TreeRoot {
             //System.out.println(Reversevalues);
             return avaliableMoves[Reversevalues.indexOf(Reverseresult)];
 
-        } else return avaliableMoves[values.indexOf(result)];
+        } else return Moves.STUCK;
+        }else return avaliableMoves[values.indexOf(result)];
 
     }
 

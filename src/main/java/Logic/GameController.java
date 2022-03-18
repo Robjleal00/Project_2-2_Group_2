@@ -29,6 +29,7 @@ public class GameController {
     public boolean PRINTVISION;
     public boolean GUI;
     private boolean DEBUG_EPXLO;
+    private int maxExploNum;
 
     public GameController(int height, int length, int eyeRange) {
         allUnseenTiles = new ArrayList<>();
@@ -49,14 +50,17 @@ public class GameController {
         PRINTVISION=con.PRINTVISION;
         GUI=con.GUI;
         DEBUG_EPXLO=con.DEBUG_EXPLO;
+        this.maxExploNum=allUnseenTiles.size();
     }
 
     public GameController() {
     }
 
     public void init() throws InterruptedException {
+        boolean wasBroken=false;
         int turns = 0;
         while (isRunning) {//gameloop
+            boolean allBroken=false;
             for (Entity e : entities) {
                 Moves currentMove = e.getMove();
                 queuedMoves.put(e, currentMove);
@@ -64,11 +68,22 @@ public class GameController {
             for (Entity e : entities) {
                 if (executeMove(e, queuedMoves.get(e))) {
                     Moves move = queuedMoves.get(e);
+                    Moves lastmove=Moves.STUCK;
                     switch (move) {
-                        case WALK -> e.walk();
-                        case TURN_AROUND -> e.turnAround();
-                        case TURN_RIGHT -> e.turnRight();
-                        case TURN_LEFT -> e.turnLeft();
+                        case WALK -> {
+                            e.walk();
+                            lastmove=move;
+                        }
+                        case TURN_AROUND ->{e.turnAround();lastmove=move;}
+                        case TURN_RIGHT -> {e.turnRight();lastmove=move;}
+                        case TURN_LEFT -> {e.turnLeft();lastmove=move;}
+                        case STUCK -> {
+                           if(lastmove==Moves.STUCK){
+                                   lastmove=move;
+                                  allBroken=true;
+
+                           }
+                        }
                     }
                 }
             }
@@ -86,9 +101,18 @@ public class GameController {
             if(DEBUG_EPXLO){
                 System.out.println(allUnseenTiles.toString());
             }
+            if(allBroken){
+                isRunning=false;
+                wasBroken=true;
+            }
             turns++;
             checkWin();
             Thread.sleep(100);
+        }
+        if(wasBroken){
+            System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
+            int currentProgress=maxExploNum-allUnseenTiles.size();
+            System.out.println(" THEY EXPLORED ABOUT "+(int)(currentProgress*100/maxExploNum) +"% IN "+turns+" TURNS" );
         }
         System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
     }
@@ -282,6 +306,9 @@ public class GameController {
     private boolean executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
         switch (m) {
+            case STUCK -> {
+                return true;
+            }
             case TURN_LEFT -> {
                 switch (rotation) {
                     case DOWN -> {
@@ -469,8 +496,16 @@ public class GameController {
     }
 
     private String symbol(Entity e) {
+        Rotations rot = entityRotationsHashMap.get(e);
+        String addition="ERROR";
+        switch(rot){
+            case DOWN ->addition="d";
+            case UP -> addition="^";
+            case LEFT -> addition="<";
+            case RIGHT -> addition=">";
+        }
         if (e.getType() == EntityType.EXPLORER) {
-            return "E";
+            return "E"+addition;
         }
         return "ERROR";
     }
