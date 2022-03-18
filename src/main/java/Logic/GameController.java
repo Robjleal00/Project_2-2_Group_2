@@ -130,6 +130,43 @@ public class GameController {
         }
         return mappy;
     }
+    public boolean noWallsOnTheWay(int[]pos,int[]target,Rotations rot){
+        switch(rot){
+            case LEFT -> {
+                int length=pos[1]-target[1];
+                for(int i=1;i<=length;i++){
+                    int[] nextTarget={pos[0],pos[1]-i};
+                    if(!canBePutThere(nextTarget))return false;
+                }
+                return true;
+            }
+            case RIGHT -> {
+                int length=target[1]-pos[1];
+                for(int i=1;i<=length;i++){
+                    int[] nextTarget={pos[0],pos[1]+i};
+                    if(!canBePutThere(nextTarget))return false;
+                }
+                return true;
+            }
+            case DOWN -> {
+                int length=target[0]-pos[0];
+                for(int i=1;i<=length;i++){
+                    int[] nextTarget={pos[0]+i,pos[1]};
+                    if(!canBePutThere(nextTarget))return false;
+                }
+                return true;
+            }
+            case UP -> {
+                int length=pos[0]-target[0];
+                for(int i=1;i<=length;i++){
+                    int[] nextTarget={pos[0]-i,pos[1]};
+                    if(!canBePutThere(nextTarget))return false;
+                }
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void printMap() {
         printArray(map);
@@ -575,6 +612,9 @@ public class GameController {
 
     private boolean canBePutThere(int h, int l) {
         return Objects.equals(map[h][l], " ");
+    }
+    private boolean canBePutThere(int []target) {
+        return Objects.equals(map[target[0]][target[1]], " ");
     }
 
     private boolean existsInBoard(int[] pos) {

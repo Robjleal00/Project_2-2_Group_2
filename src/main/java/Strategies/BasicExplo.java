@@ -1,5 +1,6 @@
 package Strategies;
 
+import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
@@ -32,7 +33,7 @@ public class BasicExplo extends Strategy {
         firstPhase=true;
     }
     @Override
-    public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot) {
+    public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
         updateExploration(vision, xy, rot);
         int eyeRange=vision.length;
         int check = eyeRange-2;
@@ -43,7 +44,7 @@ public class BasicExplo extends Strategy {
             }else return Moves.WALK;
         }
         if(!firstPhase) {
-            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length, constraints);
+            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length, constraints,vr);
             return root.getMove();
         }
         return Moves.WALK;

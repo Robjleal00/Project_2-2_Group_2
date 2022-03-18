@@ -1,5 +1,6 @@
 package Entities;
 
+import Config.Variables;
 import Enums.EntityType;
 import Enums.Moves;
 import Enums.Rotations;
@@ -13,14 +14,16 @@ public class Explorer extends Entity {
     private final EntityType type;
     private final GameController gm;
     private final Strategy st;
+    private final Variables vr;
 
-    public Explorer(EntityType type, GameController gm, Strategy st) {
+    public Explorer(EntityType type, GameController gm, Strategy st, Variables vr) {
         this.currentRotation = Rotations.FORWARD;
         this.x = 0;
         this.y = 0;
         this.type = type;
         this.gm = gm;
         this.st = st;
+        this.vr=vr;
     }
 
     @Override
@@ -33,7 +36,7 @@ public class Explorer extends Entity {
         String[][] vision = gm.giveVision(this);
         int[] xy = {x, y};
        // gm.printArray(vision);
-        return st.decideOnMove(vision, xy, currentRotation);
+        return st.decideOnMove(vision, xy, currentRotation,vr);
     }
 
     @Override

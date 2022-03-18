@@ -1,5 +1,6 @@
 package OptimalSearch;
 
+import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
 import com.google.gson.Gson;
@@ -22,8 +23,9 @@ public class ReverseTreeNode {
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
     private final double target;
     private final double parentValue;
+    private final Variables vr;
 
-    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, double target, double parentValue) {
+    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, double target, double parentValue, Variables vr) {
         this.move = move;
         this.rot = rot;
         this.explored = explored;
@@ -32,6 +34,7 @@ public class ReverseTreeNode {
         this.eyeRange = eyeRange;
         this.target = target;
         this.parentValue = parentValue;
+        this.vr=vr;
     }
 
     public int getValue(int depth,int maxDepth) {
@@ -74,7 +77,7 @@ public class ReverseTreeNode {
             } else {
                 ArrayList<Integer> values = new ArrayList<>();
                 for (Moves avaliableMove : avaliableMoves) {
-                    values.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, target, value).getValue(depth+1,maxDepth));
+                    values.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, target, value,vr).getValue(depth+1,maxDepth));
                 }
                 return max(values);
             }

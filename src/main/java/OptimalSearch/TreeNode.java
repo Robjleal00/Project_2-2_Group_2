@@ -1,5 +1,6 @@
 package OptimalSearch;
 
+import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
 import Strategies.Constraints;
@@ -23,8 +24,9 @@ public class TreeNode {
     private final int eyeRange;
     private final ArrayList<Moves> avaliableMoves = new ArrayList<>();
     private Constraints constraints;
+    private final Variables vr;
 
-    public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange,Constraints constraints) {
+    public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, Constraints constraints, Variables vr) {
         this.move = move;
         this.rot = rot;
         this.explored = explored;
@@ -32,6 +34,7 @@ public class TreeNode {
         this.xy = xy;
         this.eyeRange = eyeRange;
         this.constraints=constraints;
+        this.vr=vr;
         Moves[] movess = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
         Collections.addAll(avaliableMoves, movess);
         switch(move){
@@ -73,7 +76,7 @@ public class TreeNode {
         } else {
             ArrayList<Double> values = new ArrayList<>();
             for (Moves avaliableMove : avaliableMoves) {
-                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints).getValue(currentDepth +1,maxDepth));
+                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints,vr).getValue(currentDepth +1,maxDepth));
             }
             return value + max(values);
         }
