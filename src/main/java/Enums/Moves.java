@@ -5,4 +5,5 @@ public enum Moves {
     TURN_LEFT,
     TURN_RIGHT,
     TURN_AROUND,
+    STUCK,
 }
