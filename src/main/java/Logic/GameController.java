@@ -134,8 +134,6 @@ public class GameController {
                         int[] lookingAt = {position[0] - i, position[1] + j};
                         allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                         if (canSee[j + 1]) {
-
-                            {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[0]][lookingAt[1]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
@@ -143,7 +141,6 @@ public class GameController {
                                         canSee[j + 1] = false;
                                     }
                                 }
-                            }
                         } else {
                             if (j != 0 && canSee[1]) {
                                 int[] pos_of_it = {lookingAt[0], lookingAt[1] + 1};
