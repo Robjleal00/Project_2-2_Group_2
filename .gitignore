@@ -1,7 +1,7 @@
 .idea/
 .class/
 .bin/
-.gradle
+.gradle/
 /build/classes/java/main/Entities/Entity.class
 /build/classes/java/main/Entities/Explorer.class
 /build/classes/java/main/Enums/EntityType.class
