@@ -32,14 +32,13 @@ public class GameController {
     private int maxExploNum;
     private int walkSpeed;
 
-    public GameController(int height, int length, int eyeRange) {
+    public GameController(int height, int length) {
         allUnseenTiles = new ArrayList<>();
         this.mapLength = length;
         this.mapHeight = height;
         this.map = makeMap(height, length);
         makeBorders(length, height);
         isRunning = true;
-        this.eyeRange = eyeRange;
         entities = new ArrayList<>();
         objects=new ArrayList<>();
         entityLocations = new HashMap<>();
@@ -52,10 +51,13 @@ public class GameController {
         GUI=con.GUI;
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         this.maxExploNum=allUnseenTiles.size();
-        walkSpeed=4;
     }
 
     public GameController() {
+    }
+    public void addVars(Variables vr){
+        this.walkSpeed=vr.walkSpeed();
+        this.eyeRange=vr.eyeRange();
     }
 
     public void init() throws InterruptedException {
@@ -110,7 +112,7 @@ public class GameController {
             }
             turns++;
             checkWin();
-            Thread.sleep(1000);
+            Thread.sleep(100);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
@@ -416,17 +418,18 @@ public class GameController {
                     case UP -> {
                         int[] targetlocation = {pos[0] - walkSpeed, pos[1]};
                         if (existsInBoard(targetlocation)) {
-                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1]) && noWallsOnTheWay(pos, targetlocation, rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
                                 return walkSpeed;
-                            } else {
-                                if(walkSpeed>1){
-                                    for(int i=walkSpeed;i>0;i--){
+                            }
+                        }else {
+                                if (walkSpeed > 1) {
+                                    for (int i = walkSpeed; i > 0; i--) {
                                         int[] nexttargetlocation = {pos[0] - i, pos[1]};
-                                        if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                        if (existsInBoard(nexttargetlocation)) {
+                                            if (canBePutThere(nexttargetlocation[0], nexttargetlocation[1]) && noWallsOnTheWay(pos, nexttargetlocation, rotation)) {
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -435,24 +438,24 @@ public class GameController {
                                         }
 
                                     }
-                                }else return -1;
+                                } else return -1;
                             }
-                        } else return -1;
+                        return -1;
                     }
                     case DOWN -> {
                         int[] targetlocation = {pos[0] + walkSpeed, pos[1]};
                         if (existsInBoard(targetlocation)) {
-                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1])&&noWallsOnTheWay(pos,targetlocation,rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
                                 return walkSpeed;
-                            } else {
+                            } }else {
                                 if(walkSpeed>1){
                                     for(int i=walkSpeed;i>0;i--){
                                         int[] nexttargetlocation = {pos[0] + i, pos[1]};
                                         if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -463,22 +466,22 @@ public class GameController {
                                     }
                                 }else return -1;
                             }
-                        } else return -1;
+                        return -1;
                     }
                     case RIGHT -> {
                         int[] targetlocation = {pos[0], pos[1] + walkSpeed};
                         if (existsInBoard(targetlocation)) {
-                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1])&&noWallsOnTheWay(pos,targetlocation,rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
                                 return walkSpeed;
-                            } else {
+                            } }else {
                                 if(walkSpeed>1){
                                     for(int i=walkSpeed;i>0;i--){
                                         int[] nexttargetlocation = {pos[0] , pos[1]+i};
                                         if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -489,22 +492,22 @@ public class GameController {
                                     }
                                 }else return -1;
                             }
-                        } else return -1;
+                       return -1;
                     }
                     case LEFT -> {
                         int[] targetlocation = {pos[0], pos[1] - walkSpeed};
                         if (existsInBoard(targetlocation)) {
-                            if (canBePutThere(targetlocation[0], targetlocation[1])) {
+                            if (canBePutThere(targetlocation[0], targetlocation[1])&&noWallsOnTheWay(pos,targetlocation,rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
                                 return walkSpeed;
-                            } else {
+                            } }else {
                                 if(walkSpeed>1){
                                     for(int i=walkSpeed;i>0;i--){
                                         int[] nexttargetlocation = {pos[0], pos[1]-i};
                                         if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])){
+                                            if(canBePutThere(nexttargetlocation[0],nexttargetlocation[1])&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -515,7 +518,7 @@ public class GameController {
                                     }
                                 }else return -1;
                             }
-                        } else return -1;
+                         return -1;
                     }
                 }
             }

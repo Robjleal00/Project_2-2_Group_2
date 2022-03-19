@@ -25,13 +25,13 @@ public class ReverseTreeNode {
     private final double parentValue;
     private final Variables vr;
 
-    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, double target, double parentValue, Variables vr) {
+    public ReverseTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, double target, double parentValue, Variables vr) {
         this.move = move;
         this.rot = rot;
         this.explored = explored;
         this.walls = walls;
         this.xy = xy;
-        this.eyeRange = eyeRange;
+        this.eyeRange = vr.eyeRange();
         this.target = target;
         this.parentValue = parentValue;
         this.vr=vr;
@@ -77,7 +77,7 @@ public class ReverseTreeNode {
             } else {
                 ArrayList<Integer> values = new ArrayList<>();
                 for (Moves avaliableMove : avaliableMoves) {
-                    values.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, target, value,vr).getValue(depth+1,maxDepth));
+                    values.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, target, value,vr).getValue(depth+1,maxDepth));
                 }
                 return max(values);
             }

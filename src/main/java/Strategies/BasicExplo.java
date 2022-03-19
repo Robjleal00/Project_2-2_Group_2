@@ -44,7 +44,7 @@ public class BasicExplo extends Strategy {
             }else return Moves.WALK;
         }
         if(!firstPhase) {
-            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, vision.length, constraints,vr);
+            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr);
             return root.getMove();
         }
         return Moves.WALK;
