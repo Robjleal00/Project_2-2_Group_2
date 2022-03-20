@@ -344,29 +344,31 @@ public class TreeNode {
     }
 
     public int[] walk(int[] xy, Rotations rot) {
+        int[] origin = xy.clone();
         switch (rot) {
             case FORWARD -> { //y increase
-                int howMuch=howMuchCanIWalk(xy,rot);
-                xy[1]+=howMuch;
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[1] += howMuch;
             }
             case BACK -> { //y decrease
-                int howMuch=howMuchCanIWalk(xy,rot);
-                xy[1]-=howMuch;
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[1] -= howMuch;
             }
 
             case RIGHT -> { //x increase
-                int howMuch=howMuchCanIWalk(xy,rot);
-                xy[0]+=howMuch;
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[0] += howMuch;
             }
 
             case LEFT -> { //x decrease
-                int howMuch=howMuchCanIWalk(xy,rot);
-                xy[0]-=howMuch;
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[0] -= howMuch;
 
             }
-            }
-            return xy;
         }
+        if (constraints.isLegal(xy)) return xy;
+        else return origin;
+    }
 
 
     private int howMuchCanIWalk(int[]pos,Rotations rot){

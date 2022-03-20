@@ -26,7 +26,7 @@ public class TreeRoot {
     private final int[] xy;
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
     private final int eyeRange;
-    boolean TESTING=true;
+    boolean TESTING=false;
     boolean DEBUG_DECISIONS;
     private Constraints constraints;
     private final Variables vr;
@@ -58,6 +58,7 @@ public class TreeRoot {
                 values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(1,depth));
             }
         }
+         result = max(values);
         if(TESTING&&result==0){
             GameController printer = new GameController();
             String[][]mindMap=giveMappings();

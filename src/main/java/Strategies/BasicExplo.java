@@ -61,7 +61,7 @@ public class BasicExplo extends Strategy {
                 final String lookingAt = vision[h][l];
                 switch (rot) {
                     case FORWARD -> {
-                        if(Objects.equals(lookingAt,"E")){
+                        if(lookingAt.contains("E")){
                             if(i!=0){
                                 constraints.setMAX_X(currentX+1);
                             }
@@ -91,7 +91,7 @@ public class BasicExplo extends Strategy {
                         }
                     }
                     case BACK -> {
-                        if(Objects.equals(lookingAt,"E")) {
+                        if(lookingAt.contains("E")) {
                             if (i != 0) {
                                 constraints.setMIN_X(currentX - 1);
                             }
@@ -121,7 +121,7 @@ public class BasicExplo extends Strategy {
                         }
                     }
                     case LEFT -> {
-                        if(Objects.equals(lookingAt,"E")) {
+                        if(lookingAt.contains("E")) {
                             if (i != 0) {
                                 constraints.setMIN_Y(currentY - 1);
                             }
@@ -151,7 +151,7 @@ public class BasicExplo extends Strategy {
                         }
                     }
                     case RIGHT -> {
-                        if(Objects.equals(lookingAt,"E")) {
+                        if(lookingAt.contains("E")) {
                             if (i != 0) {
                                 constraints.setMAX_Y(currentY + 1);
                             }
