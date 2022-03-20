@@ -11,8 +11,8 @@ import Strategies.BasicExplo;
 public class Launcher {
 
     public static void main(String[] args) throws InterruptedException {
-        GameController gm = new GameController(20, 20);
-        Variables vr = new Variables(10,5);
+        GameController gm = new GameController(11, 12);
+        Variables vr = new Variables(2,5);
         gm.addVars(vr);
         gm.printMap();
         gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(),vr), 8, 1, Rotations.UP);
