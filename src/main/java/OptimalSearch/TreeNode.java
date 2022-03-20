@@ -25,16 +25,18 @@ public class TreeNode {
     private final ArrayList<Moves> avaliableMoves = new ArrayList<>();
     private Constraints constraints;
     private final Variables vr;
+    private final int walkSpeed;
 
-    public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, int eyeRange, Constraints constraints, Variables vr) {
+    public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, Constraints constraints, Variables vr) {
         this.move = move;
         this.rot = rot;
         this.explored = explored;
         this.walls = walls;
         this.xy = xy;
-        this.eyeRange = eyeRange;
+        this.eyeRange = vr.eyeRange();
         this.constraints=constraints;
         this.vr=vr;
+        this.walkSpeed=vr.walkSpeed();
         Moves[] movess = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
         Collections.addAll(avaliableMoves, movess);
         switch(move){
@@ -47,7 +49,7 @@ public class TreeNode {
     public double getValue(int currentDepth,int maxDepth) {
         switch (move) {
             case TURN_AROUND -> rot = turnAround(rot);
-            case WALK -> xy = walk(xy, rot, walls);
+            case WALK -> xy = walk(xy, rot);
             case TURN_RIGHT -> rot = turnRight(rot);
             case TURN_LEFT -> rot = turnLeft(rot);
         }
@@ -76,7 +78,7 @@ public class TreeNode {
         } else {
             ArrayList<Double> values = new ArrayList<>();
             for (Moves avaliableMove : avaliableMoves) {
-                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints,vr).getValue(currentDepth +1,maxDepth));
+                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(currentDepth +1,maxDepth));
             }
             return value + max(values);
         }
@@ -341,22 +343,111 @@ public class TreeNode {
         }
     }
 
-    public int[] walk(int[] xy, Rotations rot, HashMap<Integer, ArrayList<Integer>> walls) {
-        int[] origin = {xy[0], xy[1]};
+    public int[] walk(int[] xy, Rotations rot) {
         switch (rot) {
-            case FORWARD -> xy[1]++;
-            case BACK -> xy[1]--;
-            case RIGHT -> xy[0]++;
-            case LEFT -> xy[0]--;
+            case FORWARD -> { //y increase
+                int howMuch=howMuchCanIWalk(xy,rot);
+                xy[1]+=howMuch;
+            }
+            case BACK -> { //y decrease
+                int howMuch=howMuchCanIWalk(xy,rot);
+                xy[1]-=howMuch;
+            }
 
+            case RIGHT -> { //x increase
+                int howMuch=howMuchCanIWalk(xy,rot);
+                xy[0]+=howMuch;
+            }
+
+            case LEFT -> { //x decrease
+                int howMuch=howMuchCanIWalk(xy,rot);
+                xy[0]-=howMuch;
+
+            }
+            }
+            return xy;
         }
-        if (walls.containsKey(xy[0])) {
-            if (walls.get(xy[0]).contains(xy[1])) {
-                return origin;
+
+
+    private int howMuchCanIWalk(int[]pos,Rotations rot){
+        switch(rot){
+            case LEFT -> {//x decrease
+                for(int i=walkSpeed;i>0;i--){
+                int[]targetCell={pos[0]-i,pos[1]};
+                if(noWallsInTheWay(pos,targetCell,rot))return i;
+                }
+
+            }
+            case RIGHT -> {//x increase
+                for(int i=walkSpeed;i>0;i--){
+                    int[]targetCell={pos[0]+i,pos[1]};
+                    if(noWallsInTheWay(pos,targetCell,rot))return i;
+                }
+            }
+            case FORWARD ->{//y increase
+                for(int i=walkSpeed;i>0;i--){
+                    int[]targetCell={pos[0],pos[1]+i};
+                    if(noWallsInTheWay(pos,targetCell,rot))return i;
+                }
+            }
+            case BACK -> {//y decrease
+                for(int i=walkSpeed;i>0;i--){
+                    int[]targetCell={pos[0],pos[1]-i};
+                    if(noWallsInTheWay(pos,targetCell,rot))return i;
+                }
             }
         }
-        if(constraints.isLegal(xy))return xy;
-        else return origin;
+        return 0;
+    }
+    private boolean noWallsInTheWay(int[]pos,int[]target,Rotations rot){
+        switch(rot){
+            case FORWARD -> {//y increase
+                int distance = target[1]-pos[1];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0])){
+                        if(walls.get(pos[0]).contains(pos[1]+i)){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+            case BACK -> {//y decrease
+                int distance = pos[1]-target[1];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0])){
+                        if(walls.get(pos[0]).contains(pos[1]-i)){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+            case RIGHT -> {//x increase
+                int distance = target[0]-pos[0];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0]+i)){
+                        if(walls.get(pos[0]+i).contains(pos[1])){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+            case LEFT -> {//x decrease
+                int distance = pos[0]-target[0];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0]-i)){
+                        if(walls.get(pos[0]-i).contains(pos[1])){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+
+        }
+        return true;
     }
 
     public Rotations turnRight(Rotations rot) {

@@ -31,13 +31,13 @@ public class TreeRoot {
     private Constraints constraints;
     private final Variables vr;
 
-    public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, int eyeRange, Constraints constraints, Variables vr) {
+    public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, Constraints constraints, Variables vr) {
         this.explored = explored;
         this.walls = walls;
         this.xy = xy;
         this.rot = rot;
         this.depth = depth;
-        this.eyeRange = eyeRange;
+        this.eyeRange = vr.eyeRange();
         this.constraints=constraints;
         Config cf= new Config();
         this.DEBUG_DECISIONS = cf.DEBUG_DECISIONS;
@@ -47,7 +47,7 @@ public class TreeRoot {
     public Moves getMove() {
         ArrayList<Double> values = new ArrayList<>();
         for (Moves avaliableMove : avaliableMoves) {
-            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints,vr).getValue(1,depth));
+            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(1,depth));
         }
         double result = max(values);
         if(DEBUG_DECISIONS) System.out.println(values);
@@ -55,7 +55,7 @@ public class TreeRoot {
             constraints.reset();
             values.clear();
             for (Moves avaliableMove : avaliableMoves) {
-                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange,constraints,vr).getValue(1,depth));
+                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(1,depth));
             }
         }
         if(TESTING&&result==0){
@@ -95,7 +95,7 @@ public class TreeRoot {
             // System.out.println("ALL THE SAME AAAAAA");
             ArrayList<Integer> Reversevalues = new ArrayList<>();
             for (Moves avaliableMove : avaliableMoves) {
-                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, eyeRange, result, 0,vr).getValue(1,depth));
+                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, result, 0,vr).getValue(1,depth));
             }
             int Reverseresult = min(Reversevalues);
             //System.out.println(Reversevalues);
