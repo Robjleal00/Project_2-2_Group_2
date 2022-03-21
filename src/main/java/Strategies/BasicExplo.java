@@ -5,14 +5,12 @@ import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
 import OptimalSearch.TreeRoot;
+import PathMaking.Point;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 import static java.util.Collections.max;
 import static java.util.Collections.min;
@@ -23,6 +21,7 @@ public class BasicExplo extends Strategy {
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final HashMap<Integer,HashMap<Integer,ArrayList<Integer>>> objects;
     private final Constraints constraints;
+    private final ArrayList<Point> visitedPoints;
     boolean firstPhase;
 
     public BasicExplo() {
@@ -31,10 +30,12 @@ public class BasicExplo extends Strategy {
         objects = new HashMap<>();
         constraints=new Constraints();
         firstPhase=true;
+        visitedPoints=new ArrayList<>();
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
         updateExploration(vision, xy, rot);
+        if(!explored(xy))visitedPoints.add(new Point(xy,new ArrayList<>()));
         int eyeRange=vision.length;
         int check = eyeRange-2;
         if(firstPhase) {
@@ -44,12 +45,17 @@ public class BasicExplo extends Strategy {
             }else return Moves.WALK;
         }
         if(!firstPhase) {
-            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr);
+            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints);
             return root.getMove();
         }
         return Moves.WALK;
     }
-
+    public boolean explored(int[]xy){
+        for(Point p : visitedPoints){
+            if(Arrays.equals(p.xy(), xy))return true;
+        }
+        return false;
+    }
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
         int eyeRange = vision.length;
         int currentX = xy[0];
@@ -63,7 +69,7 @@ public class BasicExplo extends Strategy {
                     case FORWARD -> {
                         if(lookingAt.contains("E")){
                             if(i!=0){
-                                constraints.setMAX_X(currentX+1);
+                                constraints.setMAX_Y(currentY+1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
@@ -93,7 +99,7 @@ public class BasicExplo extends Strategy {
                     case BACK -> {
                         if(lookingAt.contains("E")) {
                             if (i != 0) {
-                                constraints.setMIN_X(currentX - 1);
+                                constraints.setMIN_Y(currentY - 1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
@@ -123,7 +129,7 @@ public class BasicExplo extends Strategy {
                     case LEFT -> {
                         if(lookingAt.contains("E")) {
                             if (i != 0) {
-                                constraints.setMIN_Y(currentY - 1);
+                                constraints.setMIN_X(currentX - 1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
@@ -153,7 +159,7 @@ public class BasicExplo extends Strategy {
                     case RIGHT -> {
                         if(lookingAt.contains("E")) {
                             if (i != 0) {
-                                constraints.setMAX_Y(currentY + 1);
+                                constraints.setMAX_X(currentX + 1);
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
