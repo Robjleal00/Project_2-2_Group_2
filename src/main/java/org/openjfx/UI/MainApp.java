@@ -1,5 +1,11 @@
 package org.openjfx.UI;
 
+import Config.Variables;
+import Entities.Explorer;
+import Enums.EntityType;
+import Enums.Rotations;
+import Logic.GameController;
+import Strategies.BasicExplo;
 import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
@@ -140,8 +146,11 @@ public class MainApp extends Application {
 
 
         playButton.setOnAction(e -> {
-            borderPane.setCenter(createGrid(filePath));
-            spawnIntruder(1);
+            try {
+                startGame();
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
         });
 
 
@@ -158,6 +167,17 @@ public class MainApp extends Application {
         primaryStage.show();
 
 
+    }
+    public void startGame() throws InterruptedException {
+        GameController gm = new GameController(10, 10,this);
+        Variables vr = new Variables(1,5);
+        gm.addVars(vr);
+        gm.printMap();
+        gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(),vr), 7, 4, Rotations.UP);
+        gm.init();
+    }
+    public void update(String[][]map){
+        borderPane.setCenter(createGrid(map));
     }
 
 
@@ -206,77 +226,32 @@ public class MainApp extends Application {
         }
     }*/
 
-    public GridPane createGrid(String path){
-        fileReader.readFile(path);
-        height = fileReader.getHeight();
-        width = fileReader.getWidth();
-        targetArea = fileReader.getTargetArea();
-        walls = fileReader.getWalls();
-
+    public GridPane createGrid(String[][]map){
+        height = map.length;
+        width = map[0].length;
         gridPane =  new GridPane();
         gridPane.setMinWidth(width);
         gridPane.setMinHeight(height);
-
-
         Rectangle[][] rectArray = new Rectangle[width][height];
-        for(int i = 0; i < rectArray.length; i++)
-        {
-
-            for(int j = 0; j < rectArray[0].length; j++)
-            {
-                rectArray[i][j] = new Rectangle(1300/width,1000/height);
+        for(int i = 0; i < rectArray.length; i++) {
+            for (int j = 0; j < rectArray[0].length; j++) {
+                rectArray[i][j] = new Rectangle(1300 / width, 1000 / height);
                 rectArray[i][j].setStroke(white);
                 rectArray[i][j].setStrokeWidth(0);
-                rectArray[i][j].setFill(white);
-                GridPane.setConstraints(rectArray[i][j],i,j);
+                if (map[i][j].contains("W")) {
+                    rectArray[i][j].setFill(black);
+                }
+                if (map[i][j].contains(" ")) {
+                    rectArray[i][j].setFill(white);
+                }
+                if (map[i][j].contains("E")) {
+                    rectArray[i][j].setFill(yellow);
+                }
+                GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
             }
 
         }
-
-        //marks target area
-        if(targetArea != null){
-            int x1 = targetArea.getLeftBoundary();
-            System.out.println(x1);
-            int y1 = targetArea.getBottomBoundary();
-            System.out.println(y1);
-            int xDist = targetArea.getRightBoundary()- targetArea.getLeftBoundary();
-            System.out.println(xDist);
-            int yDist = targetArea.getTopBoundary()- targetArea.getBottomBoundary();
-            System.out.println(yDist);
-            for(int i = 0; i < xDist ;i++)
-            {
-                for(int j = 0; j < yDist; j++)
-                {
-                    rectArray[x1+i][y1+j].setFill(yellow);
-                }
-            }
-        }
-
-        Area current;
-        int startX;
-        int startY;
-        int xDistWall;
-        int yDistWall;
-        for(int i = 0; i < walls.size() ; i++){
-            current = walls.get(i);
-            startX = current.getLeftBoundary();
-
-            startY = current.getBottomBoundary();
-
-            xDistWall = current.getRightBoundary()- current.getLeftBoundary();
-
-            yDistWall = current.getTopBoundary()- current.getBottomBoundary();
-
-            for(int j = 0; j < xDistWall ;j++)
-            {
-                for(int z = 0; z < yDistWall; z++)
-                {
-                    rectArray[startX+j][startY+z].setFill(black);
-                }
-            }
-        }
-
         gridPane.setStyle("-fx-background-color: white; -fx-grid-lines-visible: false");
         //gridPane.setOnMouseClicked(event -> clickGrid(event,rectArray));
         return gridPane;

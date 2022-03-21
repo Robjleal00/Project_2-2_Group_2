@@ -10,6 +10,8 @@ import java.util.HashMap;
 
 import Config.*;
 import ObjectsOnMap.ObjectOnMap;
+import org.openjfx.UI.MainApp;
+
 import java.util.Objects;
 
 public class GameController {
@@ -31,7 +33,29 @@ public class GameController {
     private boolean DEBUG_EPXLO;
     private int maxExploNum;
     private int walkSpeed;
+    private MainApp graphicsUpdater;
 
+    public GameController(int height, int length,MainApp graphics) {
+        allUnseenTiles = new ArrayList<>();
+        this.mapLength = length;
+        this.mapHeight = height;
+        this.map = makeMap(height, length);
+        makeBorders(length, height);
+        isRunning = true;
+        entities = new ArrayList<>();
+        objects=new ArrayList<>();
+        entityLocations = new HashMap<>();
+        objectsLocations = new HashMap<>();
+        entityRotationsHashMap = new HashMap<>();
+        queuedMoves = new HashMap<>();
+        Config con = new Config();
+        PRINTMAPPINGS=con.PRINTMIND;
+        PRINTVISION=con.PRINTVISION;
+        GUI=true;
+        DEBUG_EPXLO=con.DEBUG_EXPLO;
+        this.maxExploNum=allUnseenTiles.size();
+        this.graphicsUpdater=graphics;
+    }
     public GameController(int height, int length) {
         allUnseenTiles = new ArrayList<>();
         this.mapLength = length;
@@ -48,7 +72,7 @@ public class GameController {
         Config con = new Config();
         PRINTMAPPINGS=con.PRINTMIND;
         PRINTVISION=con.PRINTVISION;
-        GUI=con.GUI;
+        GUI=false;
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         this.maxExploNum=allUnseenTiles.size();
     }
@@ -66,6 +90,9 @@ public class GameController {
         while (isRunning) {//gameloop
             boolean allBroken=false;
             if(GUI){
+                new Thread(() -> {
+                    graphicsUpdater.update(map);
+                }).start();
 
             }
             else{
@@ -112,16 +139,9 @@ public class GameController {
                 isRunning=false;
                 wasBroken=true;
             }
-            if(GUI){
-
-            }
-            else{
-                printMap();
-                print("------------------------");
-            }
             turns++;
             checkWin();
-            Thread.sleep(100);
+           // Thread.sleep(100);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
@@ -129,6 +149,7 @@ public class GameController {
             System.out.println(" THEY EXPLORED ABOUT "+(int)(currentProgress*100/maxExploNum) +"% IN "+turns+" TURNS" );
         }
         System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
+        printMap();
     }
 
     private String[][] makeMap(int height, int length) {
