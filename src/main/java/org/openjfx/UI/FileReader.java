@@ -57,6 +57,7 @@ public class FileReader {
                 if(index >= 0){
                     parts[1] = parts[1].substring(0, index);
                 }
+
                 //seperate string into header and value
                 String id = parts[0];
                 String value = parts[1];
