@@ -1,5 +1,6 @@
 package org.openjfx.UI;
 import Config.Variables;
+import Entities.Entity;
 import Entities.Explorer;
 import Enums.EntityType;
 import Enums.Rotations;
@@ -301,7 +302,6 @@ public class MainApp extends Application {
     */
 
     public void displayAgent(ArrayList<Entity> entities){
-
         Entity currentEntity;
 
         for(int i = 0; i < entities.size(); i++){
