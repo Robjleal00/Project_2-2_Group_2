@@ -77,20 +77,15 @@ public class GameController {
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         this.maxExploNum=allUnseenTiles.size();
     }
-
     public GameController() {
     }
-
     public ArrayList<Entity> getEntities(){
         return entities;
     }
-
-
     public void addVars(Variables vr){
         this.walkSpeed=vr.walkSpeed();
         this.eyeRange=vr.eyeRange();
     }
-
     public void init() throws InterruptedException {
         boolean wasBroken=false;
         int turns = 0;
@@ -155,12 +150,11 @@ public class GameController {
         System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
         printMap();
     }
-
     private String[][] makeMap(int height, int length) {
-        String[][] mappy = new String[height][length];
+        String[][] mappy = new String[length][height];
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < length; j++) {
-                mappy[i][j] = " ";
+                mappy[j][i] = " ";
                 allUnseenTiles.add(coordsToNumber(i, j));
             }
         }
@@ -203,11 +197,9 @@ public class GameController {
         }
         return false;
     }
-
     public void printMap() {
         printArray(map);
     }
-
     public void printArray(String[][] thing) {
         int lenght = thing[0].length;
         for (String[] strings : thing) {
@@ -220,7 +212,6 @@ public class GameController {
             }
         }
     }
-
     public String[][] giveVision(Entity e) {
         Rotations rot = entityRotationsHashMap.get(e);
         String[][] vision = new String[eyeRange][3];
@@ -382,8 +373,6 @@ public class GameController {
         removeFromMap(xy);
         putOnMap(symbol(e),xy);
     }
-
-
     private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
 
@@ -573,8 +562,6 @@ public class GameController {
         }
         return -1;
     }
-
-
     public void addEntity(Entity e, int h, int l, Rotations rot) {
         entities.add(e);
         int[] yx = {h, l};
@@ -606,20 +593,16 @@ public class GameController {
 
 
     }
-
     public int getEntitiesSize()
     {
         return entities.size();
     }
-
     public void print(String s) {
         System.out.println(s);
     }
-
     public void print(int s) {
         System.out.println(s);
     }
-
     public void makeBorders(int length, int height) {
         for (int i = 0; i < length; i++) {
             putOnMap("W", 0, i);
@@ -634,23 +617,59 @@ public class GameController {
             allUnseenTiles.remove((Object) coordsToNumber(j, length - 1));
         }
     }
+    public void addWall(int y0, int x0, int y1, int x1){
+        int ySpan=y1-y0;
+        int xSpan=x1-x0;
+        if(xSpan>0){//x goes up
+            if(ySpan>0){//Y goes up
+                for(int y=y0;y<=y1;y++){
+                    for(int x=x0;x<=x1;x++){
+                        putOnMap("W",x,y);
+                        allUnseenTiles.remove((Object) coordsToNumber(x,y));
+                    }
+                }
 
+            }
+            else{//Y goes down
+                for(int y=y0;y>=y1;y--){
+                    for(int x=x0;x<=x1;x++){
+                        putOnMap("W",x,y);
+                        allUnseenTiles.remove((Object) coordsToNumber(x,y));
+                    }
+                }
+            }
+        }
+        else{//x goes down
+            if(ySpan>0){//Y goes up
+                for(int y=y0;y<=y1;y++){
+                    for(int x=x0;x>=x1;x--){
+                        putOnMap("W",x,y);
+                        allUnseenTiles.remove((Object) coordsToNumber(x,y));
+                    }
+                }
+            }
+            else{//Y goes down
+                for(int y=y0;y>=y1;y--){
+                    for(int x=x0;x>=x1;x--){
+                        putOnMap("W",x,y);
+                        allUnseenTiles.remove((Object) coordsToNumber(x,y));
+                    }
+                }
+            }
+        }
+    }
     private void putOnMap(String s, int[] yx) {
-        map[yx[0]][yx[1]] = s;
+        map[yx[1]][yx[0]] = s;
     }
-
     private void putOnMap(String s, int h, int l) {
-        map[h][l] = s;
+        map[l][h] = s;
     }
-
     private void removeFromMap(int h, int l) {
-        map[h][l] = " ";
+        map[l][h] = " ";
     }
-
     private void removeFromMap(int[] yx) {
-        map[yx[0]][yx[1]] = " ";
+        map[yx[1]][yx[0]] = " ";
     }
-
     private String symbol(Entity e) {
         Rotations rot = entityRotationsHashMap.get(e);
         String addition="ERROR";
@@ -665,24 +684,19 @@ public class GameController {
         }
         return "ERROR";
     }
-
     private boolean canBePutThere(int []target) {
-        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength)return Objects.equals(map[target[0]][target[1]], " ");
+        if(target[0] > -1 &&target[0] < mapLength && target[1] > -1 && target[1] < mapHeight)return Objects.equals(map[target[1]][target[0]], " ");
         else return false;
     }
-
     private boolean existsInBoard(int[] pos) {
-        return (pos[0] > -1 && pos[0] < mapHeight && pos[1] > -1 && pos[1] < mapLength);
+        return (pos[0] > -1 && pos[0] < mapLength && pos[1] > -1 && pos[1] < mapHeight);
     }
-
     private int coordsToNumber(int h, int l) {
-        return ((h * mapLength) + l);
+        return ((h * mapHeight) + l);
     }
-
     private int coordsToNumber(int[] yx) {
-        return ((yx[0] * mapLength) + yx[1]);
+        return ((yx[0] * mapHeight) + yx[1]);
     }
-
     private void checkWin() {
         if (allUnseenTiles.isEmpty()) isRunning = false;
     }
