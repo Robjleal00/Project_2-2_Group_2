@@ -60,6 +60,7 @@ public class FileReader {
                 id = id.trim();
                 value = value.trim();
 
+
                 //System.out.println("Head: "+id+", Value: "+value);
 
                 //Handles array values, not necessary I think
