@@ -110,6 +110,8 @@ public class MainApp extends Application {
 
         FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/TriangleRIGHT.png");
         triangleRIGHT = new Image(input_stream5);
+        FileInputStream input_stream6 = new FileInputStream("src/main/java/Images/teleport_icon.png");
+        teleport_icon = new Image(input_stream6);
         //ImageView agentRIGHT = new ImageView();
         //agentRIGHT.setImage(triangleRIGHT);
 

@@ -13,6 +13,7 @@ import org.openjfx.UI.FileReader;
 import org.openjfx.UI.MainApp;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import java.util.ArrayList;
@@ -29,6 +30,10 @@ public class Launcher {
         gm.addVars(vr);
         addGuards(fileReader,gm,vr);
         ArrayList<Area> walls = fileReader.getWalls();
+        ArrayList<Teleporter> telepors = fileReader.getTeleporters();
+        for(Teleporter tp : telepors){
+            gm.addObject(tp);
+        }
         makeWalls(walls,gm);
         return gm;
 

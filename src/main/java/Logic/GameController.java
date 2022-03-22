@@ -640,6 +640,10 @@ public class GameController {
         int[] yx = o.getXy();
         objectsLocations.put(o, yx);
         putObjectOnMap(o);
+        if(o instanceof Teleporter){
+           int[] xd= ((Teleporter) o).getTarget();
+           putOnMap("W",xd);
+        }
     }
     public void putObjectOnMap(ObjectOnMap o){
         String symbol=o.getSymbol();

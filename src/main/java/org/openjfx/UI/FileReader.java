@@ -47,6 +47,7 @@ public class FileReader {
 
     public void readNextLine(String nextLine, int lineCount)
     {
+        int TpId=1;
         try (Scanner scan = new Scanner(nextLine))
         {
             if (scan.hasNext())
@@ -108,7 +109,8 @@ public class FileReader {
                         spawnArea = createArea(value);
                         break;
                     case "teleport":
-                        teleporters.addTeleporter(0);
+                        teleporters.add(addTeleporter(value,TpId));
+                        TpId++;
                         break;
 
                 }
@@ -148,22 +150,18 @@ public class FileReader {
     public int getDistanceViewing() {
         return distanceViewing;
     }
+    public ArrayList<Teleporter>getTeleporters(){
+        return teleporters;
+    }
 
     public Teleporter addTeleporter(String value, int id) {
-        int[] firstCorner = new int[4];
-        for (int i = 0; i <= teleporters.size(); i++) {
-            firstCorner = teleporters.get(i).getXy();
-        }
-        for (int i = 2; i <= teleporters.size(); i++) {
-            firstCorner = teleporters.get(i).getTarget();
-        }
+        String[] values = value.split(" ");
+        int x = Integer.valueOf(values[0]);
+        int y = Integer.valueOf(values[1]);
+        int x2 = Integer.valueOf(values[4]);
+        int y2 = Integer.valueOf(values[5]);
 
-        int x = firstCorner[0];
-        int y = firstCorner[1];
-        int x2 = firstCorner[2];
-        int y2 = firstCorner[3];
-
-        Teleporter teleporter = new Teleporter(id, x, y, x2, y2);
+        Teleporter teleporter = new Teleporter(id, y, x, y2, x2);
 
         return teleporter;
     }
