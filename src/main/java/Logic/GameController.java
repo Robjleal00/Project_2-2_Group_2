@@ -582,6 +582,11 @@ public class GameController {
 
     }
 
+    public int getEntitiesSize()
+    {
+        return entities.size();
+    }
+
     public void print(String s) {
         System.out.println(s);
     }

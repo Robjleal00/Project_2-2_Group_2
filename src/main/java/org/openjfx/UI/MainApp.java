@@ -141,7 +141,7 @@ public class MainApp extends Application {
 
         playButton.setOnAction(e -> {
             borderPane.setCenter(createGrid(filePath));
-            spawnIntruder(1);
+            // spawnIntruder(1);
         });
 
 
