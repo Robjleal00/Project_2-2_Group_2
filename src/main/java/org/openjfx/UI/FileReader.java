@@ -1,5 +1,8 @@
 package org.openjfx.UI;
 
+import ObjectsOnMap.ObjectOnMap;
+import ObjectsOnMap.Teleporter;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -24,6 +27,7 @@ public class FileReader {
     Area spawnArea;
     ArrayList<Area> walls = new ArrayList<>();
     Area targetArea;
+    ArrayList<Teleporter> teleporters = new ArrayList<>();
 
     public void readFile(String path)
     {
@@ -103,6 +107,9 @@ public class FileReader {
                     case "spawnAreaGuards":
                         spawnArea = createArea(value);
                         break;
+                    case "teleport":
+                        teleporters.addTeleporter(0);
+                        break;
 
                 }
             }
@@ -141,6 +148,26 @@ public class FileReader {
     public int getDistanceViewing() {
         return distanceViewing;
     }
+
+    public Teleporter addTeleporter(String value, int id) {
+        int[] firstCorner = new int[4];
+        for (int i = 0; i <= teleporters.size(); i++) {
+            firstCorner = teleporters.get(i).getXy();
+        }
+        for (int i = 2; i <= teleporters.size(); i++) {
+            firstCorner = teleporters.get(i).getTarget();
+        }
+
+        int x = firstCorner[0];
+        int y = firstCorner[1];
+        int x2 = firstCorner[2];
+        int y2 = firstCorner[3];
+
+        Teleporter teleporter = new Teleporter(id, x, y, x2, y2);
+
+        return teleporter;
+    }
+
 
     public Area createArea(String input)
     {
