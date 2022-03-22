@@ -12,10 +12,8 @@ import com.google.gson.reflect.TypeToken;
 import Config.Variables;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static java.util.Collections.max;
 import static java.util.Collections.min;
@@ -23,18 +21,19 @@ import static java.util.Collections.min;
 public class TreeRoot {
     private final HashMap<Integer,ArrayList<Integer>> explored;
     private final HashMap<Integer,ArrayList<Integer>> walls;
+    private final HashMap<Integer,int[]>objects;
     private final Rotations rot;
     private final int depth;
     private final int[] xy;
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
     private final int eyeRange;
-    boolean TESTING=true;
+    boolean PATHMAKING=true;
     boolean DEBUG_DECISIONS;
     private Constraints constraints;
     private final Variables vr;
     private final ArrayList<Point> visitedPoints;
 
-    public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, Constraints constraints, Variables vr, ArrayList<Point> visitedPoints) {
+    public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, Constraints constraints, Variables vr, ArrayList<Point> visitedPoints,HashMap<Integer,int[]>objects) {
         this.explored = explored;
         this.walls = walls;
         this.xy = xy;
@@ -46,6 +45,7 @@ public class TreeRoot {
         this.DEBUG_DECISIONS = cf.DEBUG_DECISIONS;
         this.vr=vr;
         this.visitedPoints=visitedPoints;
+        this.objects=objects;
     }
 
     public Moves getMove() {
@@ -63,15 +63,71 @@ public class TreeRoot {
             }
         }
          result = max(values);
-        if(TESTING&&result==0){
-            //GameController printer = new GameController();
+        if(PATHMAKING&&result==0){
+
             String[][]mindMap=giveMappings();
-            PathMaker pm = new PathMaker(explored,walls,mindMap,visitedPoints,vr,xy.clone(),rot);
-            return pm.giveMove();
-            //printer.printArray(mindMap);
-            //System.out.println(explorationPoints);
-            //Now explorationPoints has all question marks transformed back into agents mapping
-            //gotta add some kind of path-finding for him to get the shortest path and which move to output to go follow that
+            if(hasPotential(mindMap)) {
+                PathMaker pm = new PathMaker(explored, walls, mindMap, visitedPoints, vr, xy.clone(), rot);
+                return pm.giveMove();
+            }else{
+                //System.out.println("NOTHING MORE TO EXPLORE HERE");
+                if(!objects.isEmpty()){
+                    //System.out.println("I KNOW A TELEPORTER THOUGH");
+                    int numberOfTeleporters = objects.keySet().size();
+                    int r;
+                    if(numberOfTeleporters!=1) r = ThreadLocalRandom.current().nextInt(1,numberOfTeleporters+1);
+                    else r=numberOfTeleporters;
+
+                    int[] position = objects.get(r);
+                    if(!itsNextToMe(position)) {
+                        HashMap<Integer, ArrayList<Integer>> explorationPoints = giveExplorationPoints(position);
+                        PathMaker pm = new PathMaker(explored, walls, explorationPoints, visitedPoints, vr, xy.clone(), rot);
+                        return pm.giveMove();
+                    }else {
+                        //System.out.println("IM IN FRONT OF IT");
+                        if(position[0]==xy[0]){
+                            if(position[1]>xy[1]){
+                                //System.out.println("I NEED TO BE LOOKING FORWARD");
+                                switch(rot){
+                                    case FORWARD -> {return Moves.USE_TELEPORTER;}
+                                    case BACK -> {return Moves.TURN_AROUND;}
+                                    case RIGHT -> {return Moves.TURN_LEFT;}
+                                    case LEFT -> {return Moves.TURN_RIGHT;}
+                                }
+                            }
+                            else {
+                                //System.out.println("NEED TO BE LOOKING BACK");
+                                switch(rot){
+                                    case FORWARD -> {return Moves.TURN_AROUND;}
+                                    case BACK -> {return Moves.USE_TELEPORTER;}
+                                    case RIGHT -> {return Moves.TURN_RIGHT;}
+                                    case LEFT -> {return Moves.TURN_LEFT;}
+                                }
+                            }
+                        }
+                        if(position[1]==xy[1]){
+                            if(position[0]>xy[0]){
+                                //System.out.println("I NEED TO BE LOOKING RIGHT");
+                                switch(rot){
+                                    case FORWARD -> {return Moves.TURN_RIGHT;}
+                                    case BACK -> {return Moves.TURN_LEFT;}
+                                    case RIGHT -> {return Moves.USE_TELEPORTER;}
+                                    case LEFT -> {return Moves.TURN_AROUND;}
+                                }
+                            }
+                            else {
+                                //System.out.println("NEED TO BE LOOKING LEFT");
+                                switch(rot){
+                                    case FORWARD -> {return Moves.TURN_LEFT;}
+                                    case BACK -> {return Moves.TURN_RIGHT;}
+                                    case RIGHT -> {return Moves.TURN_AROUND;}
+                                    case LEFT -> {return Moves.USE_TELEPORTER;}
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
         boolean allTheSame = true;
         for (Double value : values) {
@@ -95,7 +151,40 @@ public class TreeRoot {
         }else return avaliableMoves[values.indexOf(result)];
 
     }
+    boolean itsNextToMe(int[]pos){
+        int[]mypos = xy;
+        if(xy[0]==pos[0]){
+            if(pos[1]==xy[1]+1)return true;
+            if(pos[1]==xy[1]-1)return true;
+        }
+        if(xy[1]==pos[1]){
+            if(pos[0]==xy[0]+1)return true;
+            if(pos[0]==xy[0]-1)return true;
+        }
+        return false;
 
+    }
+    private HashMap<Integer,ArrayList<Integer>>giveExplorationPoints(int[] pos){
+        ArrayList<Integer> one = new ArrayList<Integer>();
+        ArrayList<Integer>two = new ArrayList<Integer>();
+        one.add(pos[1]);
+        two.add(pos[1]+1);
+        two.add(pos[1]-1);
+        HashMap<Integer,ArrayList<Integer>> mapping = new HashMap<>();
+        mapping.put(pos[0],two);
+        mapping.put(pos[0]-1,one);
+        mapping.put(pos[0]+1,one);
+        return mapping;
+    }
+    private boolean hasPotential(String[][]thing){
+        int lenght = thing[0].length;
+        for (String[] strings : thing) {
+            for (int j = 0; j < lenght; j++) {
+                if(strings[j].equals("?"))return true;
+            }
+        }
+        return false;
+    }
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
         Gson gson = new Gson();
         String jsonString = gson.toJson(maptoCopy);

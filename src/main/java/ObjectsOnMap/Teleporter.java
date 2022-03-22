@@ -3,37 +3,27 @@ package ObjectsOnMap;
 public class Teleporter extends ObjectOnMap {
     private int id;
     private int[] yx;
-    private int[] firstCorner;
-    private int[] secondCorner;
     private Teleporter link;
+    private int[] target;
 
-    public Teleporter(int id,int y, int x,int y2,int x2){
-    int [] xd = {y,x};
-    int [] second = {y2,x2};
-    this.firstCorner=xd;
-    this.secondCorner=second;
+    public Teleporter(int id,int x,int y, int x2, int y2){
+    int [] xd = {x,y};
+    int [] target = {x2,y2};
+    this.yx=xd;
+    this.target=target;
     this.id=id;
     }
     @Override
     public String getSymbol(){
         //add T but its making it look weird
-        return String.valueOf(id);
+        return "T"+String.valueOf(id);
     }
+    @Override
     public int[] getXy(){
         return yx;
     }
-    public void addLink(Teleporter t){
-        if(link==null){
-            this.link=t;
-            t.addLink(this);
-        }
+    public int[]getTarget(){
+        return target;
     }
-    @Override
-    public int[] getFirstCorner() {
-        return firstCorner;
-    }
-    @Override
-    public int[] getSecondCorner() {
-        return secondCorner;
-    }
+
 }

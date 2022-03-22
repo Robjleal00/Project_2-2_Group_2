@@ -6,4 +6,5 @@ public enum Moves {
     TURN_RIGHT,
     TURN_AROUND,
     STUCK,
+    USE_TELEPORTER,
 }

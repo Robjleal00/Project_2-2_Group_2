@@ -19,7 +19,7 @@ import static java.util.Collections.min;
 public class BasicExplo extends Strategy {
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
-    private final HashMap<Integer,HashMap<Integer,ArrayList<Integer>>> objects;
+    private final HashMap<Integer,int[]> objects;
     private final Constraints constraints;
     private final ArrayList<Point> visitedPoints;
     boolean firstPhase;
@@ -45,7 +45,12 @@ public class BasicExplo extends Strategy {
             }else return Moves.WALK;
         }
         if(!firstPhase) {
-            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints);
+            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
+           /* for(int id : objects.keySet()){
+                int[]pos = objects.get(id);
+                System.out.println(pos[0]);
+                System.out.println(pos[1]);
+            }*/
             return root.getMove();
         }
         return Moves.WALK;
@@ -73,7 +78,7 @@ public class BasicExplo extends Strategy {
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
-                            if (!Objects.equals(lookingAt, "W")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX + j)) {
                                     if (!explored.get(currentX + j).contains(currentY + i)) {
                                         explored.get(currentX + j).add(currentY + i);
@@ -84,6 +89,14 @@ public class BasicExplo extends Strategy {
                                     explored.get(currentX + j).add(currentY + i);
                                 }
                             } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX+j,currentY+i};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
                                 if (walls.containsKey(currentX + j)) {
                                     if (!walls.get(currentX + j).contains(currentY + i)) {
                                         walls.get(currentX + j).add(currentY + i);
@@ -103,7 +116,7 @@ public class BasicExplo extends Strategy {
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
-                            if (!Objects.equals(lookingAt, "W")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX - j)) {
                                     if (!explored.get(currentX - j).contains(currentY - i)) {
                                         explored.get(currentX - j).add(currentY - i);
@@ -114,6 +127,14 @@ public class BasicExplo extends Strategy {
                                     explored.get(currentX - j).add(currentY - i);
                                 }
                             } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX-j,currentY-i};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
                                 if (walls.containsKey(currentX - j)) {
                                     if (!walls.get(currentX - j).contains(currentY - i)) {
                                         walls.get(currentX - j).add(currentY - i);
@@ -133,7 +154,7 @@ public class BasicExplo extends Strategy {
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
-                            if (!Objects.equals(lookingAt, "W")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX - i)) {
                                     if (!explored.get(currentX - i).contains(currentY + j)) {
                                         explored.get(currentX - i).add(currentY + j);
@@ -144,6 +165,14 @@ public class BasicExplo extends Strategy {
                                     explored.get(currentX - i).add(currentY + j);
                                 }
                             } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX-i,currentY+j};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
                                 if (walls.containsKey(currentX - i)) {
                                     if (!walls.get(currentX - i).contains(currentY + j)) {
                                         walls.get(currentX - i).add(currentY + j);
@@ -163,7 +192,7 @@ public class BasicExplo extends Strategy {
                             }
                         }
                         if (!Objects.equals(lookingAt, "X")) {
-                            if (!Objects.equals(lookingAt, "W")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX + i)) {
                                     if (!explored.get(currentX + i).contains(currentY - j)) {
                                         explored.get(currentX + i).add(currentY - j);
@@ -174,6 +203,14 @@ public class BasicExplo extends Strategy {
                                     explored.get(currentX + i).add(currentY - j);
                                 }
                             } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX+i,currentY-j};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
                                 if (walls.containsKey(currentX + i)) {
                                     if (!walls.get(currentX + i).contains(currentY - j)) {
                                         walls.get(currentX + i).add(currentY - j);

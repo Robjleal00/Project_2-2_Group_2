@@ -99,6 +99,12 @@ public class Explorer extends Entity {
         this.y = y;
     }
 
+    @Override
+    public void setPosition(int[] xy) {
+        this.x=xy[0];
+        this.y=xy[1];
+    }
+
     public Rotations getCurrentRotation() {
         return currentRotation;
     }
