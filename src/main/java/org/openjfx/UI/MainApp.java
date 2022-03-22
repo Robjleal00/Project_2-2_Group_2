@@ -18,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -91,24 +92,24 @@ public class MainApp extends Application {
         imageView1.setImage(surveillanceIMG1);
 
         FileInputStream input_stream2 = new FileInputStream("src/main/java/Images/TriangleDOWN.png");
-        triangleDOWN = new Image(input_stream1);
-        ImageView agentDOWN = new ImageView();
-        agentDOWN.setImage(triangleDOWN);
+        triangleDOWN = new Image(input_stream2);
+        //ImageView agentDOWN = new ImageView();
+        //agentDOWN.setImage(triangleDOWN);
 
         FileInputStream input_stream3 = new FileInputStream("src/main/java/Images/TriangleUP.png");
-        triangleUP = new Image(input_stream1);
-        ImageView agentUP = new ImageView();
-        agentUP.setImage(triangleUP);
+        triangleUP = new Image(input_stream3);
+        //ImageView agentUP = new ImageView();
+        //agentUP.setImage(triangleUP);
 
         FileInputStream input_stream4 = new FileInputStream("src/main/java/Images/TriangleLEFT.png");
-        triangleLEFT = new Image(input_stream1);
-        ImageView agentLEFT = new ImageView();
-        agentLEFT.setImage(triangleLEFT);
+        triangleLEFT = new Image(input_stream4);
+        //ImageView agentLEFT = new ImageView();
+        //agentLEFT.setImage(triangleLEFT);
 
         FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/TriangleRIGHT.png");
-        triangleRIGHT = new Image(input_stream1);
-        ImageView agentRIGHT = new ImageView();
-        agentRIGHT.setImage(triangleRIGHT);
+        triangleRIGHT = new Image(input_stream5);
+        //ImageView agentRIGHT = new ImageView();
+        //agentRIGHT.setImage(triangleRIGHT);
 
 
 
@@ -275,8 +276,17 @@ public class MainApp extends Application {
                 if (map[i][j].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
-                if (map[i][j].contains("E")) {
-                    rectArray[i][j].setFill(yellow);
+                if (map[i][j].contains("E^")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleUP));
+                }
+                if (map[i][j].contains("E>")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleRIGHT));
+                }
+                if (map[i][j].contains("E<")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleLEFT));
+                }
+                if (map[i][j].contains("Ed")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
@@ -316,8 +326,5 @@ public class MainApp extends Application {
 
         gridPane.getChildren().add(agent);
     }
-
-
-
 
 }
