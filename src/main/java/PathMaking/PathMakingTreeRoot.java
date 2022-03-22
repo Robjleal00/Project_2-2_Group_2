@@ -1,15 +1,11 @@
-package OptimalSearch;
+package PathMaking;
 
 import Config.Config;
+import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
-import Logic.GameController;
-import PathMaking.PathMaker;
-import PathMaking.Point;
-import Strategies.Constraints;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import Config.Variables;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -20,79 +16,38 @@ import java.util.Set;
 import static java.util.Collections.max;
 import static java.util.Collections.min;
 
-public class TreeRoot {
+public class PathMakingTreeRoot {
     private final HashMap<Integer,ArrayList<Integer>> explored;
     private final HashMap<Integer,ArrayList<Integer>> walls;
     private final Rotations rot;
     private final int depth;
     private final int[] xy;
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
-    private final int eyeRange;
-    boolean TESTING=true;
-    boolean DEBUG_DECISIONS;
-    private Constraints constraints;
+    private final boolean DEBUG_DECISIONS;
     private final Variables vr;
-    private final ArrayList<Point> visitedPoints;
+    private final int[]target;
 
-    public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, Constraints constraints, Variables vr, ArrayList<Point> visitedPoints) {
+    public PathMakingTreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth,Variables vr,int[]target) {
         this.explored = explored;
         this.walls = walls;
         this.xy = xy;
         this.rot = rot;
         this.depth = depth;
-        this.eyeRange = vr.eyeRange();
-        this.constraints=constraints;
         Config cf= new Config();
         this.DEBUG_DECISIONS = cf.DEBUG_DECISIONS;
         this.vr=vr;
-        this.visitedPoints=visitedPoints;
+        this.target=target;
     }
 
-    public Moves getMove() {
-        ArrayList<Double> values = new ArrayList<>();
+    public boolean getMove() {
+        ArrayList<Integer> values = new ArrayList<>();
         for (Moves avaliableMove : avaliableMoves) {
-            values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(1,depth));
+            values.add(new PathMakingTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,vr,target).getValue(1,depth));
         }
-        double result = max(values);
-        if(DEBUG_DECISIONS) System.out.println(values);
-        if(result==0){
-            constraints.reset();
-            values.clear();
-            for (Moves avaliableMove : avaliableMoves) {
-                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(1,depth));
-            }
-        }
-         result = max(values);
-        if(TESTING&&result==0){
-            //GameController printer = new GameController();
-            String[][]mindMap=giveMappings();
-            PathMaker pm = new PathMaker(explored,walls,mindMap,visitedPoints,vr,xy.clone(),rot);
-            return pm.giveMove();
-            //printer.printArray(mindMap);
-            //System.out.println(explorationPoints);
-            //Now explorationPoints has all question marks transformed back into agents mapping
-            //gotta add some kind of path-finding for him to get the shortest path and which move to output to go follow that
-        }
-        boolean allTheSame = true;
-        for (Double value : values) {
-            if (value != result) {
-                allTheSame = false;
-                break;
-            }
-        }
-        if (allTheSame) {
-            if(result!=0){
-            // System.out.println("ALL THE SAME AAAAAA");
-            ArrayList<Integer> Reversevalues = new ArrayList<>();
-            for (Moves avaliableMove : avaliableMoves) {
-                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, result, 0,vr).getValue(1,depth));
-            }
-            int Reverseresult = min(Reversevalues);
-            //System.out.println(Reversevalues);
-            return avaliableMoves[Reversevalues.indexOf(Reverseresult)];
-
-        } else return Moves.STUCK;
-        }else return avaliableMoves[values.indexOf(result)];
+        System.out.println(values);
+        int result = max(values);
+        if(result>0)return true;
+        else return false;
 
     }
 
