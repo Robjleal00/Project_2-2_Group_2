@@ -92,25 +92,25 @@ public class MainApp extends Application {
         ImageView imageView1 = new ImageView();
         imageView1.setImage(surveillanceIMG1);
 
-        FileInputStream input_stream2 = new FileInputStream("src/main/java/Images/TriangleDOWN.png");
-        triangleDOWN = new Image(input_stream1);
-        ImageView agentDOWN = new ImageView();
-        agentDOWN.setImage(triangleDOWN);
+        //FileInputStream input_stream2 = new FileInputStream("src/main/java/Images/TriangleDOWN.png");
+        triangleDOWN = new Image("src/main/java/Images/TriangleDOWN.png");
+        //ImageView agentDOWN = new ImageView();
+        //agentDOWN.setImage(triangleDOWN);
 
-        FileInputStream input_stream3 = new FileInputStream("src/main/java/Images/TriangleUP.png");
-        triangleUP = new Image(input_stream1);
-        ImageView agentUP = new ImageView();
-        agentUP.setImage(triangleUP);
+        //FileInputStream input_stream3 = new FileInputStream("src/main/java/Images/TriangleUP.png");
+        triangleUP = new Image("src/main/java/Images/TriangleUP.png");
+        //ImageView agentUP = new ImageView();
+        //agentUP.setImage(triangleUP);
 
-        FileInputStream input_stream4 = new FileInputStream("src/main/java/Images/TriangleLEFT.png");
-        triangleLEFT = new Image(input_stream1);
-        ImageView agentLEFT = new ImageView();
-        agentLEFT.setImage(triangleLEFT);
+        //FileInputStream input_stream4 = new FileInputStream("src/main/java/Images/TriangleLEFT.png");
+        triangleLEFT = new Image("src/main/java/Images/TriangleLEFT.png");
+        /*ImageView agentLEFT = new ImageView();
+        agentLEFT.setImage(triangleLEFT);*/
 
-        FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/TriangleRIGHT.png");
-        triangleRIGHT = new Image(input_stream1);
-        ImageView agentRIGHT = new ImageView();
-        agentRIGHT.setImage(triangleRIGHT);
+        //FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/TriangleRIGHT.png");
+        triangleRIGHT = new Image("src/main/java/Images/TriangleRIGHT.png");
+        /*ImageView agentRIGHT = new ImageView();
+        agentRIGHT.setImage(triangleRIGHT);*/
 
 
         chooseMap = new Button("Select a map");
