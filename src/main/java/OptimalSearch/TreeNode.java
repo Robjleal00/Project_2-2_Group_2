@@ -501,10 +501,11 @@ public class TreeNode {
             for (int j = -1; j < 2; j++) { //j==sideways
                 int h = eyeRange - (i + 1);
                 int l = j + 1;
+                final String lookingAt = vision[h][l];
                 switch (rot) {
                     case FORWARD -> {
                         if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                            if (!Objects.equals(vision[h][l], "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX + j)) {
                                     if (!explored.get(currentX + j).contains(currentY + i)) {
                                         explored.get(currentX + j).add(currentY + i);
@@ -533,7 +534,7 @@ public class TreeNode {
                     }
                     case BACK -> {
                         if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                            if (!Objects.equals(vision[h][l], "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX - j)) {
                                     if (!explored.get(currentX - j).contains(currentY - i)) {
                                         explored.get(currentX - j).add(currentY - i);
@@ -562,7 +563,7 @@ public class TreeNode {
                     }
                     case LEFT -> {
                         if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                            if (!Objects.equals(vision[h][l], "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX - i)) {
                                     if (!explored.get(currentX - i).contains(currentY + j)) {
                                         explored.get(currentX - i).add(currentY + j);
@@ -591,7 +592,7 @@ public class TreeNode {
                     }
                     case RIGHT -> {
                         if (!Objects.equals(vision[h][l], "X")) {
-                            if (!Objects.equals(vision[h][l], "W")) {
+                            if (!Objects.equals(vision[h][l], "W")&&!lookingAt.contains("T")) {
                                 if (explored.containsKey(currentX + i)) {
                                     if (!explored.get(currentX + i).contains(currentY - j)) {
                                         explored.get(currentX + i).add(currentY - j);

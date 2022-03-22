@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import Config.*;
 import ObjectsOnMap.ObjectOnMap;
+import ObjectsOnMap.Teleporter;
 import javafx.application.Platform;
 import org.openjfx.UI.MainApp;
 
@@ -27,6 +28,7 @@ public class GameController {
     private HashMap<ObjectOnMap, int[]> objectsLocations;
     private HashMap<Entity, Rotations> entityRotationsHashMap;
     private HashMap<Entity, Moves> queuedMoves;
+    private HashMap<Entity,Pose> entityInitialPoses;
     private ArrayList<Integer> allUnseenTiles;
     private boolean PRINTMAPPINGS ;
     public boolean PRINTVISION;
@@ -57,6 +59,7 @@ public class GameController {
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         this.maxExploNum=allUnseenTiles.size();
         this.graphicsUpdater=graphics;
+        entityInitialPoses=new HashMap<>();
     }
     public GameController(int height, int length) {
         allUnseenTiles = new ArrayList<>();
@@ -76,7 +79,7 @@ public class GameController {
         PRINTVISION=con.PRINTVISION;
         GUI=false;
         DEBUG_EPXLO=con.DEBUG_EXPLO;
-        this.maxExploNum=allUnseenTiles.size();
+        entityInitialPoses=new HashMap<>();
     }
     public GameController() {
     }
@@ -88,6 +91,7 @@ public class GameController {
         this.eyeRange=vr.eyeRange();
     }
     public void init() throws InterruptedException {
+        this.maxExploNum=allUnseenTiles.size();
         boolean wasBroken=false;
         int turns = 0;
         while (isRunning) {//gameloop
@@ -113,6 +117,7 @@ public class GameController {
                             e.walk(tester);
                             lastmove=move;
                         }
+                        case USE_TELEPORTER -> {System.out.println(move);}
                         case TURN_AROUND ->{e.turnAround();lastmove=move;}
                         case TURN_RIGHT -> {e.turnRight();lastmove=move;}
                         case TURN_LEFT -> {e.turnLeft();lastmove=move;}
@@ -141,7 +146,7 @@ public class GameController {
             }
             turns++;
             checkWin(turns);
-             Thread.sleep(100);
+             Thread.sleep(200);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
@@ -223,7 +228,6 @@ public class GameController {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
                         int[] lookingAt = {position[0] +j, position[1] -i};
-                        if(existsInBoard(lookingAt)) allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                         if (canSee[j + 1]) {
                                 if (existsInBoard(lookingAt)) {
                                     String symbol = map[lookingAt[1]][lookingAt[0]];
@@ -251,6 +255,11 @@ public class GameController {
                                 }
                             } else vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
+                        if(!vision[eyeRange - (i + 1)][j + 1].contains("X")){
+                            if(!vision[eyeRange - (i + 1)][j + 1].contains("W")){
+                                allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
+                            }
+                        }
                     }
                 }
             }
@@ -258,7 +267,6 @@ public class GameController {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
                         int[] lookingAt = {position[0] + i, position[1] + j};
-                        if(existsInBoard(lookingAt)) allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                         if (canSee[j + 1]) {
                             {
                                 if (existsInBoard(lookingAt)) {
@@ -287,6 +295,11 @@ public class GameController {
                                 }
                             } else vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
+                        if(!vision[eyeRange - (i + 1)][j + 1].contains("X")){
+                            if(!vision[eyeRange - (i + 1)][j + 1].contains("W")){
+                                allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
+                            }
+                        }
                     }
                 }
             }
@@ -294,7 +307,6 @@ public class GameController {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
                         int[] lookingAt = {position[0] - i, position[1] - j};
-                        if(existsInBoard(lookingAt))  allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                         if (canSee[j + 1]) {
                             {
                                 if (existsInBoard(lookingAt)) {
@@ -323,6 +335,11 @@ public class GameController {
                                 }
                             } else vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
+                        if(!vision[eyeRange - (i + 1)][j + 1].contains("X")){
+                            if(!vision[eyeRange - (i + 1)][j + 1].contains("W")){
+                                allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
+                            }
+                        }
                     }
                 }
             }
@@ -331,7 +348,6 @@ public class GameController {
                     for (int j = -1; j < 2; j++) {
                         int[] lookingAt = {position[0] -j, position[1] +i};
                         if (existsInBoard(lookingAt)) {
-                            if(existsInBoard(lookingAt))  allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                             if (canSee[j + 1]) {
                                 {
                                     String symbol = map[lookingAt[1]][lookingAt[0]];
@@ -361,6 +377,11 @@ public class GameController {
                         } else {
                             vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
+                        if(!vision[eyeRange - (i + 1)][j + 1].contains("X")){
+                            if(!vision[eyeRange - (i + 1)][j + 1].contains("W")){
+                                allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
+                            }
+                        }
                     }
                 }
             }
@@ -374,10 +395,50 @@ public class GameController {
         removeFromMap(xy);
         putOnMap(symbol(e),xy);
     }
+    private boolean equal(int[]a, int[]b){
+        return(a[0]==b[0]&&a[1]==b[1]);
+    }
+    private Teleporter findTeleporter(int[]pos){
+       int [] first = {pos[0],pos[1]+1};
+        int [] second = {pos[0],pos[1]-1};
+        int [] third = {pos[0]+1,pos[1]};
+        int [] fourth = {pos[0]-1,pos[1]};
+        ArrayList<int[]>poss = new ArrayList<>();
+        poss.add(first);
+        poss.add(second);
+        poss.add(third);
+        poss.add(fourth);
+        for(ObjectOnMap ob : objects){
+            int[]position = objectsLocations.get(ob);
+            for(int[] p :poss){
+                if(equal(p,position)&&ob instanceof Teleporter)return (Teleporter) ob;
+            }
+        }
+        return null;
+    }
     private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
 
         switch (m) {
+            case USE_TELEPORTER -> {
+                System.out.println("HE WANTS TO USE IT");
+                int[] pos =entityLocations.get(e);
+                Teleporter tp = findTeleporter(pos);
+
+                if(tp==null)return -1;
+                else{
+                    int[]target=tp.getTarget();
+                    if(canBePutThere(target)) {
+                        e.setPosition(entityInitialPoses.get(e).newPosition(target));
+                        removeFromMap(pos);
+                        putOnMap(symbol(e),target);
+                        putOnMap("M1",pos);
+                        entityLocations.put(e,target);
+                        return 1;
+                    }
+                    else return -1;
+                }
+            }
             case STUCK -> {
                 return 1;
             }
@@ -569,6 +630,7 @@ public class GameController {
         entityLocations.put(e, yx);
         entityRotationsHashMap.put(e, rot);
         putOnMap(symbol(e), h, l);
+        entityInitialPoses.put(e,new Pose(rot,yx));
     }
     public void addObject(ObjectOnMap o) {
         objects.add(o);
@@ -578,26 +640,10 @@ public class GameController {
     }
     public void putObjectOnMap(ObjectOnMap o){
         String symbol=o.getSymbol();
-        int[] firstCorner=o.getFirstCorner();
-        int[] secondCorner = o.getSecondCorner();
-        int yGrow=(secondCorner[0]-firstCorner[0]);
-        int xGrow=(secondCorner[1]-firstCorner[1]);
-        int yFix;
-        int xFix;
-        if(yGrow>0){yFix=1;}else yFix=-1;
-        if(xGrow>0){xFix=1;}else xFix=-1;
-        for(int i=0;i<=Math.abs(yGrow);i++){
-            for(int j=0;j<=Math.abs(xGrow);j++){
-                putOnMap(symbol,firstCorner[0]+i*yFix,firstCorner[1]+j*xFix);
-            }
-        }
-
+        putOnMap(o.getSymbol(),o.getXy());
 
     }
-    public int getEntitiesSize()
-    {
-        return entities.size();
-    }
+    public int getEntitiesSize() {return entities.size();}
     public void print(String s) {
         System.out.println(s);
     }
@@ -623,8 +669,8 @@ public class GameController {
         int xSpan=x1-x0;
         if(xSpan>0){//x goes up
             if(ySpan>0){//Y goes up
-                for(int y=y0;y<=y1;y++){
-                    for(int x=x0;x<=x1;x++){
+                for(int y=y0;y<y1;y++){
+                    for(int x=x0;x<x1;x++){
                         putOnMap("W",x,y);
                         allUnseenTiles.remove((Object) coordsToNumber(x,y));
                     }
@@ -693,10 +739,10 @@ public class GameController {
         return (pos[0] > -1 && pos[0] < mapHeight && pos[1] > -1 && pos[1] < mapLength);
     }
     private int coordsToNumber(int h, int l) {
-        return ((h * mapHeight) + l);
+        return (h + l*mapHeight);
     }
     private int coordsToNumber(int[] yx) {
-        return ((yx[0] * mapHeight) + yx[1]);
+        return ((yx[0] ) + yx[1]* mapHeight);
     }
     private void checkWin(int turns) {
         if (allUnseenTiles.isEmpty()) isRunning = false;
