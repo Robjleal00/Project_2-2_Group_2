@@ -35,6 +35,7 @@ public class GameController {
     private int maxExploNum;
     private int walkSpeed;
     private MainApp graphicsUpdater;
+    private final int MAX_TURNS=500;
 
     public GameController(int height, int length,MainApp graphics) {
         allUnseenTiles = new ArrayList<>();
@@ -139,7 +140,7 @@ public class GameController {
                 wasBroken=true;
             }
             turns++;
-            checkWin();
+            checkWin(turns);
              Thread.sleep(100);
         }
         if(wasBroken){
@@ -697,7 +698,8 @@ public class GameController {
     private int coordsToNumber(int[] yx) {
         return ((yx[0] * mapHeight) + yx[1]);
     }
-    private void checkWin() {
+    private void checkWin(int turns) {
         if (allUnseenTiles.isEmpty()) isRunning = false;
+        if(turns>MAX_TURNS) isRunning=false;
     }
 }
