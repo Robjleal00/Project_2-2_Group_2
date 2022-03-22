@@ -50,7 +50,7 @@ public class MainApp extends Application {
     Label game;
     VBox launchPane;
 
-    protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT;
+    protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT, teleport_icon;
 
     File fileMap;
     String filePath;
@@ -288,6 +288,9 @@ public class MainApp extends Application {
                 if (map[j][i].contains("Ed")) {
                     rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
 
+                }
+                if (map[j][i].contains("T")) {
+                    rectArray[i][j].setFill(new ImagePattern(teleport_icon));
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);

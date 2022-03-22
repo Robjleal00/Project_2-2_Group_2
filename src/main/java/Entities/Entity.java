@@ -26,6 +26,9 @@ public class Entity {
     public void showMeWhatUSaw(){
 
     }
+    public void setPosition(int[]xy){
+
+    }
 
 
 }

@@ -86,19 +86,22 @@ public class Launcher {
         }
     }
     public static void main(String[] args) throws InterruptedException {
-        GameController gm = new GameController(11, 12);
+        GameController gm = new GameController(11, 20);
         FileReader fileReader = new FileReader();
-        Variables vr = new Variables(2,5);
+        Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),8,1,Rotations.UP);
-       // Teleporter t1 = new Teleporter(1,3 ,3,2,2);
+        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        Teleporter t1 = new Teleporter(1,3 ,3,8,8);
        // Teleporter t2 = new Teleporter(2,5,5,9,9);
        // t1.addLink(t2);
-       // gm.addObject(t1);
+        gm.addObject(t1);
         //gm.addObject(t2);
        // gm.printMap();
+        gm.addWall(0,5,19,5);
         gm.init();
+        String o = "T1";
+        //System.out.print(Integer.valueOf(o,"T"));
     }
 
 

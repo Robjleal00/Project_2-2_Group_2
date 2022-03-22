@@ -11,25 +11,40 @@ public class PathMaker {
     private HashMap<Integer, ArrayList<Integer>> explored;
     private HashMap<Integer, ArrayList<Integer>> walls;
     private String[][] mapToExplore;
-    private HashMap<Integer,ArrayList<Integer>> explorationPoints;
+    private HashMap<Integer, ArrayList<Integer>> explorationPoints;
     private ArrayList<Point> visitedPoints;
     private Variables vr;
-    private final int []xy;
+    private final int[] xy;
     private final int walkSpeed;
-    Rotations[] avaliableRotations={Rotations.BACK,Rotations.RIGHT,Rotations.LEFT,Rotations.FORWARD};
+    Rotations[] avaliableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
     private int[] properTarget;
     private final Rotations currentRotation;
+    int depth;
 
-    public PathMaker(HashMap<Integer, ArrayList<Integer>> explored, HashMap<Integer, ArrayList<Integer>> walls, String[][] map, ArrayList<Point> visitedPoints, Variables vr,int[]xy,Rotations rot){
-        this.explored=explored;
-        this.walls=walls;
-        this.mapToExplore=map;
-        explorationPoints= new HashMap<>();
-        this.visitedPoints=visitedPoints;
-        this.vr=vr;
-        this.xy=xy;
-        this.walkSpeed=vr.walkSpeed();
-        this.currentRotation=rot;
+    public PathMaker(HashMap<Integer, ArrayList<Integer>> explored, HashMap<Integer, ArrayList<Integer>> walls, String[][] map, ArrayList<Point> visitedPoints, Variables vr, int[] xy, Rotations rot) {
+        this.explored = explored;
+        this.walls = walls;
+        this.mapToExplore = map;
+        explorationPoints = new HashMap<>();
+        this.visitedPoints = visitedPoints;
+        this.vr = vr;
+        this.xy = xy;
+        this.walkSpeed = vr.walkSpeed();
+        this.currentRotation = rot;
+        depth=2;
+    }
+
+    public PathMaker(HashMap<Integer, ArrayList<Integer>> explored, HashMap<Integer, ArrayList<Integer>> walls, HashMap<Integer, ArrayList<Integer>> explorationPoints, ArrayList<Point> visitedPoints, Variables vr, int[] xy, Rotations rot) {
+        this.explored = explored;
+        this.walls = walls;
+        this.explorationPoints = explorationPoints;
+        this.visitedPoints = visitedPoints;
+        this.vr = vr;
+        this.xy = xy;
+        this.walkSpeed = vr.walkSpeed();
+        this.currentRotation = rot;
+        this.mapToExplore=null;
+        depth=1;
     }
     private void findPoints(){
         int fix=Integer.parseInt(mapToExplore[0][0])+1;
@@ -68,16 +83,22 @@ public class PathMaker {
        return points;
     }
     private boolean checkIfPossible(int[]target){
-        boolean result=false;
+        boolean overallResult=false;
+        int distance=999;
         for(Point p :visitedPoints){
-            PathMakingTreeRoot treeRoot = new PathMakingTreeRoot(explored,walls,p.xy().clone(), Rotations.FORWARD,2,vr,target);
-            result =treeRoot.getMove();
+            PathMakingTreeRoot treeRoot = new PathMakingTreeRoot(explored,walls,p.xy().clone(), Rotations.FORWARD,depth,vr,target);
+            boolean result =treeRoot.getMove();
             if(result){
-                this.properTarget=p.xy();
-                break;
+                overallResult=true;
+                int currentDistance = Math.abs(p.xy()[0]-target[0])+Math.abs(p.xy()[1]-target[1]);
+                if(currentDistance<distance){
+                    //this.properTarget=p.xy();
+                    distance=currentDistance;
+                }
+
             }
         }
-        return result;
+        return overallResult;
     }
     private ArrayList<Point> reachablePoints(Point p,boolean t){
         int [] pos = p.xy();
@@ -262,16 +283,17 @@ public class PathMaker {
         return Moves.STUCK;
     }
     public Moves giveMove(){
-        findPoints();
+        if(mapToExplore!=null)findPoints();
         Point targetPoint = closestPoint();
+        this.properTarget=targetPoint.xy();
         ArrayList<int[]> visited = new ArrayList();
         ArrayList<Point> currentWave=new ArrayList<>();
         ArrayList<Point> nextWave = new ArrayList<>();
         if(targetPoint==null)return Moves.STUCK;
         else{
             visited.add(xy);
-            System.out.println("X "+xy[0]);
-            System.out.println("Y "+xy[1]);
+           // System.out.println("X "+xy[0]);
+           // System.out.println("Y "+xy[1]);
             ArrayList<Point> reach = reachablePoints(new Point(xy,new ArrayList<>()),false);
             for(Point p : reach){
                 if(!contains(visited,p.xy())) {
@@ -279,7 +301,7 @@ public class PathMaker {
                     visited.add(p.xy());
                 }
             }
-           System.out.println(nextWave);
+          // System.out.println(nextWave);
             while(!contains(visited,properTarget)){ // if it will be true then in nextWave
                 currentWave=new ArrayList<>(nextWave);
                 nextWave=new ArrayList<>();
@@ -292,9 +314,9 @@ public class PathMaker {
                         }
                     }
                 }
-                System.out.println(nextWave);
-                System.out.println("X ->"+properTarget[0]);
-                System.out.println("Y->" +properTarget[1]);
+                //System.out.println(nextWave);
+              //  System.out.println("X ->"+properTarget[0]);
+                //System.out.println("Y->" +properTarget[1]);
             }
             Point savedPoint=null;
             for(Point p:nextWave){
@@ -303,11 +325,12 @@ public class PathMaker {
                     break;
                 }
             }
-            System.out.println(properTarget[0]);
-            System.out.println(properTarget[1]);
-            System.out.println(savedPoint.path());
+           // System.out.println(properTarget[0]);
+            //System.out.println(properTarget[1]);
+           // System.out.println(savedPoint.path());
             int[] toGo=null;
             if(savedPoint.path().size()!=0) toGo=savedPoint.path().get(0).xy();
+            if(savedPoint.path().size()==0)toGo=savedPoint.xy();
             return directMove(toGo);
         }
     }

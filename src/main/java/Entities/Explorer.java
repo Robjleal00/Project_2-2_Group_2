@@ -35,7 +35,6 @@ public class Explorer extends Entity {
     public Moves getMove() {
         String[][] vision = gm.giveVision(this);
         int[] xy = {x, y};
-       // gm.printArray(vision);
         return st.decideOnMove(vision, xy, currentRotation,vr);
     }
 
@@ -97,6 +96,12 @@ public class Explorer extends Entity {
 
     public void setY(int y) {
         this.y = y;
+    }
+
+    @Override
+    public void setPosition(int[] xy) {
+        this.x=xy[0];
+        this.y=xy[1];
     }
 
     public Rotations getCurrentRotation() {
