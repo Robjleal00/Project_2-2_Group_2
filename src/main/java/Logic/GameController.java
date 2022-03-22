@@ -37,7 +37,7 @@ public class GameController {
     private int maxExploNum;
     private int walkSpeed;
     private MainApp graphicsUpdater;
-    private final int MAX_TURNS=500;
+    private final int MAX_TURNS=1000;
 
     public GameController(int height, int length,MainApp graphics) {
         allUnseenTiles = new ArrayList<>();
