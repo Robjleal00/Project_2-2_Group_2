@@ -16,9 +16,10 @@ public class FileReader {
     double scaling;
     int numberOfGuards;
     int numberOfIntruders;
-    double baseSpeedIntruder;
-    double sprintSpeedIntruder;
-    double baseSpeedGuard;
+    int baseSpeedIntruder;
+    int sprintSpeedIntruder;
+    int baseSpeedGuard;
+    int distanceViewing;
     int gamemode;
     Area spawnArea;
     ArrayList<Area> walls = new ArrayList<>();
@@ -60,6 +61,9 @@ public class FileReader {
                 //Handles array values, not necessary I think
                 //String[] locations = value.split(" ");
                 switch (id) {
+                    case "distanceViewing":
+                        distanceViewing=Integer.parseInt(value);
+                        break;
                     case "height":
                         height = Integer.parseInt(value);
                         break;
@@ -76,13 +80,13 @@ public class FileReader {
                         numberOfIntruders = Integer.parseInt(value);
                         break;
                     case "baseSpeedIntruder":
-                        baseSpeedIntruder = Double.parseDouble(value);
+                        baseSpeedIntruder = Integer.parseInt(value);
                         break;
                     case "sprintSpeedIntruder":
-                        sprintSpeedIntruder = Double.parseDouble(value);
+                        sprintSpeedIntruder = Integer.parseInt(value);
                         break;
                     case "baseSpeedGuard":
-                        baseSpeedGuard = Double.parseDouble(value);
+                        baseSpeedGuard = Integer.parseInt(value);
                         break;
                     case "gameMode":
                         gamemode = Integer.parseInt(value);
@@ -97,8 +101,9 @@ public class FileReader {
                         walls.add(wall);
                         break;
                     case "spawnAreaGuards":
-                        Area spawnArea = createArea(value);
+                        spawnArea = createArea(value);
                         break;
+
                 }
             }
         }
@@ -123,6 +128,18 @@ public class FileReader {
 
     public Area getTargetArea() {
         return targetArea;
+    }
+
+    public int getNumberOfGuards() {
+        return numberOfGuards;
+    }
+
+    public int getBaseSpeedGuard() {
+        return baseSpeedGuard;
+    }
+
+    public int getDistanceViewing() {
+        return distanceViewing;
     }
 
     public Area createArea(String input)

@@ -1,9 +1,11 @@
 package org.openjfx.UI;
 
 import Config.Variables;
+import Entities.Entity;
 import Entities.Explorer;
 import Enums.EntityType;
 import Enums.Rotations;
+import Launcher.Launcher;
 import Logic.GameController;
 import Strategies.BasicExplo;
 import javafx.application.Application;
@@ -191,20 +193,17 @@ public class MainApp extends Application {
 
     }
     public void startGame() throws InterruptedException {
-        GameController gm = new GameController(10, 10,this);
-        Variables vr = new Variables(1,5);
-        gm.addVars(vr);
-        gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(),vr), 7, 4, Rotations.UP);
-        Task<Void> task = new Task<>(){
-            @Override
-            protected Void call() throws InterruptedException {
-                gm.init();
-                return null;
-            }
-        };
+        Launcher launcher = new Launcher();
+        GameController gm = launcher.makeGame(filePath,this);
+            Task<Void> task = new Task<>(){
+                @Override
+                protected Void call() throws InterruptedException {
+                    gm.init();
+                    return null;
+                }
+            };
+         new Thread(task).start();
 
-        new Thread(task).start();
 
 
     }
@@ -270,12 +269,13 @@ public class MainApp extends Application {
                 rectArray[i][j] = new Rectangle(1300 / width, 1000 / height);
                 rectArray[i][j].setStroke(white);
                 rectArray[i][j].setStrokeWidth(0);
-                if (map[i][j].contains("W")) {
+                if (map[j][i].contains("W")) {
                     rectArray[i][j].setFill(black);
                 }
-                if (map[i][j].contains(" ")) {
+                if (map[j][i].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
+
                 if (map[i][j].contains("E^")) {
                     rectArray[i][j].setFill(new ImagePattern(triangleUP));
                 }
@@ -287,6 +287,7 @@ public class MainApp extends Application {
                 }
                 if (map[i][j].contains("Ed")) {
                     rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
+
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);

@@ -10,13 +10,81 @@ import PathMaking.Point;
 import Strategies.BasicExplo;
 import org.openjfx.UI.Area;
 import org.openjfx.UI.FileReader;
+import org.openjfx.UI.MainApp;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import java.util.ArrayList;
 
 public class Launcher {
+    public GameController makeGame(String filePath, MainApp app){
+        //GM needs height width
+        // walls added and stuff
+        FileReader fileReader = new FileReader();
+        fileReader.readFile(filePath);
+        GameController gm = new GameController(fileReader.getHeight(),fileReader.getWidth(),app);
 
+        Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing());
+        gm.addVars(vr);
+        addGuards(fileReader,gm,vr);
+        ArrayList<Area> walls = fileReader.getWalls();
+        makeWalls(walls,gm);
+        return gm;
+
+
+    }
+    private void makeWalls(ArrayList<Area>walls, GameController gm){
+        for(Area a : walls){
+            int botX=a.getLeftBoundary();
+            int botY=a.getBottomBoundary();
+            int topX=a.getRightBoundary();
+            int topY=a.getTopBoundary();
+            gm.addWall(botX,botY,topX,topY);
+        }
+
+    }
+    private void addGuards(FileReader fl, GameController gm,Variables vr){
+        int number = fl.getNumberOfGuards();
+        Area spawnArea = fl.getSpawnArea();
+        int startX = spawnArea.getLeftBoundary();
+        int startY = spawnArea.getBottomBoundary();
+        int spawnAreaWidth = spawnArea.getRightBoundary()- spawnArea.getLeftBoundary();
+        int spawnAreaHeight = spawnArea.getTopBoundary()- spawnArea.getBottomBoundary();
+        ArrayList<int[]> filledSpots = new ArrayList<>();
+        for(int i = 0; i < number; i++)
+        {
+            int randomH = (int) (Math.random()*spawnAreaHeight);
+            int randomL = (int) (Math.random()*spawnAreaWidth);
+            int[] pair = {randomH, randomL};
+            //contains or !contains
+            while(contains(filledSpots, pair))
+            {
+                randomH = (int) (Math.random()*spawnAreaHeight);
+                randomL = (int) (Math.random()*spawnAreaWidth);
+                pair = new int[]{randomH, randomL};
+            }
+            double rotation = Math.random();
+            if(rotation < 0.25)
+            {
+                gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(), vr), startY +randomH, startX+randomL, Rotations.DOWN);
+            }
+            else if(rotation > 0.25 && rotation < 0.5)
+            {
+                gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(), vr), startY + randomH, startX +randomL, Rotations.UP);
+            }
+            else if(rotation > 0.5 && rotation < 0.75)
+            {
+                gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(), vr), startY+ randomH, startX+randomL, Rotations.LEFT);
+            }
+            else
+            {
+                gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(), vr), startY+randomH, startX+randomL, Rotations.RIGHT);
+            }
+            int[] takenSpot = {randomH, randomL};
+            filledSpots.add(takenSpot);
+        }
+    }
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 12);
         FileReader fileReader = new FileReader();
