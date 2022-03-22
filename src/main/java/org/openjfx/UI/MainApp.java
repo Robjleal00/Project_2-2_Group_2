@@ -276,16 +276,16 @@ public class MainApp extends Application {
                     rectArray[i][j].setFill(white);
                 }
 
-                if (map[i][j].contains("E^")) {
+                if (map[j][i].contains("E^")) {
                     rectArray[i][j].setFill(new ImagePattern(triangleUP));
                 }
-                if (map[i][j].contains("E>")) {
+                if (map[j][i].contains("E>")) {
                     rectArray[i][j].setFill(new ImagePattern(triangleRIGHT));
                 }
-                if (map[i][j].contains("E<")) {
+                if (map[j][i].contains("E<")) {
                     rectArray[i][j].setFill(new ImagePattern(triangleLEFT));
                 }
-                if (map[i][j].contains("Ed")) {
+                if (map[j][i].contains("Ed")) {
                     rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
 
                 }

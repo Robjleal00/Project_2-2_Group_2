@@ -140,7 +140,7 @@ public class GameController {
             }
             turns++;
             checkWin();
-             Thread.sleep(500);
+             Thread.sleep(100);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
@@ -163,22 +163,14 @@ public class GameController {
     public boolean noWallsOnTheWay(int[]pos,int[]target,Rotations rot){
         switch(rot){
             case LEFT -> {
-                int length=pos[1]-target[1];
+                int length=pos[0]-target[0];
                 for(int i=1;i<=length;i++){
-                    int[] nextTarget={pos[0],pos[1]-i};
+                    int[] nextTarget={pos[0]-i,pos[1]};
                     if(!canBePutThere(nextTarget))return false;
                 }
                 return true;
             }
             case RIGHT -> {
-                int length=target[1]-pos[1];
-                for(int i=1;i<=length;i++){
-                    int[] nextTarget={pos[0],pos[1]+i};
-                    if(!canBePutThere(nextTarget))return false;
-                }
-                return true;
-            }
-            case DOWN -> {
                 int length=target[0]-pos[0];
                 for(int i=1;i<=length;i++){
                     int[] nextTarget={pos[0]+i,pos[1]};
@@ -186,10 +178,18 @@ public class GameController {
                 }
                 return true;
             }
-            case UP -> {
-                int length=pos[0]-target[0];
+            case DOWN -> {
+                int length=target[1]-pos[1];
                 for(int i=1;i<=length;i++){
-                    int[] nextTarget={pos[0]-i,pos[1]};
+                    int[] nextTarget={pos[0],pos[1]+i};
+                    if(!canBePutThere(nextTarget))return false;
+                }
+                return true;
+            }
+            case UP -> {
+                int length=pos[1]-target[1];
+                for(int i=1;i<=length;i++){
+                    int[] nextTarget={pos[0],pos[1]-i};
                     if(!canBePutThere(nextTarget))return false;
                 }
                 return true;
@@ -221,11 +221,11 @@ public class GameController {
             case UP -> {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
-                        int[] lookingAt = {position[0] - i, position[1] + j};
+                        int[] lookingAt = {position[0] +j, position[1] -i};
                         if(existsInBoard(lookingAt)) allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                         if (canSee[j + 1]) {
                                 if (existsInBoard(lookingAt)) {
-                                    String symbol = map[lookingAt[0]][lookingAt[1]];
+                                    String symbol = map[lookingAt[1]][lookingAt[0]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
                                     if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
@@ -233,13 +233,13 @@ public class GameController {
                                 }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it = {lookingAt[0], lookingAt[1] + 1};
-                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
+                                int[] pos_of_it = {lookingAt[0]+1, lookingAt[1]};
+                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[1]][pos_of_it[0]], "W")) {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
                                         if (existsInBoard(lookingAt)) {
-                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            String symbol = map[lookingAt[1]][lookingAt[0]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
                                             if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
@@ -256,12 +256,12 @@ public class GameController {
             case RIGHT -> {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
-                        int[] lookingAt = {position[0] + j, position[1] + i};
+                        int[] lookingAt = {position[0] + i, position[1] + j};
                         if(existsInBoard(lookingAt)) allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                         if (canSee[j + 1]) {
                             {
                                 if (existsInBoard(lookingAt)) {
-                                    String symbol = map[lookingAt[0]][lookingAt[1]];
+                                    String symbol = map[lookingAt[1]][lookingAt[0]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
                                     if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
@@ -270,13 +270,13 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it = {lookingAt[0] + 1, lookingAt[1]};
-                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
+                                int[] pos_of_it = {lookingAt[0], lookingAt[1]+1};
+                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[1]][pos_of_it[0]], "W")) {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
                                         if (existsInBoard(lookingAt)) {
-                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            String symbol = map[lookingAt[1]][lookingAt[0]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
                                             if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
@@ -292,12 +292,12 @@ public class GameController {
             case LEFT -> {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
-                        int[] lookingAt = {position[0] - j, position[1] - i};
+                        int[] lookingAt = {position[0] - i, position[1] - j};
                         if(existsInBoard(lookingAt))  allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                         if (canSee[j + 1]) {
                             {
                                 if (existsInBoard(lookingAt)) {
-                                    String symbol = map[lookingAt[0]][lookingAt[1]];
+                                    String symbol = map[lookingAt[1]][lookingAt[0]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
                                     if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
@@ -306,13 +306,13 @@ public class GameController {
                             }
                         } else {
                             if (j != 0 && canSee[1]) {
-                                int[] pos_of_it = {lookingAt[0] - 1, lookingAt[1]};
-                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
+                                int[] pos_of_it = {lookingAt[0] , lookingAt[1]-1};
+                                if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[1]][pos_of_it[0]], "W")) {
                                     vision[eyeRange - (i + 1)][j + 1] = "X";
                                 } else {
                                     {
                                         if (existsInBoard(lookingAt)) {
-                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            String symbol = map[lookingAt[1]][lookingAt[0]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
                                             if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
@@ -328,12 +328,12 @@ public class GameController {
             case DOWN -> {
                 for (int i = 0; i < eyeRange; i++) {
                     for (int j = -1; j < 2; j++) {
-                        int[] lookingAt = {position[0] + i, position[1] - j};
+                        int[] lookingAt = {position[0] -j, position[1] +i};
                         if (existsInBoard(lookingAt)) {
                             if(existsInBoard(lookingAt))  allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
                             if (canSee[j + 1]) {
                                 {
-                                    String symbol = map[lookingAt[0]][lookingAt[1]];
+                                    String symbol = map[lookingAt[1]][lookingAt[0]];
                                     vision[eyeRange - (i + 1)][j + 1] = symbol;
                                     if (Objects.equals(symbol, "W")) {
                                         canSee[j + 1] = false;
@@ -341,12 +341,12 @@ public class GameController {
                                 }
                             } else {
                                 if (j != 0 && canSee[1]) {
-                                    int[] pos_of_it = {lookingAt[0], lookingAt[1] - 1};
-                                    if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[0]][pos_of_it[1]], "W")) {
+                                    int[] pos_of_it = {lookingAt[0]-1, lookingAt[1]};
+                                    if (existsInBoard(pos_of_it) && j == -1 && Objects.equals(map[pos_of_it[1]][pos_of_it[0]], "W")) {
                                         vision[eyeRange - (i + 1)][j + 1] = "X";
                                     } else {
                                         {
-                                            String symbol = map[lookingAt[0]][lookingAt[1]];
+                                            String symbol = map[lookingAt[1]][lookingAt[0]];
                                             vision[eyeRange - (i + 1)][j + 1] = symbol;
                                             if (Objects.equals(symbol, "W")) {
                                                 canSee[j + 1] = false;
@@ -458,7 +458,7 @@ public class GameController {
                 int[] pos = entityLocations.get(e);
                 switch (rotation) {
                     case UP -> {
-                        int[] targetlocation = {pos[0] - walkSpeed, pos[1]};
+                        int[] targetlocation = {pos[0] , pos[1]- walkSpeed};
                             if (canBePutThere(targetlocation) && noWallsOnTheWay(pos, targetlocation, rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
@@ -467,7 +467,7 @@ public class GameController {
                             } else {
                                 if (walkSpeed > 1) {
                                     for (int i = walkSpeed; i > 0; i--) {
-                                        int[] nexttargetlocation = {pos[0] - i, pos[1]};
+                                        int[] nexttargetlocation = {pos[0] , pos[1]- i};
                                         if (existsInBoard(nexttargetlocation)) {
                                             if (canBePutThere(nexttargetlocation) && noWallsOnTheWay(pos, nexttargetlocation, rotation)) {
                                                 putOnMap(symbol(e), nexttargetlocation);
@@ -483,7 +483,7 @@ public class GameController {
                         return -1;
                     }
                     case DOWN -> {
-                        int[] targetlocation = {pos[0] + walkSpeed, pos[1]};
+                        int[] targetlocation = {pos[0] , pos[1]+ walkSpeed};
                             if (canBePutThere(targetlocation)&&noWallsOnTheWay(pos,targetlocation,rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
@@ -492,7 +492,7 @@ public class GameController {
                             } else {
                                 if(walkSpeed>1){
                                     for(int i=walkSpeed;i>0;i--){
-                                        int[] nexttargetlocation = {pos[0] + i, pos[1]};
+                                        int[] nexttargetlocation = {pos[0] , pos[1]+ i};
                                         if(existsInBoard(nexttargetlocation)){
                                             if(canBePutThere(nexttargetlocation)&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
                                                 putOnMap(symbol(e), nexttargetlocation);
@@ -508,7 +508,7 @@ public class GameController {
                         return -1;
                     }
                     case RIGHT -> {
-                        int[] targetlocation = {pos[0], pos[1] + walkSpeed};
+                        int[] targetlocation = {pos[0]+ walkSpeed, pos[1] };
                             if (canBePutThere(targetlocation)&&noWallsOnTheWay(pos,targetlocation,rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
@@ -517,7 +517,7 @@ public class GameController {
                              }else {
                                 if(walkSpeed>1){
                                     for(int i=walkSpeed;i>0;i--){
-                                        int[] nexttargetlocation = {pos[0] , pos[1]+i};
+                                        int[] nexttargetlocation = {pos[0]+i , pos[1]};
                                         if(existsInBoard(nexttargetlocation)){
                                             if(canBePutThere(nexttargetlocation)&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
                                                 putOnMap(symbol(e), nexttargetlocation);
@@ -533,7 +533,7 @@ public class GameController {
                        return -1;
                     }
                     case LEFT -> {
-                        int[] targetlocation = {pos[0], pos[1] - walkSpeed};
+                        int[] targetlocation = {pos[0]- walkSpeed, pos[1] };
                             if (canBePutThere(targetlocation)&&noWallsOnTheWay(pos,targetlocation,rotation)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
@@ -542,7 +542,7 @@ public class GameController {
                              }else {
                                 if(walkSpeed>1){
                                     for(int i=walkSpeed;i>0;i--){
-                                        int[] nexttargetlocation = {pos[0], pos[1]-i};
+                                        int[] nexttargetlocation = {pos[0]-i, pos[1]};
                                         if(existsInBoard(nexttargetlocation)){
                                             if(canBePutThere(nexttargetlocation)&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
                                                 putOnMap(symbol(e), nexttargetlocation);
@@ -685,11 +685,11 @@ public class GameController {
         return "ERROR";
     }
     private boolean canBePutThere(int []target) {
-        if(target[0] > -1 &&target[0] < mapLength && target[1] > -1 && target[1] < mapHeight)return Objects.equals(map[target[1]][target[0]], " ");
+        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength)return Objects.equals(map[target[1]][target[0]], " ");
         else return false;
     }
     private boolean existsInBoard(int[] pos) {
-        return (pos[0] > -1 && pos[0] < mapLength && pos[1] > -1 && pos[1] < mapHeight);
+        return (pos[0] > -1 && pos[0] < mapHeight && pos[1] > -1 && pos[1] < mapLength);
     }
     private int coordsToNumber(int h, int l) {
         return ((h * mapHeight) + l);
