@@ -55,7 +55,7 @@ public class GameController {
         Config con = new Config();
         PRINTMAPPINGS=con.PRINTMIND;
         PRINTVISION=con.PRINTVISION;
-        GUI=true;
+        this.GUI=true;
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         this.maxExploNum=allUnseenTiles.size();
         this.graphicsUpdater=graphics;
@@ -77,7 +77,7 @@ public class GameController {
         Config con = new Config();
         PRINTMAPPINGS=con.PRINTMIND;
         PRINTVISION=con.PRINTVISION;
-        GUI=false;
+        this.GUI=false;
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         entityInitialPoses=new HashMap<>();
     }
