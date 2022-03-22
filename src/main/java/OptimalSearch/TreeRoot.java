@@ -70,9 +70,9 @@ public class TreeRoot {
                 PathMaker pm = new PathMaker(explored, walls, mindMap, visitedPoints, vr, xy.clone(), rot);
                 return pm.giveMove();
             }else{
-                System.out.println("NOTHING MORE TO EXPLORE HERE");
+                //System.out.println("NOTHING MORE TO EXPLORE HERE");
                 if(!objects.isEmpty()){
-                    System.out.println("I KNOW A TELEPORTER THOUGH");
+                    //System.out.println("I KNOW A TELEPORTER THOUGH");
                     int numberOfTeleporters = objects.keySet().size();
                     int r;
                     if(numberOfTeleporters!=1) r = ThreadLocalRandom.current().nextInt(1,numberOfTeleporters+1);
@@ -84,10 +84,10 @@ public class TreeRoot {
                         PathMaker pm = new PathMaker(explored, walls, explorationPoints, visitedPoints, vr, xy.clone(), rot);
                         return pm.giveMove();
                     }else {
-                        System.out.println("IM IN FRONT OF IT");
+                        //System.out.println("IM IN FRONT OF IT");
                         if(position[0]==xy[0]){
                             if(position[1]>xy[1]){
-                                System.out.println("I NEED TO BE LOOKING FORWARD");
+                                //System.out.println("I NEED TO BE LOOKING FORWARD");
                                 switch(rot){
                                     case FORWARD -> {return Moves.USE_TELEPORTER;}
                                     case BACK -> {return Moves.TURN_AROUND;}
@@ -96,7 +96,7 @@ public class TreeRoot {
                                 }
                             }
                             else {
-                                System.out.println("NEED TO BE LOOKING BACK");
+                                //System.out.println("NEED TO BE LOOKING BACK");
                                 switch(rot){
                                     case FORWARD -> {return Moves.TURN_AROUND;}
                                     case BACK -> {return Moves.USE_TELEPORTER;}
@@ -107,7 +107,7 @@ public class TreeRoot {
                         }
                         if(position[1]==xy[1]){
                             if(position[0]>xy[0]){
-                                System.out.println("I NEED TO BE LOOKING RIGHT");
+                                //System.out.println("I NEED TO BE LOOKING RIGHT");
                                 switch(rot){
                                     case FORWARD -> {return Moves.TURN_RIGHT;}
                                     case BACK -> {return Moves.TURN_LEFT;}
@@ -116,7 +116,7 @@ public class TreeRoot {
                                 }
                             }
                             else {
-                                System.out.println("NEED TO BE LOOKING LEFT");
+                                //System.out.println("NEED TO BE LOOKING LEFT");
                                 switch(rot){
                                     case FORWARD -> {return Moves.TURN_LEFT;}
                                     case BACK -> {return Moves.TURN_RIGHT;}

@@ -292,8 +292,8 @@ public class PathMaker {
         if(targetPoint==null)return Moves.STUCK;
         else{
             visited.add(xy);
-            System.out.println("X "+xy[0]);
-            System.out.println("Y "+xy[1]);
+           // System.out.println("X "+xy[0]);
+           // System.out.println("Y "+xy[1]);
             ArrayList<Point> reach = reachablePoints(new Point(xy,new ArrayList<>()),false);
             for(Point p : reach){
                 if(!contains(visited,p.xy())) {
@@ -301,7 +301,7 @@ public class PathMaker {
                     visited.add(p.xy());
                 }
             }
-           System.out.println(nextWave);
+          // System.out.println(nextWave);
             while(!contains(visited,properTarget)){ // if it will be true then in nextWave
                 currentWave=new ArrayList<>(nextWave);
                 nextWave=new ArrayList<>();
@@ -314,9 +314,9 @@ public class PathMaker {
                         }
                     }
                 }
-                System.out.println(nextWave);
-                System.out.println("X ->"+properTarget[0]);
-                System.out.println("Y->" +properTarget[1]);
+                //System.out.println(nextWave);
+              //  System.out.println("X ->"+properTarget[0]);
+                //System.out.println("Y->" +properTarget[1]);
             }
             Point savedPoint=null;
             for(Point p:nextWave){
@@ -325,9 +325,9 @@ public class PathMaker {
                     break;
                 }
             }
-            System.out.println(properTarget[0]);
-            System.out.println(properTarget[1]);
-            System.out.println(savedPoint.path());
+           // System.out.println(properTarget[0]);
+            //System.out.println(properTarget[1]);
+           // System.out.println(savedPoint.path());
             int[] toGo=null;
             if(savedPoint.path().size()!=0) toGo=savedPoint.path().get(0).xy();
             if(savedPoint.path().size()==0)toGo=savedPoint.xy();

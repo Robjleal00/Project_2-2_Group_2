@@ -117,7 +117,7 @@ public class GameController {
                             e.walk(tester);
                             lastmove=move;
                         }
-                        case USE_TELEPORTER -> {System.out.println(move);}
+                        //case USE_TELEPORTER -> {System.out.println(move);}
                         case TURN_AROUND ->{e.turnAround();lastmove=move;}
                         case TURN_RIGHT -> {e.turnRight();lastmove=move;}
                         case TURN_LEFT -> {e.turnLeft();lastmove=move;}
@@ -131,11 +131,7 @@ public class GameController {
                     }
                 }
             }
-            if(PRINTMAPPINGS){
-                for (Entity e : entities) {
-                    e.showMeWhatUSaw();
-                }
-            }
+
 
             if(DEBUG_EPXLO){
                 System.out.println(allUnseenTiles.toString());
@@ -146,13 +142,20 @@ public class GameController {
             }
             turns++;
             checkWin(turns);
-             Thread.sleep(200);
+             Thread.sleep(1000);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
             int currentProgress=maxExploNum-allUnseenTiles.size();
             System.out.println(" THEY EXPLORED ABOUT "+(int)(currentProgress*100/maxExploNum) +"% IN "+turns+" TURNS" );
         }
+        if(PRINTMAPPINGS){
+            for (Entity e : entities) {
+                e.showMeWhatUSaw();
+            }
+        }
+        int currentProgress=maxExploNum-allUnseenTiles.size();
+        System.out.println(" THEY EXPLORED ABOUT "+(int)(currentProgress*100/maxExploNum) +"% IN "+turns+" TURNS" );
         System.out.println("EXPLORATION DONE IN " + turns + " TURNS!");
         printMap();
     }
@@ -421,7 +424,7 @@ public class GameController {
 
         switch (m) {
             case USE_TELEPORTER -> {
-                System.out.println("HE WANTS TO USE IT");
+                //System.out.println("HE WANTS TO USE IT");
                 int[] pos =entityLocations.get(e);
                 Teleporter tp = findTeleporter(pos);
 
