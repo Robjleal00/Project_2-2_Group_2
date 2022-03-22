@@ -6,9 +6,12 @@ import Enums.EntityType;
 import Enums.Rotations;
 import Logic.GameController;
 import ObjectsOnMap.Teleporter;
+import PathMaking.Point;
 import Strategies.BasicExplo;
 import org.openjfx.UI.Area;
 import org.openjfx.UI.FileReader;
+
+import java.util.ArrayList;
 
 import java.util.ArrayList;
 
@@ -20,7 +23,6 @@ public class Launcher {
         Variables vr = new Variables(2,5);
         gm.addVars(vr);
         gm.printMap();
-
         Area spawnArea = fileReader.getSpawnArea();
         int startX = spawnArea.getLeftBoundary();
         int startY = spawnArea.getBottomBoundary();
@@ -59,15 +61,14 @@ public class Launcher {
             int[] takenSpot = {randomH, randomL};
             filledSpots.add(takenSpot);
         }
+
        // Teleporter t1 = new Teleporter(1,3 ,3,2,2);
        // Teleporter t2 = new Teleporter(2,5,5,9,9);
        // t1.addLink(t2);
        // gm.addObject(t1);
-        // gm.addObject(t2);
-        gm.printMap();
+        //gm.addObject(t2);
+       // gm.printMap();
         gm.init();
-
-
     }
 
 

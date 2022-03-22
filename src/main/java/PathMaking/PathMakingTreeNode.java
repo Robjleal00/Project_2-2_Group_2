@@ -1,4 +1,4 @@
-package OptimalSearch;
+package PathMaking;
 
 import Config.Variables;
 import Enums.Moves;
@@ -8,14 +8,11 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Objects;
+import java.util.*;
 
 import static java.util.Collections.max;
 
-public class TreeNode {
+public class PathMakingTreeNode {
     private final Moves move;
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
@@ -23,20 +20,20 @@ public class TreeNode {
     private Rotations rot;
     private final int eyeRange;
     private final ArrayList<Moves> avaliableMoves = new ArrayList<>();
-    private Constraints constraints;
     private final Variables vr;
     private final int walkSpeed;
+    private int [] target;
 
-    public TreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, Constraints constraints, Variables vr) {
+    public PathMakingTreeNode(Moves move, HashMap explored, HashMap walls, int[] xy, Rotations rot, Variables vr,int[]target) {
         this.move = move;
         this.rot = rot;
         this.explored = explored;
         this.walls = walls;
         this.xy = xy;
         this.eyeRange = vr.eyeRange();
-        this.constraints=constraints;
         this.vr=vr;
         this.walkSpeed=vr.walkSpeed();
+        this.target=target;
         Moves[] movess = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
         Collections.addAll(avaliableMoves, movess);
         switch(move){
@@ -46,7 +43,7 @@ public class TreeNode {
         }
     }
 
-    public double getValue(int currentDepth,int maxDepth) {
+    public int getValue(int currentDepth,int maxDepth) {
         switch (move) {
             case TURN_AROUND -> rot = turnAround(rot);
             case WALK -> xy = walk(xy, rot);
@@ -54,31 +51,13 @@ public class TreeNode {
             case TURN_LEFT -> rot = turnLeft(rot);
         }
         String[][] vision = predictVision(xy, rot, walls, explored);
-        /*
-        VISION TESTING
-        GameController printer = new GameController();
-        printer.printArray(vision);
-        printer.print("---------------------");
-        */
-        int valued = updateExploration(vision, xy, rot);
-        double value = (double)valued/Math.pow(currentDepth,3);
-        /*
-        if (value==1){
-            GameController printer = new GameController();
-            printer.print(" PRINTING THE VISION AT POSITION THAT GAVE ME RESULT OF 1");
-            printer.printArray(vision);
-            printer.print(" AT POSITION");
-            System.out.println(xy);
-            printer.print(" LOOKING");
-            System.out.println(rot);
-        }
-         */
+        int value = updateExploration(vision, xy, rot,target);
         if (currentDepth == maxDepth) {
             return value;
         } else {
-            ArrayList<Double> values = new ArrayList<>();
+            ArrayList<Integer> values = new ArrayList<>();
             for (Moves avaliableMove : avaliableMoves) {
-                values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(currentDepth +1,maxDepth));
+                values.add(new PathMakingTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,vr,target).getValue(currentDepth +1,maxDepth));
             }
             return value + max(values);
         }
@@ -344,7 +323,6 @@ public class TreeNode {
     }
 
     public int[] walk(int[] xy, Rotations rot) {
-        int[] origin = xy.clone();
         switch (rot) {
             case FORWARD -> { //y increase
                 int howMuch = howMuchCanIWalk(xy, rot);
@@ -366,8 +344,8 @@ public class TreeNode {
 
             }
         }
-        if (constraints.isLegal(xy)) return xy;
-        else return origin;
+         return xy;
+
     }
 
 
@@ -375,8 +353,8 @@ public class TreeNode {
         switch(rot){
             case LEFT -> {//x decrease
                 for(int i=walkSpeed;i>0;i--){
-                int[]targetCell={pos[0]-i,pos[1]};
-                if(noWallsInTheWay(pos,targetCell,rot))return i;
+                    int[]targetCell={pos[0]-i,pos[1]};
+                    if(noWallsInTheWay(pos,targetCell,rot))return i;
                 }
 
             }
@@ -492,8 +470,8 @@ public class TreeNode {
         }
     }
 
-    public int updateExploration(String[][] vision, int[] xy, Rotations rot) {
-        int informationGain = 0;
+    public int updateExploration(String[][] vision, int[] xy, Rotations rot,int[]target) {
+        int informationGain = -1;
         int eyeRange = vision.length;
         int currentX = xy[0];
         int currentY = xy[1];
@@ -505,121 +483,35 @@ public class TreeNode {
                     case FORWARD -> {
                         if (!Objects.equals(vision[h][l], "X")) {
                             if (!Objects.equals(vision[h][l], "W")) {
-                                if (explored.containsKey(currentX + j)) {
-                                    if (!explored.get(currentX + j).contains(currentY + i)) {
-                                        explored.get(currentX + j).add(currentY + i);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    explored.put(currentX + j, new ArrayList<>());
-                                    explored.get(currentX + j).add(currentY + i);
-                                    informationGain++;
-                                }
-                            } else {
-                                if (walls.containsKey(currentX + j)) {
-                                    if (!walls.get(currentX + j).contains(currentY + i)) {
-                                        walls.get(currentX + j).add(currentY + i);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    walls.put(currentX + j, new ArrayList<>());
-                                    walls.get(currentX + j).add(currentY + i);
-                                    informationGain++;
-                                }
+                                int [] xyOfIt={currentX+j,currentY+i};
+                                if(Arrays.equals(xyOfIt,target)) informationGain+=999;
                             }
                         }
                     }
                     case BACK -> {
                         if (!Objects.equals(vision[h][l], "X")) {
                             if (!Objects.equals(vision[h][l], "W")) {
-                                if (explored.containsKey(currentX - j)) {
-                                    if (!explored.get(currentX - j).contains(currentY - i)) {
-                                        explored.get(currentX - j).add(currentY - i);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    explored.put(currentX - j, new ArrayList<>());
-                                    explored.get(currentX - j).add(currentY - i);
-                                    informationGain++;
-                                }
-                            } else {
-                                if (walls.containsKey(currentX - j)) {
-                                    if (!walls.get(currentX - j).contains(currentY - i)) {
-                                        walls.get(currentX - j).add(currentY - i);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    walls.put(currentX - j, new ArrayList<>());
-                                    walls.get(currentX - j).add(currentY - i);
-                                    informationGain++;
-                                }
+                                int [] xyOfIt={currentX-j,currentY-i};
+                                if(Arrays.equals(xyOfIt,target)) informationGain+=999;
                             }
                         }
                     }
                     case LEFT -> {
                         if (!Objects.equals(vision[h][l], "X")) {
                             if (!Objects.equals(vision[h][l], "W")) {
-                                if (explored.containsKey(currentX - i)) {
-                                    if (!explored.get(currentX - i).contains(currentY + j)) {
-                                        explored.get(currentX - i).add(currentY + j);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    explored.put(currentX - i, new ArrayList<>());
-                                    explored.get(currentX - i).add(currentY + j);
-                                    informationGain++;
-                                }
-                            } else {
-                                if (walls.containsKey(currentX - i)) {
-                                    if (!walls.get(currentX - i).contains(currentY + j)) {
-                                        walls.get(currentX - i).add(currentY + j);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    walls.put(currentX - i, new ArrayList<>());
-                                    walls.get(currentX - i).add(currentY + j);
-                                    informationGain++;
-                                }
+                                int [] xyOfIt={currentX-i,currentY+j};
+                                if(Arrays.equals(xyOfIt,target)) informationGain+=999;
                             }
                         }
                     }
                     case RIGHT -> {
                         if (!Objects.equals(vision[h][l], "X")) {
                             if (!Objects.equals(vision[h][l], "W")) {
-                                if (explored.containsKey(currentX + i)) {
-                                    if (!explored.get(currentX + i).contains(currentY - j)) {
-                                        explored.get(currentX + i).add(currentY - j);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    explored.put(currentX + i, new ArrayList<>());
-                                    explored.get(currentX + i).add(currentY - j);
-                                    informationGain++;
-                                }
-                            } else {
-                                if (walls.containsKey(currentX + i)) {
-                                    if (!walls.get(currentX + i).contains(currentY - j)) {
-                                        walls.get(currentX + i).add(currentY - j);
-                                        informationGain++;
-                                    }
-
-                                } else {
-                                    walls.put(currentX + i, new ArrayList<>());
-                                    walls.get(currentX + i).add(currentY - j);
-                                    informationGain++;
-                                }
+                                int [] xyOfIt={currentX+i,currentY-j};
+                                if(Arrays.equals(xyOfIt,target)) informationGain+=999;
                             }
                         }
                     }
-
-
                 }
             }
         }

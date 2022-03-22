@@ -647,7 +647,8 @@ public class GameController {
     }
 
     private boolean canBePutThere(int []target) {
-        return Objects.equals(map[target[0]][target[1]], " ")&&(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength);
+        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength)return Objects.equals(map[target[0]][target[1]], " ");
+        else return false;
     }
 
     private boolean existsInBoard(int[] pos) {
