@@ -1,4 +1,5 @@
 package org.openjfx.UI;
+
 import Config.Variables;
 import Entities.Entity;
 import Entities.Explorer;
@@ -19,6 +20,7 @@ import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -49,8 +51,6 @@ public class MainApp extends Application {
     VBox launchPane;
 
     protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT;
-
-    private ArrayList<Entity> entities;
 
     File fileMap;
     String filePath;
@@ -94,24 +94,25 @@ public class MainApp extends Application {
         imageView1.setImage(surveillanceIMG1);
 
         FileInputStream input_stream2 = new FileInputStream("src/main/java/Images/TriangleDOWN.png");
-        triangleDOWN = new Image(input_stream1);
-        ImageView agentDOWN = new ImageView();
-        agentDOWN.setImage(triangleDOWN);
+        triangleDOWN = new Image(input_stream2);
+        //ImageView agentDOWN = new ImageView();
+        //agentDOWN.setImage(triangleDOWN);
 
         FileInputStream input_stream3 = new FileInputStream("src/main/java/Images/TriangleUP.png");
-        triangleUP = new Image(input_stream1);
-        ImageView agentUP = new ImageView();
-        agentUP.setImage(triangleUP);
+        triangleUP = new Image(input_stream3);
+        //ImageView agentUP = new ImageView();
+        //agentUP.setImage(triangleUP);
 
         FileInputStream input_stream4 = new FileInputStream("src/main/java/Images/TriangleLEFT.png");
-        triangleLEFT = new Image(input_stream1);
-        ImageView agentLEFT = new ImageView();
-        agentLEFT.setImage(triangleLEFT);
+        triangleLEFT = new Image(input_stream4);
+        //ImageView agentLEFT = new ImageView();
+        //agentLEFT.setImage(triangleLEFT);
 
         FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/TriangleRIGHT.png");
-        triangleRIGHT = new Image(input_stream1);
-        ImageView agentRIGHT = new ImageView();
-        agentRIGHT.setImage(triangleRIGHT);
+        triangleRIGHT = new Image(input_stream5);
+        //ImageView agentRIGHT = new ImageView();
+        //agentRIGHT.setImage(triangleRIGHT);
+
 
 
         chooseMap = new Button("Select a map");
@@ -186,7 +187,10 @@ public class MainApp extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("Surveillance Game");
 
+
         primaryStage.show();
+
+
     }
     public void startGame() throws InterruptedException {
         Launcher launcher = new Launcher();
@@ -199,6 +203,7 @@ public class MainApp extends Application {
                 }
             };
          new Thread(task).start();
+
 
 
     }
@@ -270,8 +275,19 @@ public class MainApp extends Application {
                 if (map[j][i].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
-                if (map[j][i].contains("E")) {//E^ UP E> RIGHT E< LEFT Ed DOWN
-                    rectArray[i][j].setFill(yellow);
+
+                if (map[i][j].contains("E^")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleUP));
+                }
+                if (map[i][j].contains("E>")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleRIGHT));
+                }
+                if (map[i][j].contains("E<")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleLEFT));
+                }
+                if (map[i][j].contains("Ed")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
+
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
@@ -298,20 +314,6 @@ public class MainApp extends Application {
     }
     */
 
-    public void displayAgent(ArrayList<Entity> entities){
-
-        Entity currentEntity;
-
-        for(int i = 0; i < entities.size(); i++){
-            currentEntity = entities.get(i);
-
-
-            //currentEntity.getCurrentRotation();
-            //int x_Entity = currentEntity.getX();
-            //currentEntity.getY();
-        }
-
-    }
 
     public void spawnIntruder(int numIntruders) {
         int i;
@@ -325,8 +327,5 @@ public class MainApp extends Application {
 
         gridPane.getChildren().add(agent);
     }
-
-
-
 
 }
