@@ -80,6 +80,12 @@ public class GameController {
 
     public GameController() {
     }
+
+    public ArrayList<Entity> getEntities(){
+        return entities;
+    }
+
+
     public void addVars(Variables vr){
         this.walkSpeed=vr.walkSpeed();
         this.eyeRange=vr.eyeRange();

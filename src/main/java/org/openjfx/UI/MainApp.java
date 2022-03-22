@@ -1,5 +1,4 @@
 package org.openjfx.UI;
-
 import Config.Variables;
 import Entities.Explorer;
 import Enums.EntityType;
@@ -48,6 +47,8 @@ public class MainApp extends Application {
     VBox launchPane;
 
     protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT;
+
+    private ArrayList<Entity> entities;
 
     File fileMap;
     String filePath;
@@ -109,7 +110,6 @@ public class MainApp extends Application {
         triangleRIGHT = new Image(input_stream1);
         ImageView agentRIGHT = new ImageView();
         agentRIGHT.setImage(triangleRIGHT);
-
 
 
         chooseMap = new Button("Select a map");
@@ -184,10 +184,7 @@ public class MainApp extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("Surveillance Game");
 
-
         primaryStage.show();
-
-
     }
     public void startGame() throws InterruptedException {
         GameController gm = new GameController(10, 10,this);
@@ -303,6 +300,20 @@ public class MainApp extends Application {
     }
     */
 
+    public void displayAgent(ArrayList<Entity> entities){
+
+        Entity currentEntity;
+
+        for(int i = 0; i < entities.size(); i++){
+            currentEntity = entities.get(i);
+
+
+            //currentEntity.getCurrentRotation();
+            //int x_Entity = currentEntity.getX();
+            //currentEntity.getY();
+        }
+
+    }
 
     public void spawnIntruder(int numIntruders) {
         int i;
