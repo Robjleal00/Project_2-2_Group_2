@@ -60,6 +60,7 @@ public class GameController {
         return entities;
     }
 
+
     public void addVars(Variables vr){
         this.walkSpeed=vr.walkSpeed();
         this.eyeRange=vr.eyeRange();
