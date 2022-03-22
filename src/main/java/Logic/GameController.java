@@ -10,6 +10,7 @@ import java.util.HashMap;
 
 import Config.*;
 import ObjectsOnMap.ObjectOnMap;
+import javafx.application.Platform;
 import org.openjfx.UI.MainApp;
 
 import java.util.Objects;
@@ -90,10 +91,7 @@ public class GameController {
         while (isRunning) {//gameloop
             boolean allBroken=false;
             if(GUI){
-                new Thread(() -> {
-                    graphicsUpdater.update(map);
-                }).start();
-
+                Platform.runLater(() -> graphicsUpdater.update(map));
             }
             else{
                 print("------------------------");
@@ -141,7 +139,7 @@ public class GameController {
             }
             turns++;
             checkWin();
-           // Thread.sleep(100);
+             Thread.sleep(500);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");

@@ -7,6 +7,7 @@ import Enums.Rotations;
 import Logic.GameController;
 import Strategies.BasicExplo;
 import javafx.application.Application;
+import javafx.concurrent.Task;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -174,7 +175,17 @@ public class MainApp extends Application {
         gm.addVars(vr);
         gm.printMap();
         gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(),vr), 7, 4, Rotations.UP);
-        gm.init();
+            Task<Void> task = new Task<>(){
+                @Override
+                protected Void call() throws InterruptedException {
+                    gm.init();
+                    return null;
+                }
+            };
+
+         new Thread(task).start();
+
+
     }
     public void update(String[][]map){
         borderPane.setCenter(createGrid(map));
