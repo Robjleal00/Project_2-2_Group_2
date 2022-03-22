@@ -20,7 +20,7 @@ public class FileReader {
     double sprintSpeedIntruder;
     double baseSpeedGuard;
     int gamemode;
-
+    Area spawnArea;
     ArrayList<Area> walls = new ArrayList<>();
     Area targetArea;
 
@@ -90,19 +90,25 @@ public class FileReader {
                     case "targetArea":
                         //System.out.println("Value: "+value); //this just returns 0 (?)
                         targetArea = createArea(value);
-                        System.out.println(targetArea.toString());
+                        //System.out.println(targetArea.toString());
                         break;
                     case "wall":
                         Area wall = createArea(value);
                         walls.add(wall);
                         break;
-
+                    case "spawnAreaGuards":
+                        Area spawnArea = createArea(value);
+                        break;
                 }
             }
         }
     }
 
 
+    public Area getSpawnArea()
+    {
+        return spawnArea;
+    }
     public int getHeight() {
         return height;
     }
