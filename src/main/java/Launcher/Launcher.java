@@ -98,7 +98,9 @@ public class Launcher {
        // gm.addObject(t1);
         //gm.addObject(t2);
        // gm.printMap();
-        gm.init();
+        //gm.init();
+        String o = "T1";
+        //System.out.print(Integer.valueOf(o,"T"));
     }
 
 
