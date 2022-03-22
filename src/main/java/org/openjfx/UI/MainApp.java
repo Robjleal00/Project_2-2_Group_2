@@ -40,7 +40,7 @@ public class MainApp extends Application {
     Label game;
     VBox launchPane;
 
-    protected Image surveillanceIMG1, selectIMG, startIMG;
+    protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT;
 
     File fileMap;
     String filePath;
@@ -82,6 +82,26 @@ public class MainApp extends Application {
         surveillanceIMG1 = new Image(input_stream1);
         ImageView imageView1 = new ImageView();
         imageView1.setImage(surveillanceIMG1);
+
+        FileInputStream input_stream2 = new FileInputStream("src/main/java/Images/TriangleDOWN.png");
+        triangleDOWN = new Image(input_stream1);
+        ImageView agentDOWN = new ImageView();
+        agentDOWN.setImage(triangleDOWN);
+
+        FileInputStream input_stream3 = new FileInputStream("src/main/java/Images/TriangleUP.png");
+        triangleUP = new Image(input_stream1);
+        ImageView agentUP = new ImageView();
+        agentUP.setImage(triangleUP);
+
+        FileInputStream input_stream4 = new FileInputStream("src/main/java/Images/TriangleLEFT.png");
+        triangleLEFT = new Image(input_stream1);
+        ImageView agentLEFT = new ImageView();
+        agentLEFT.setImage(triangleLEFT);
+
+        FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/TriangleRIGHT.png");
+        triangleRIGHT = new Image(input_stream1);
+        ImageView agentRIGHT = new ImageView();
+        agentRIGHT.setImage(triangleRIGHT);
 
 
 
@@ -141,7 +161,7 @@ public class MainApp extends Application {
 
         playButton.setOnAction(e -> {
             borderPane.setCenter(createGrid(filePath));
-            // spawnIntruder(1);
+            spawnIntruder(1);
         });
 
 
