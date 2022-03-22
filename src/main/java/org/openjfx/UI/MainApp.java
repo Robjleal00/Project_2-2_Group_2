@@ -275,7 +275,7 @@ public class MainApp extends Application {
                 if (map[i][j].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
-                if (map[i][j].contains("E")) {
+                if (map[i][j].contains("E")) {//E^ UP E> RIGHT E< LEFT Ed DOWN
                     rectArray[i][j].setFill(yellow);
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
