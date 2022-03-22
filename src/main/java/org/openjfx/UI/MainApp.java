@@ -1,6 +1,6 @@
 package org.openjfx.UI;
+
 import Config.Variables;
-import Entities.Entity;
 import Entities.Explorer;
 import Enums.EntityType;
 import Enums.Rotations;
@@ -18,7 +18,6 @@ import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -49,8 +48,6 @@ public class MainApp extends Application {
     VBox launchPane;
 
     protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT;
-
-    //private ArrayList<Entity> entities;
 
     File fileMap;
     String filePath;
@@ -112,6 +109,7 @@ public class MainApp extends Application {
         triangleRIGHT = new Image(input_stream1);
         ImageView agentRIGHT = new ImageView();
         agentRIGHT.setImage(triangleRIGHT);
+
 
 
         chooseMap = new Button("Select a map");
@@ -186,7 +184,10 @@ public class MainApp extends Application {
         primaryStage.setResizable(false);
         primaryStage.setTitle("Surveillance Game");
 
+
         primaryStage.show();
+
+
     }
     public void startGame() throws InterruptedException {
         GameController gm = new GameController(10, 10,this);
@@ -194,15 +195,15 @@ public class MainApp extends Application {
         gm.addVars(vr);
         gm.printMap();
         gm.addEntity(new Explorer(EntityType.EXPLORER, gm, new BasicExplo(),vr), 7, 4, Rotations.UP);
-            Task<Void> task = new Task<>(){
-                @Override
-                protected Void call() throws InterruptedException {
-                    gm.init();
-                    return null;
-                }
-            };
+        Task<Void> task = new Task<>(){
+            @Override
+            protected Void call() throws InterruptedException {
+                gm.init();
+                return null;
+            }
+        };
 
-         new Thread(task).start();
+        new Thread(task).start();
 
 
     }
@@ -274,25 +275,9 @@ public class MainApp extends Application {
                 if (map[i][j].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
-                /*if (map[i][j].contains("E")) {
-                    //E^ UP E> RIGHT E< LEFT Ed DOWN
+                if (map[i][j].contains("E")) {
                     rectArray[i][j].setFill(yellow);
-                }*/
-
-                if (map[i][j].contains("E^")) {
-                    //E^ UP E> RIGHT E< LEFT Ed DOWN
-                    rectArray[i][j].setFill(new ImagePattern(triangleUP));
                 }
-                if (map[i][j].contains("E>")) {
-                    rectArray[i][j].setFill(new ImagePattern(triangleRIGHT));
-                }
-                if (map[i][j].contains("E<")) {
-                    rectArray[i][j].setFill(new ImagePattern(triangleLEFT));
-                }
-                if (map[i][j].contains("Ed")) {
-                    rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
-                }
-
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
             }
@@ -318,20 +303,6 @@ public class MainApp extends Application {
     }
     */
 
-    public void displayAgent(ArrayList<Entity> entities){
-
-        Entity currentEntity;
-
-        for(int i = 0; i < entities.size(); i++){
-            currentEntity = entities.get(i);
-
-
-            //currentEntity.getCurrentRotation();
-            //int x_Entity = currentEntity.getX();
-            //currentEntity.getY();
-        }
-
-    }
 
     public void spawnIntruder(int numIntruders) {
         int i;
