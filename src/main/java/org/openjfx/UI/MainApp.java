@@ -1,5 +1,6 @@
 package org.openjfx.UI;
 import Config.Variables;
+import Entities.Entity;
 import Entities.Explorer;
 import Enums.EntityType;
 import Enums.Rotations;
@@ -17,6 +18,7 @@ import javafx.scene.layout.*;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.control.Label;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.stage.FileChooser;
@@ -48,7 +50,7 @@ public class MainApp extends Application {
 
     protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT;
 
-    private ArrayList<Entity> entities;
+    //private ArrayList<Entity> entities;
 
     File fileMap;
     String filePath;
@@ -272,9 +274,25 @@ public class MainApp extends Application {
                 if (map[i][j].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
-                if (map[i][j].contains("E")) {//E^ UP E> RIGHT E< LEFT Ed DOWN
+                /*if (map[i][j].contains("E")) {
+                    //E^ UP E> RIGHT E< LEFT Ed DOWN
                     rectArray[i][j].setFill(yellow);
+                }*/
+
+                if (map[i][j].contains("E^")) {
+                    //E^ UP E> RIGHT E< LEFT Ed DOWN
+                    rectArray[i][j].setFill(new ImagePattern(triangleUP));
                 }
+                if (map[i][j].contains("E>")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleRIGHT));
+                }
+                if (map[i][j].contains("E<")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleLEFT));
+                }
+                if (map[i][j].contains("Ed")) {
+                    rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
+                }
+
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
             }
