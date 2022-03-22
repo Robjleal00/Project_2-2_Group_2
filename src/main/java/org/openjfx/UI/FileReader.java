@@ -49,6 +49,10 @@ public class FileReader {
             {
                 String fullLine = scan.nextLine();
                 String[] parts = fullLine.split("=");
+                int index = parts[1].indexOf("/");
+                if(index >= 0){
+                    parts[1] = parts[1].substring(0, index);
+                }
                 //seperate string into header and value
                 String id = parts[0];
                 String value = parts[1];
@@ -108,7 +112,6 @@ public class FileReader {
             }
         }
     }
-
 
     public Area getSpawnArea()
     {
