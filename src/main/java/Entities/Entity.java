@@ -23,6 +23,7 @@ public class Entity {
 
     public void walk(int d) {
     }
+    public void nothing(int a){}
     public void showMeWhatUSaw(){
 
     }

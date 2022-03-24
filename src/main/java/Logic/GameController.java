@@ -5,8 +5,7 @@ import Enums.EntityType;
 import Enums.Moves;
 import Enums.Rotations;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 import Config.*;
 import ObjectsOnMap.ObjectOnMap;
@@ -14,7 +13,9 @@ import ObjectsOnMap.Teleporter;
 import javafx.application.Platform;
 import org.openjfx.UI.MainApp;
 
-import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class GameController {
     private String[][] map;
@@ -27,7 +28,8 @@ public class GameController {
     private HashMap<Entity, int[]> entityLocations;
     private HashMap<ObjectOnMap, int[]> objectsLocations;
     private HashMap<Entity, Rotations> entityRotationsHashMap;
-    private HashMap<Entity, Moves> queuedMoves;
+    HashMap<Entity, Integer> moveMap;
+    private Map<Entity, Moves> queuedMoves;
     private HashMap<Entity,Pose> entityInitialPoses;
     private ArrayList<Integer> allUnseenTiles;
     private boolean PRINTMAPPINGS ;
@@ -40,6 +42,7 @@ public class GameController {
     private final int MAX_TURNS=1000;
 
     public GameController(int height, int length,MainApp graphics) {
+        moveMap=new HashMap<>();
         allUnseenTiles = new ArrayList<>();
         this.mapLength = length;
         this.mapHeight = height;
@@ -51,7 +54,6 @@ public class GameController {
         entityLocations = new HashMap<>();
         objectsLocations = new HashMap<>();
         entityRotationsHashMap = new HashMap<>();
-        queuedMoves = new HashMap<>();
         Config con = new Config();
         PRINTMAPPINGS=con.PRINTMIND;
         PRINTVISION=con.PRINTVISION;
@@ -90,6 +92,8 @@ public class GameController {
         this.walkSpeed=vr.walkSpeed();
         this.eyeRange=vr.eyeRange();
     }
+    public void nothing(int a){}
+
     public void init() throws InterruptedException {
         this.maxExploNum=allUnseenTiles.size();
         boolean wasBroken=false;
@@ -103,20 +107,23 @@ public class GameController {
                 print("------------------------");
                 printMap();
             }
-            for (Entity e : entities) {
-                Moves currentMove = e.getMove();
-                queuedMoves.put(e, currentMove);
-            }
-            Moves lastmove=Moves.STUCK;
+            //.forEach((k,v)->v==Moves.WALK ? k.walk(executeMove(k,v)):k.nothing(executeMove(k,v)));
+            entities.stream().collect(Collectors.toMap(Function.identity(),Entity ::getMove,(o1,o2)->o1,ConcurrentHashMap::new)).forEach((k,v)->moveMap.put(k,executeMove(k,v)));
+            moveMap.entrySet().stream().filter(e->e.getValue()>0).forEach(e->e.getKey().walk(e.getValue()));
+                           // .entrySet().stream()
+                            //.filter(e->executeMove(e.getKey(),e.getValue())!=-1).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue))
+                            //.entrySet().stream().filter(e->e.getValue()==Moves.WALK).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue))
+                            //.forEach((k,v)->k.walk(executeMove(k,v)));
+            System.out.println(queuedMoves);
+
+            //queuedMoves.forEach();
+            /*
             for (Entity e : entities) {
                 int tester=executeMove(e, queuedMoves.get(e));
                 if (tester!=-1) {
                     Moves move = queuedMoves.get(e);
                     switch (move) {
-                        case WALK -> {
-                            e.walk(tester);
-                            lastmove=move;
-                        }
+                        case WALK -> {e.walk(tester);lastmove=move;}
                         //case USE_TELEPORTER -> {System.out.println(move);}
                         case TURN_AROUND ->{e.turnAround();lastmove=move;}
                         case TURN_RIGHT -> {e.turnRight();lastmove=move;}
@@ -132,7 +139,7 @@ public class GameController {
                 }
             }
 
-
+             */
             if(DEBUG_EPXLO){
                 System.out.println(allUnseenTiles.toString());
             }
@@ -142,7 +149,7 @@ public class GameController {
             }
             turns++;
             checkWin(turns);
-             Thread.sleep(1000);
+             Thread.sleep(200);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");

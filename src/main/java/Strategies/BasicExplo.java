@@ -39,10 +39,11 @@ public class BasicExplo extends Strategy {
         int eyeRange=vision.length;
         int check = eyeRange-2;
         if(firstPhase) {
-            if (!Objects.equals(vision[check][1], " ")) {
+            //if (!Objects.equals(vision[check][1], " ")) {
                 //System.out.println("FOUND A WALL");
-                firstPhase=false;
-            }else return Moves.WALK;
+              //  firstPhase=false;
+            //}else return Moves.WALK;
+            return Moves.WALK;
         }
         if(!firstPhase) {
             TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
