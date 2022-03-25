@@ -28,7 +28,7 @@ public class GameController {
     private HashMap<Entity, int[]> entityLocations;
     private HashMap<ObjectOnMap, int[]> objectsLocations;
     private HashMap<Entity, Rotations> entityRotationsHashMap;
-    HashMap<Entity, Integer> moveMap;
+    private  HashMap<Entity, Integer> moveMap;
     private Map<Entity, Moves> queuedMoves;
     private HashMap<Entity,Pose> entityInitialPoses;
     private ArrayList<Integer> allUnseenTiles;
@@ -64,6 +64,7 @@ public class GameController {
         entityInitialPoses=new HashMap<>();
     }
     public GameController(int height, int length) {
+        moveMap=new HashMap<>();
         allUnseenTiles = new ArrayList<>();
         this.mapLength = length;
         this.mapHeight = height;
@@ -92,8 +93,6 @@ public class GameController {
         this.walkSpeed=vr.walkSpeed();
         this.eyeRange=vr.eyeRange();
     }
-    public void nothing(int a){}
-
     public void init() throws InterruptedException {
         this.maxExploNum=allUnseenTiles.size();
         boolean wasBroken=false;
@@ -115,31 +114,11 @@ public class GameController {
                             //.entrySet().stream().filter(e->e.getValue()==Moves.WALK).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue))
                             //.forEach((k,v)->k.walk(executeMove(k,v)));
             System.out.println(queuedMoves);
-
-            //queuedMoves.forEach();
-            /*
-            for (Entity e : entities) {
-                int tester=executeMove(e, queuedMoves.get(e));
-                if (tester!=-1) {
-                    Moves move = queuedMoves.get(e);
-                    switch (move) {
-                        case WALK -> {e.walk(tester);lastmove=move;}
-                        //case USE_TELEPORTER -> {System.out.println(move);}
-                        case TURN_AROUND ->{e.turnAround();lastmove=move;}
-                        case TURN_RIGHT -> {e.turnRight();lastmove=move;}
-                        case TURN_LEFT -> {e.turnLeft();lastmove=move;}
-                        case STUCK -> {
-                           if(lastmove==Moves.STUCK){
-                                   lastmove=move;
-                                  allBroken=true;
-
-                           }
-                        }
-                    }
+            if(PRINTMAPPINGS){
+                for (Entity e : entities) {
+                    e.showMeWhatUSaw();
                 }
             }
-
-             */
             if(DEBUG_EPXLO){
                 System.out.println(allUnseenTiles.toString());
             }
@@ -217,16 +196,10 @@ public class GameController {
         printArray(map);
     }
     public void printArray(String[][] thing) {
-        int lenght = thing[0].length;
-        for (String[] strings : thing) {
-            for (int j = 0; j < lenght; j++) {
-                if (j == lenght - 1) {
-                    print(strings[j]);
-                } else {
-                    System.out.print(strings[j] + "-");
-                }
-            }
-        }
+        Arrays.stream(thing).forEach(this::printRow);
+    }
+    public void printRow(String[] row) {
+        print(Arrays.stream(row).toList().stream().collect(Collectors.joining("-")));
     }
     public String[][] giveVision(Entity e) {
         Rotations rot = entityRotationsHashMap.get(e);
@@ -428,7 +401,6 @@ public class GameController {
     }
     private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
-
         switch (m) {
             case USE_TELEPORTER -> {
                 //System.out.println("HE WANTS TO USE IT");
@@ -444,36 +416,40 @@ public class GameController {
                         putOnMap(symbol(e),target);
                         putOnMap("M1",pos);
                         entityLocations.put(e,target);
-                        return 1;
+                        return 0;
                     }
                     else return -1;
                 }
             }
             case STUCK -> {
-                return 1;
+                return 0;
             }
             case TURN_LEFT -> {
                 switch (rotation) {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnLeft();
+                        return 0;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnLeft();
+                        return 0;
 
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnLeft();
+                        return 0;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnLeft();
+                        return 0;
                     }
                 }
             }
@@ -482,22 +458,26 @@ public class GameController {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnRight();
+                        return 0;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnRight();
+                        return 0;
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnRight();
+                        return 0;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnRight();
+                        return 0;
                     }
                 }
             }
@@ -506,23 +486,26 @@ public class GameController {
                     case DOWN -> {
                         entityRotationsHashMap.put(e, Rotations.UP);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnAround();
+                        return 0;
                     }
                     case LEFT -> {
                         entityRotationsHashMap.put(e, Rotations.RIGHT);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnAround();
+                        return 0;
                     }
                     case RIGHT -> {
                         entityRotationsHashMap.put(e, Rotations.LEFT);
                         updateAgentDisplay(e);
-
-                        return 1;
+                        e.turnAround();
+                        return 0;
                     }
                     case UP -> {
                         entityRotationsHashMap.put(e, Rotations.DOWN);
                         updateAgentDisplay(e);
-                        return 1;
+                        e.turnAround();
+                        return 0;
                     }
                 }
             }

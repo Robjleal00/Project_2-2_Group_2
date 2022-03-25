@@ -108,6 +108,7 @@ public class Launcher {
         String o = "T1";
         //System.out.print(Integer.valueOf(o,"T"));
     }
+
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         FileReader fileReader = new FileReader();
