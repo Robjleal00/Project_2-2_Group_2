@@ -1,6 +1,6 @@
 package Strategies;
 
-public class Constraints {
+public class Constraints {//multi-agent aspect of basic explo
     private int MAX_Y;
     private int MIN_Y;
     private int MAX_X;

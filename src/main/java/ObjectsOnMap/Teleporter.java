@@ -1,6 +1,6 @@
 package ObjectsOnMap;
 
-public class Teleporter extends ObjectOnMap {
+public class Teleporter extends ObjectOnMap { // example of implemented object on map
     private int id;
     private int[] yx;
     private Teleporter link;

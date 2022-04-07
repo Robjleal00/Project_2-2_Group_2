@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.ArrayList;
 
 public class Launcher {
+    // creates a game controller from a file path, use for MainApp
     public GameController makeGame(String filePath, MainApp app){
         //GM needs height width
         // walls added and stuff
@@ -90,25 +91,22 @@ public class Launcher {
             filledSpots.add(takenSpot);
         }
     }
+    // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        FileReader fileReader = new FileReader();
         Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
         gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
-       // Teleporter t2 = new Teleporter(2,5,5,9,9);
-       // t1.addLink(t2);
         gm.addObject(t1);
-        //gm.addObject(t2);
-       // gm.printMap();
         gm.addWall(0,5,19,5);
         gm.init();
-        String o = "T1";
-        //System.out.print(Integer.valueOf(o,"T"));
-    }
 
+    }
+ /*
+ gives testing map, do what u want here
+  */
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         FileReader fileReader = new FileReader();

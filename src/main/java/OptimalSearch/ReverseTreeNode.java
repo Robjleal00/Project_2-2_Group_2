@@ -13,7 +13,7 @@ import java.util.Objects;
 
 import static java.util.Collections.max;
 
-public class ReverseTreeNode {
+public class ReverseTreeNode { // prolly not used anymore
     private final Moves move;
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;

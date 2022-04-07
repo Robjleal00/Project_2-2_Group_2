@@ -7,7 +7,7 @@ import Enums.Rotations;
 import Logic.GameController;
 import Strategies.Strategy;
 
-public class Explorer extends Entity {
+public class Explorer extends Entity { // example of an implemented entity
     private int x;
     private int y;
     private Rotations currentRotation;
@@ -32,7 +32,7 @@ public class Explorer extends Entity {
     }
 
     @Override
-    public Moves getMove() {
+    public Moves getMove() {//gets vision and passes on needed variables to strategy
         String[][] vision = gm.giveVision(this);
         int[] xy = {x, y};
         return st.decideOnMove(vision, xy, currentRotation,vr);

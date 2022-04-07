@@ -15,7 +15,7 @@ import java.util.Objects;
 
 import static java.util.Collections.max;
 
-public class TreeNode {
+public class TreeNode { // stuff for basicexplo
     private final Moves move;
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;

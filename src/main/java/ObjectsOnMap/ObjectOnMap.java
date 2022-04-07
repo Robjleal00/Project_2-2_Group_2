@@ -1,6 +1,6 @@
 package ObjectsOnMap;
 
-public class ObjectOnMap {
+public class ObjectOnMap { // use this to implement objects on map
     public String getSymbol(){
         return "O";
     }

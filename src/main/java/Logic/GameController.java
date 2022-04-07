@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-public class GameController {
+public class GameController { // self explanatory
     private String[][] map;
     private int mapLength;
     private int mapHeight;
@@ -40,7 +40,9 @@ public class GameController {
     private int walkSpeed;
     private MainApp graphicsUpdater;
     private final int MAX_TURNS=1000;
-
+/*
+Use this to construct with graphics.
+ */
     public GameController(int height, int length,MainApp graphics) {
         moveMap=new HashMap<>();
         allUnseenTiles = new ArrayList<>();
@@ -63,6 +65,9 @@ public class GameController {
         this.graphicsUpdater=graphics;
         entityInitialPoses=new HashMap<>();
     }
+    /*
+    Use this to construct without graphics
+     */
     public GameController(int height, int length) {
         moveMap=new HashMap<>();
         allUnseenTiles = new ArrayList<>();
@@ -84,6 +89,10 @@ public class GameController {
         DEBUG_EPXLO=con.DEBUG_EXPLO;
         entityInitialPoses=new HashMap<>();
     }
+    /*
+    Use this if u wanna make a printer or sth
+    GM has functions for printing arrays easy so using a basic one as a printer is quite handy
+     */
     public GameController() {
     }
     public ArrayList<Entity> getEntities(){
@@ -97,8 +106,23 @@ public class GameController {
         this.maxExploNum=allUnseenTiles.size();
         boolean wasBroken=false;
         int turns = 0;
+        if(GUI){
+            Platform.runLater(() -> graphicsUpdater.update(map));
+        }
+        else{
+            print("------------------------");
+            printMap();
+            print("------------------------");
+        }
         while (isRunning) {//gameloop
             boolean allBroken=false;
+            // This cute little line get all the moves from the agents, effectively executing everything except turning
+            entities.stream().collect(Collectors.toMap(Function.identity(),Entity ::getMove,(o1,o2)->o1,ConcurrentHashMap::new)).forEach((k,v)->moveMap.put(k,executeMove(k,v)));
+            // this checks if all of them are stuck
+            if (moveMap.entrySet().stream().allMatch(e->e.getValue()==-999))allBroken=true;
+            // And this executes all walking (possibly to be removed later)
+            moveMap.entrySet().stream().filter(e->e.getValue()>0).forEach(e->e.getKey().walk(e.getValue()));
+            moveMap.clear();
             if(GUI){
                 Platform.runLater(() -> graphicsUpdater.update(map));
             }
@@ -106,14 +130,6 @@ public class GameController {
                 print("------------------------");
                 printMap();
             }
-            //.forEach((k,v)->v==Moves.WALK ? k.walk(executeMove(k,v)):k.nothing(executeMove(k,v)));
-            entities.stream().collect(Collectors.toMap(Function.identity(),Entity ::getMove,(o1,o2)->o1,ConcurrentHashMap::new)).forEach((k,v)->moveMap.put(k,executeMove(k,v)));
-            moveMap.entrySet().stream().filter(e->e.getValue()>0).forEach(e->e.getKey().walk(e.getValue()));
-                           // .entrySet().stream()
-                            //.filter(e->executeMove(e.getKey(),e.getValue())!=-1).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue))
-                            //.entrySet().stream().filter(e->e.getValue()==Moves.WALK).collect(Collectors.toMap(Map.Entry::getKey,Map.Entry::getValue))
-                            //.forEach((k,v)->k.walk(executeMove(k,v)));
-            System.out.println(queuedMoves);
             if(PRINTMAPPINGS){
                 for (Entity e : entities) {
                     e.showMeWhatUSaw();
@@ -202,6 +218,11 @@ public class GameController {
         print(Arrays.stream(row).toList().stream().collect(Collectors.joining("-")));
 
     }
+    /*
+    returns vision ? idk seems self explanatory
+    vision is piece of map, gives it with respect to
+     entitys location rotation walls in the way and all that
+     */
     public String[][] giveVision(Entity e) {
         Rotations rot = entityRotationsHashMap.get(e);
         String[][] vision = new String[eyeRange][3];
@@ -379,6 +400,7 @@ public class GameController {
         removeFromMap(xy);
         putOnMap(symbol(e),xy);
     }
+    //handy for checking if two positions are equal
     private boolean equal(int[]a, int[]b){
         return(a[0]==b[0]&&a[1]==b[1]);
     }
@@ -400,6 +422,9 @@ public class GameController {
         }
         return null;
     }
+    // executes rotations and teleporting(if possible teleporting)
+    // returns int value for walking for how much the entity can actually walk
+    // for handling collisions and such
     private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
         switch (m) {
@@ -423,7 +448,7 @@ public class GameController {
                 }
             }
             case STUCK -> {
-                return 0;
+                return -999;
             }
             case TURN_LEFT -> {
                 switch (rotation) {
@@ -732,6 +757,7 @@ public class GameController {
     private boolean existsInBoard(int[] pos) {
         return (pos[0] > -1 && pos[0] < mapHeight && pos[1] > -1 && pos[1] < mapLength);
     }
+    // all this usable for checking win condition
     private int coordsToNumber(int h, int l) {
         return (h + l*mapHeight);
     }

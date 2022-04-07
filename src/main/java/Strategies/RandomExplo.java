@@ -16,6 +16,7 @@ public class RandomExplo extends Strategy{
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final Constraints constraints;
+    private final Moves[] moves = {Moves.TURN_AROUND,Moves.TURN_LEFT, Moves.TURN_AROUND,Moves.WALK};
     //private final ArrayList<Point> visitedPoints;
     boolean firstPhase;
 

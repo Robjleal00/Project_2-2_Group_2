@@ -2,7 +2,7 @@ package Logic;
 
 import Enums.Rotations;
 
-public class Pose {
+public class Pose { // transforms global coordinates to local for entity, used for teleeporters for now
     private Rotations rot;
     private int[]pos;
     public Pose(Rotations rot, int[] pos){

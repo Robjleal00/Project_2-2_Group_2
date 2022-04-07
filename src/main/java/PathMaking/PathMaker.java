@@ -7,7 +7,7 @@ import Enums.Rotations;
 import java.sql.Array;
 import java.util.*;
 
-public class PathMaker {
+public class PathMaker { // object for pathmaking
     private HashMap<Integer, ArrayList<Integer>> explored;
     private HashMap<Integer, ArrayList<Integer>> walls;
     private String[][] mapToExplore;
@@ -33,7 +33,7 @@ public class PathMaker {
         this.currentRotation = rot;
         depth=2;
     }
-
+// 2 ways to start, one with hashmap of points, one with mindmap which still needs to be read
     public PathMaker(HashMap<Integer, ArrayList<Integer>> explored, HashMap<Integer, ArrayList<Integer>> walls, HashMap<Integer, ArrayList<Integer>> explorationPoints, ArrayList<Point> visitedPoints, Variables vr, int[] xy, Rotations rot) {
         this.explored = explored;
         this.walls = walls;
@@ -282,6 +282,18 @@ public class PathMaker {
         }
         return Moves.STUCK;
     }
+    /*
+    Order of pathmaking:
+    1. check if there are points to explore
+    2. find the points to explore
+    3. find the closest point ( checks if the target can be reached)
+    Some objects cant be reached cus of speed not always being 1 so we have to check
+    4. does a djikstra-like wave, with respect to obstacles you can bump in
+    5. once the target is found, get the path and find the easy move to get where uw ant
+    Methods named nicely so should be clear enough whats going on
+    anyways all of this works so u dont need to touch it much
+
+     */
     public Moves giveMove(){
         if(mapToExplore!=null)findPoints();
         Point targetPoint = closestPoint();

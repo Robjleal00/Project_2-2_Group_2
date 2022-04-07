@@ -18,7 +18,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import static java.util.Collections.max;
 import static java.util.Collections.min;
 
-public class TreeRoot {
+public class TreeRoot { //more stuff for basic explo
     private final HashMap<Integer,ArrayList<Integer>> explored;
     private final HashMap<Integer,ArrayList<Integer>> walls;
     private final HashMap<Integer,int[]>objects;

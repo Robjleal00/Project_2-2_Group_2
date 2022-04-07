@@ -16,7 +16,7 @@ import static java.util.Collections.max;
 import static java.util.Collections.min;
 
 
-public class BasicExplo extends Strategy {
+public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final HashMap<Integer,int[]> objects;

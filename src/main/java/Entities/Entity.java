@@ -3,7 +3,7 @@ package Entities;
 import Enums.EntityType;
 import Enums.Moves;
 
-public class Entity {
+public class Entity { // extend this to create entities for it all to work
     public EntityType getType() {
         return EntityType.INTRUDER;
     }
@@ -23,7 +23,6 @@ public class Entity {
 
     public void walk(int d) {
     }
-    public void nothing(int a){}
     public void showMeWhatUSaw(){
 
     }
