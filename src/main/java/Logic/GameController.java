@@ -200,6 +200,7 @@ public class GameController {
     }
     public void printRow(String[] row) {
         print(Arrays.stream(row).toList().stream().collect(Collectors.joining("-")));
+
     }
     public String[][] giveVision(Entity e) {
         Rotations rot = entityRotationsHashMap.get(e);
