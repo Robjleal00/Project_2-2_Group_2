@@ -110,7 +110,6 @@ public class PathMaker { // object for pathmaking
             Point pointer= new Point(currentPosition,history);
             returner.add(0,pointer);
         }
-
        // System.out.println(returner);
         return returner;
     }

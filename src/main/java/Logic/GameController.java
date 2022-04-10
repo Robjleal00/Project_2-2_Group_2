@@ -663,12 +663,10 @@ Use this to construct with graphics.
 
     }
     public int getEntitiesSize() {return entities.size();}
-    public void print(String s) {
-        System.out.println(s);
+    public static <T> void  print(T t) {
+        System.out.println(t);
     }
-    public void print(int s) {
-        System.out.println(s);
-    }
+
     public void makeBorders(int length, int height) {
         for (int i = 0; i < length; i++) {
             putOnMap("W", 0, i);

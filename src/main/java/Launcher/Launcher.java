@@ -101,7 +101,9 @@ public class Launcher {
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         gm.addObject(t1);
         gm.addWall(0,5,19,5);
-        gm.init();
+        //gm.init();
+        gm.print("D");
+        gm.print(12);
 
     }
  /*
