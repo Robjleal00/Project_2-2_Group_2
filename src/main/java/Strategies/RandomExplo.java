@@ -1,14 +1,10 @@
 package Strategies;
 import Config.Variables;
-import Enums.Moves;
-import Enums.Rotations;
+import Enums.*;
 import java.util.Objects;
-import java.util.Random;
 
 public class RandomExplo extends Strategy{
     private final Moves[] moves = {Moves.TURN_AROUND,Moves.TURN_LEFT, Moves.TURN_AROUND,Moves.WALK};
-    static Random random;
-    public RandomExplo() {}
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr){
         int eyeRange = vision.length;
