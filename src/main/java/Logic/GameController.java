@@ -216,7 +216,6 @@ Use this to construct with graphics.
     }
     public void printRow(String[] row) {
         print(Arrays.stream(row).toList().stream().collect(Collectors.joining("-")));
-
     }
     /*
     returns vision ? idk seems self explanatory
@@ -663,10 +662,10 @@ Use this to construct with graphics.
 
     }
     public int getEntitiesSize() {return entities.size();}
+    // this prints anything u give it really
     public static <T> void  print(T t) {
         System.out.println(t);
     }
-
     public void makeBorders(int length, int height) {
         for (int i = 0; i < length; i++) {
             putOnMap("W", 0, i);
@@ -745,6 +744,9 @@ Use this to construct with graphics.
         }
         if (e.getType() == EntityType.EXPLORER) {
             return "E"+addition;
+        }
+        if(e.getType()==EntityType.GUARD){
+            return "G"+addition;
         }
         return "ERROR";
     }

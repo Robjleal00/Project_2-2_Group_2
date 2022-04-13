@@ -2,6 +2,7 @@ package Launcher;
 
 import Config.Variables;
 import Entities.Explorer;
+import Entities.Guard;
 import Enums.EntityType;
 import Enums.Rotations;
 import Logic.GameController;
@@ -17,6 +18,7 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Launcher {
     // creates a game controller from a file path, use for MainApp
@@ -97,14 +99,26 @@ public class Launcher {
         Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         gm.addObject(t1);
         gm.addWall(0,5,19,5);
         //gm.init();
-        gm.print("D");
-        gm.print(12);
-
+       // gm.print("D");
+        //gm.print(12);
+        System.out.println("STARTED");
+        int[][] idleness = new int[200][200];
+        for(int i=0;i<200;i++){
+            for(int j=0;j<200;j++){
+                idleness[i][j]=5;
+            }
+        }
+        for(int i=0;i<200;i++){
+            for(int j=0;j<200;j++){
+                idleness[i][j]--;
+            }
+        }
+        System.out.println("ENDED");
     }
  /*
  gives testing map, do what u want here

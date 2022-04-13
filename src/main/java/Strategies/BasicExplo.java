@@ -23,6 +23,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final Constraints constraints;
     private final ArrayList<Point> visitedPoints;
     boolean firstPhase;
+    boolean patrolling;
+    boolean chasing;
 
     public BasicExplo() {
         explored = new HashMap<>();
@@ -31,6 +33,11 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         constraints=new Constraints();
         firstPhase=true;
         visitedPoints=new ArrayList<>();
+    }
+    @Override
+    public void setBooleans(boolean p, boolean c){
+        this.patrolling=p;
+        this.chasing=c;
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
