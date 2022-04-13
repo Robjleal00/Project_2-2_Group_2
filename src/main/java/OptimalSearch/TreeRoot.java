@@ -129,26 +129,7 @@ public class TreeRoot { //more stuff for basic explo
                 }
             }
         }
-        boolean allTheSame = true;
-        for (Double value : values) {
-            if (value != result) {
-                allTheSame = false;
-                break;
-            }
-        }
-        if (allTheSame) {
-            if(result!=0){
-            // System.out.println("ALL THE SAME AAAAAA");
-            ArrayList<Integer> Reversevalues = new ArrayList<>();
-            for (Moves avaliableMove : avaliableMoves) {
-                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, result, 0,vr).getValue(1,depth));
-            }
-            int Reverseresult = min(Reversevalues);
-            //System.out.println(Reversevalues);
-            return avaliableMoves[Reversevalues.indexOf(Reverseresult)];
-
-        } else return Moves.STUCK;
-        }else return avaliableMoves[values.indexOf(result)];
+        return avaliableMoves[values.indexOf(result)];
 
     }
     boolean itsNextToMe(int[]pos){
