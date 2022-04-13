@@ -15,7 +15,7 @@ public class Intruder extends Entity{
     }
 
     @Override
-    public void turnLeft() {
+    public void turnLeft() { // dont touch turning imma fix that later
         super.turnLeft();
     }
 
