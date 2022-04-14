@@ -143,7 +143,7 @@ Use this to construct with graphics.
                 wasBroken=true;
             }
             turns++;
-            checkWin(turns);
+            //checkWin(turns);
              Thread.sleep(200);
         }
         if(wasBroken){

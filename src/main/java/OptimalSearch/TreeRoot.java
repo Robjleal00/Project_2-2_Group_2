@@ -63,72 +63,7 @@ public class TreeRoot { //more stuff for basic explo
             }
         }
          result = max(values);
-        if(PATHMAKING&&result==0){
 
-            String[][]mindMap=giveMappings();
-            if(hasPotential(mindMap)) {
-                PathMaker pm = new PathMaker(explored, walls, mindMap, visitedPoints, vr, xy.clone(), rot);
-                return pm.giveMove();
-            }else{
-                //System.out.println("NOTHING MORE TO EXPLORE HERE");
-                if(!objects.isEmpty()){
-                    //System.out.println("I KNOW A TELEPORTER THOUGH");
-                    int numberOfTeleporters = objects.keySet().size();
-                    int r;
-                    if(numberOfTeleporters!=1) r = ThreadLocalRandom.current().nextInt(1,numberOfTeleporters+1);
-                    else r=numberOfTeleporters;
-
-                    int[] position = objects.get(r);
-                    if(!itsNextToMe(position)) {
-                        HashMap<Integer, ArrayList<Integer>> explorationPoints = giveExplorationPoints(position);
-                        PathMaker pm = new PathMaker(explored, walls, explorationPoints, visitedPoints, vr, xy.clone(), rot);
-                        return pm.giveMove();
-                    }else {
-                        //System.out.println("IM IN FRONT OF IT");
-                        if(position[0]==xy[0]){
-                            if(position[1]>xy[1]){
-                                //System.out.println("I NEED TO BE LOOKING FORWARD");
-                                switch(rot){
-                                    case FORWARD -> {return Moves.USE_TELEPORTER;}
-                                    case BACK -> {return Moves.TURN_AROUND;}
-                                    case RIGHT -> {return Moves.TURN_LEFT;}
-                                    case LEFT -> {return Moves.TURN_RIGHT;}
-                                }
-                            }
-                            else {
-                                //System.out.println("NEED TO BE LOOKING BACK");
-                                switch(rot){
-                                    case FORWARD -> {return Moves.TURN_AROUND;}
-                                    case BACK -> {return Moves.USE_TELEPORTER;}
-                                    case RIGHT -> {return Moves.TURN_RIGHT;}
-                                    case LEFT -> {return Moves.TURN_LEFT;}
-                                }
-                            }
-                        }
-                        if(position[1]==xy[1]){
-                            if(position[0]>xy[0]){
-                                //System.out.println("I NEED TO BE LOOKING RIGHT");
-                                switch(rot){
-                                    case FORWARD -> {return Moves.TURN_RIGHT;}
-                                    case BACK -> {return Moves.TURN_LEFT;}
-                                    case RIGHT -> {return Moves.USE_TELEPORTER;}
-                                    case LEFT -> {return Moves.TURN_AROUND;}
-                                }
-                            }
-                            else {
-                                //System.out.println("NEED TO BE LOOKING LEFT");
-                                switch(rot){
-                                    case FORWARD -> {return Moves.TURN_LEFT;}
-                                    case BACK -> {return Moves.TURN_RIGHT;}
-                                    case RIGHT -> {return Moves.TURN_AROUND;}
-                                    case LEFT -> {return Moves.USE_TELEPORTER;}
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
         boolean allTheSame = true;
         for (Double value : values) {
             if (value != result) {
@@ -137,22 +72,78 @@ public class TreeRoot { //more stuff for basic explo
             }
         }
         if (allTheSame) {
-            if(result!=0){
-            // System.out.println("ALL THE SAME AAAAAA");
-            ArrayList<Integer> Reversevalues = new ArrayList<>();
-            for (Moves avaliableMove : avaliableMoves) {
-                Reversevalues.add(new ReverseTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot, result, 0,vr).getValue(1,depth));
-            }
-            int Reverseresult = min(Reversevalues);
-            //System.out.println(Reversevalues);
-            return avaliableMoves[Reversevalues.indexOf(Reverseresult)];
-
-        } else return Moves.STUCK;
+           return Moves.STUCK;
         }else return avaliableMoves[values.indexOf(result)];
 
     }
+    public Moves tryPathfinding(){
+        if(PATHMAKING){
+            String[][]mindMap=giveMappings();
+            if(hasPotential(mindMap)) {
+                PathMaker pm = new PathMaker(explored, walls, mindMap, visitedPoints, vr, xy.clone(), rot);
+                return pm.giveMove();
+            }
+        }
+        return Moves.STUCK;
+    }
+    public Moves tryTeleporting(){
+        if(!objects.isEmpty()){
+            //System.out.println("I KNOW A TELEPORTER THOUGH");
+            int numberOfTeleporters = objects.keySet().size();
+            int r;
+            if(numberOfTeleporters!=1) r = ThreadLocalRandom.current().nextInt(1,numberOfTeleporters+1);
+            else r=numberOfTeleporters;
+            int[] position = objects.get(r);
+            if(!itsNextToMe(position)) {
+                HashMap<Integer, ArrayList<Integer>> explorationPoints = giveExplorationPoints(position);
+                PathMaker pm = new PathMaker(explored, walls, explorationPoints, visitedPoints, vr, xy.clone(), rot);
+                return pm.giveMove();
+            }else {
+                if(position[0]==xy[0]){
+                    if(position[1]>xy[1]){
+                        //System.out.println("I NEED TO BE LOOKING FORWARD");
+                        switch(rot){
+                            case FORWARD -> {visitedPoints.clear();return Moves.USE_TELEPORTER;}
+                            case BACK -> {return Moves.TURN_AROUND;}
+                            case RIGHT -> {return Moves.TURN_LEFT;}
+                            case LEFT -> {return Moves.TURN_RIGHT;}
+                        }
+                    }
+                    else {
+                        //System.out.println("NEED TO BE LOOKING BACK");
+                        switch(rot){
+                            case FORWARD -> {return Moves.TURN_AROUND;}
+                            case BACK -> {visitedPoints.clear();return Moves.USE_TELEPORTER;}
+                            case RIGHT -> {return Moves.TURN_RIGHT;}
+                            case LEFT -> {return Moves.TURN_LEFT;}
+                        }
+                    }
+                }
+                if(position[1]==xy[1]){
+                    if(position[0]>xy[0]){
+                        //System.out.println("I NEED TO BE LOOKING RIGHT");
+                        switch(rot){
+                            case FORWARD -> {return Moves.TURN_RIGHT;}
+                            case BACK -> {return Moves.TURN_LEFT;}
+                            case RIGHT -> {visitedPoints.clear();return Moves.USE_TELEPORTER;}
+                            case LEFT -> {return Moves.TURN_AROUND;}
+                        }
+                    }
+                    else {
+                        //System.out.println("NEED TO BE LOOKING LEFT");
+                        switch(rot){
+                            case FORWARD -> {return Moves.TURN_LEFT;}
+                            case BACK -> {return Moves.TURN_RIGHT;}
+                            case RIGHT -> {return Moves.TURN_AROUND;}
+                            case LEFT -> {visitedPoints.clear();return Moves.USE_TELEPORTER;}
+                        }
+                    }
+                }
+            }
+        }
+        return Moves.STUCK;
+    }
     boolean itsNextToMe(int[]pos){
-        int[]mypos = xy;
         if(xy[0]==pos[0]){
             if(pos[1]==xy[1]+1)return true;
             if(pos[1]==xy[1]-1)return true;

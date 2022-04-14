@@ -296,6 +296,7 @@ public class PathMaker { // object for pathmaking
     public Moves giveMove(){
         if(mapToExplore!=null)findPoints();
         Point targetPoint = closestPoint();
+        if(targetPoint==null)return Moves.STUCK;
         this.properTarget=targetPoint.xy();
         ArrayList<int[]> visited = new ArrayList();
         ArrayList<Point> currentWave=new ArrayList<>();

@@ -25,14 +25,16 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean firstPhase;
     boolean patrolling;
     boolean chasing;
+    boolean exploDone;
 
     public BasicExplo() {
-        explored = new HashMap<>();
-        walls = new HashMap<>();
-        objects = new HashMap<>();
-        constraints=new Constraints();
-        firstPhase=true;
-        visitedPoints=new ArrayList<>();
+        this.explored = new HashMap<>();
+        this.walls = new HashMap<>();
+        this.objects = new HashMap<>();
+        this.constraints=new Constraints();
+        this.firstPhase=true;
+        this.visitedPoints=new ArrayList<>();
+        this.exploDone=false;
     }
     @Override
     public void setBooleans(boolean p, boolean c){
@@ -41,6 +43,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
+        Moves returner = Moves.STUCK;
         updateExploration(vision, xy, rot);
         if(!explored(xy))visitedPoints.add(new Point(xy,new ArrayList<>()));
         int eyeRange=vision.length;
@@ -52,16 +55,24 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             }else return Moves.WALK;
 
         }
-        if(!firstPhase) {
+        if(!firstPhase&&!exploDone) {
             TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
-           /* for(int id : objects.keySet()){
-                int[]pos = objects.get(id);
-                System.out.println(pos[0]);
-                System.out.println(pos[1]);
-            }*/
-            return root.getMove();
+            returner = root.getMove();
+            if(returner==Moves.STUCK){
+                returner = root.tryPathfinding();
+                if(returner==Moves.STUCK){
+                    returner = root.tryTeleporting();
+                    if(returner==Moves.STUCK)exploDone=true;
+                }
+            }
         }
-        return Moves.WALK;
+        if(exploDone){ System.out.println("I FINISHED");
+        if(patrolling){
+            //PATROLLING SHIT TO GO HERE
+        }
+        }
+
+        return returner;
     }
     public boolean explored(int[]xy){
         for(Point p : visitedPoints){
