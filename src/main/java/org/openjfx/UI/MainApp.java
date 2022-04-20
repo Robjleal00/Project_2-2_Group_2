@@ -50,7 +50,7 @@ public class MainApp extends Application {
     Label game;
     VBox launchPane;
 
-    protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT, teleport_icon;
+    protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT, teleport_icon, champagne_toast;
 
     File fileMap;
     String filePath;
@@ -114,6 +114,8 @@ public class MainApp extends Application {
         teleport_icon = new Image(input_stream6);
         //ImageView agentRIGHT = new ImageView();
         //agentRIGHT.setImage(triangleRIGHT);
+        FileInputStream input_stream7 = new FileInputStream("src/main/java/Images/champagne-toast.png");
+        champagne_toast = new Image(input_stream7);
 
 
 
@@ -294,6 +296,9 @@ public class MainApp extends Application {
                 }
                 if (map[j][i].contains("T")) {
                     rectArray[i][j].setFill(new ImagePattern(teleport_icon));
+                }
+                if (map[j][i].contains("P")) {
+                    rectArray[i][j].setFill(new ImagePattern(champagne_toast));
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
