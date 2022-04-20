@@ -341,6 +341,35 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         // SECOND ONE IN MATRIX IS X
         // GOTTA MOVE X's + LOWEST X TO REACH 0 SAME FOR Y
 
+
+
+    }
+    public HashMap<Integer, ArrayList<Integer>> createHashMap(String[][] mindMap)
+    {
+        HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap();
+        HashMap<Integer, ArrayList<Integer>> wallsMap = new HashMap();
+        //Removes the X's at the edges of the mindMap to create a functional HM
+        int x = 0;
+        int y = 0;
+        for (int i = 2; i < mindMap.length-2;i++)
+        {
+            x = i-2;
+            wallsMap.put(x,new ArrayList<Integer>());
+            hashMap.put(x,new ArrayList<Integer>());
+            for(int j = 2; j < mindMap[0].length-2;j++)
+            {
+                y = j-2;
+                if(mindMap[i][j].contains("W"))
+                {
+                    wallsMap.get(x).add(y);
+                }
+                else if(mindMap[i][j].contains(" "))
+                {
+                    hashMap.get(x).add(y);
+                }
+            }
+        }
+        return hashMap;
     }
 
 }
