@@ -344,6 +344,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
 
     }
+
     public HashMap<Integer, ArrayList<Integer>> createHashMap(String[][] mindMap)
     {
         HashMap<Integer, ArrayList<Integer>> hashMap = new HashMap();
@@ -370,6 +371,25 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             }
         }
         return hashMap;
+    }
+
+    //Creates an identical copy without the borders of the mindMap
+    public String[][] makeMap(String[][] mindMap)
+    {
+        String[][] newMap = new String[mindMap.length-4][mindMap[0].length-4];
+        int x = 0;
+        int y = 0;
+
+        for(int i = 2; i <mindMap.length-2;i++)
+        {
+            x = i-2;
+            for(int j = 2; j < mindMap[0].length-2;j++)
+            {
+                y = j-2;
+                newMap[x][y] = mindMap[i][j];
+            }
+        }
+        return newMap;
     }
 
 }
