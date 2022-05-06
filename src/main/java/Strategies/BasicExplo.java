@@ -67,6 +67,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             }
         }
         if(exploDone){ System.out.println("I FINISHED");
+
         if(patrolling){
             //PATROLLING SHIT TO GO HERE
         }
@@ -390,6 +391,56 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             }
         }
         return newMap;
+    }
+
+    /**
+     *
+     * @param individualMap map which you get from makeMap()
+     * @return
+     */
+    public int[][] makeLastSeenMap(String[][] individualMap)
+    {
+        int[][] lastSeen = new int[individualMap.length][individualMap[0].length];
+
+        for(int i = 0; i < individualMap.length; i++)
+        {
+            for(int j = 0; j < individualMap[0].length; j++)
+            {
+                // Since a wall isn't really worth visiting, I just assigned an arbitrary negative number
+                if(individualMap[i][j].contains("W"))
+                {
+                    lastSeen[i][j] = -1;
+                }
+                else
+                {
+                    // Make the security guard wish to check out everything
+                    lastSeen[i][j] = 1;
+                }
+            }
+        }
+        return lastSeen;
+    }
+
+    /**
+     *
+     * @param lastSeen
+     * @param visionRange Not quite sure how to extract an integer value fron String[][] vision, but it
+     *                    represents how far the agent can see
+     * @param x,y         The agent's position on the int[][] map decomposed
+     *
+     *
+     *              Question: since lastSeen is respective to each guard, does that mean this method type should be void
+     *                    or return the lastSeen 2D Array with the modified values?
+     */
+    public void setSeen(int[][] lastSeen, int visionRange, int x, int y)
+    {
+        for(int i = x - visionRange; i < x + visionRange; i++)
+        {
+            for(int j = y - visionRange; j < y + visionRange; j++)
+            {
+                lastSeen[i][j] = 0;
+            }
+        }
     }
 
 }
