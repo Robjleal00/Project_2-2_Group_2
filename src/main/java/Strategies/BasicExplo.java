@@ -422,6 +422,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     }
 
     /**
+     *  Question: Will this method be called one or reiteratively?
+     * @return
+     */
+    public Moves getPatrolPath(int x, int y, Rotations rotation)
+    {
+
+    }
+
+    /**
      *
      * @param lastSeen
      * @param visionRange Not quite sure how to extract an integer value fron String[][] vision, but it
