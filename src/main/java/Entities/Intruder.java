@@ -5,6 +5,7 @@ import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
 import Strategies.Strategy;
+import Config.Variables;
 
 public class Intruder extends Entity{
     private int x;
