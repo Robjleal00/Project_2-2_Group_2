@@ -442,27 +442,83 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             case BACK ->{return Moves.TURN_LEFT;}
         }
 
+        //move to right
         if(horizontalDifference > 0  ){
 
-            if(verticalDifference > 0){
-
+            if(verticalDifference > 0){//move up
+                switch(rotation){
+                    case BACK -> {return Moves.TURN_AROUND;}
+                    case FORWARD -> {return Moves.WALK;}
+                    case LEFT -> {return Moves.TURN_RIGHT;}
+                    case RIGHT ->{return Moves.TURN_LEFT;}
+                }
             }
-            else if(verticalDifference < 0){
-
+            else if(verticalDifference < 0){ //move down
+                switch(rotation){
+                    case FORWARD -> {return Moves.TURN_AROUND;}
+                    case BACK -> {return Moves.WALK;}
+                    case RIGHT -> {return Moves.TURN_RIGHT;}
+                    case LEFT ->{return Moves.TURN_LEFT;}
+                }
             }
-
+            else if(verticalDifference == 0){ //go right
+                switch(rotation){
+                    case LEFT -> {return Moves.TURN_AROUND;}
+                    case RIGHT -> {return Moves.WALK;}
+                    case FORWARD -> {return Moves.TURN_RIGHT;}
+                    case BACK ->{return Moves.TURN_LEFT;}
+                }
+            }
         }
+
+        //Move to left
         else if(horizontalDifference < 0 ){
-            if(verticalDifference > 0){
-
+            if(verticalDifference > 0){ //move up
+                switch(rotation){
+                    case BACK -> {return Moves.TURN_AROUND;}
+                    case FORWARD -> {return Moves.WALK;}
+                    case LEFT -> {return Moves.TURN_RIGHT;}
+                    case RIGHT ->{return Moves.TURN_LEFT;}
+                }
             }
-            else if(verticalDifference < 0){
-
+            if(verticalDifference < 0) { //move down
+                switch (rotation) {
+                    case FORWARD -> {return Moves.TURN_AROUND;}
+                    case BACK -> {return Moves.WALK;}
+                    case RIGHT -> {return Moves.TURN_RIGHT;}
+                    case LEFT -> {return Moves.TURN_LEFT;}
+                }
+            }
+            else if(verticalDifference == 0){ //go left
+                switch(rotation){
+                    case RIGHT-> {return Moves.TURN_AROUND;}
+                    case LEFT -> {return Moves.WALK;}
+                    case BACK -> {return Moves.TURN_RIGHT;}
+                    case FORWARD ->{return Moves.TURN_LEFT;}
+                }
             }
 
+            if(horizontalDifference == 0){
+                if(verticalDifference > 0){ //move down
+                    switch(rotation){
+                        case FORWARD -> {return Moves.TURN_AROUND;}
+                        case BACK -> {return Moves.WALK;}
+                        case RIGHT -> {return Moves.TURN_RIGHT;}
+                        case LEFT ->{return Moves.TURN_LEFT;}
+                    }
+                }
+                else if(verticalDifference < 0){ //move up
+                    switch (rotation) {
+                        case FORWARD -> {return Moves.TURN_AROUND;}
+                        case BACK -> {return Moves.WALK;}
+                        case RIGHT -> {return Moves.TURN_RIGHT;}
+                        case LEFT -> {return Moves.TURN_LEFT;}
+                    }
+                }
+            }
         }
+        return nextMove; //change this return
 
-        return nextMove;
     }
 
     /**
