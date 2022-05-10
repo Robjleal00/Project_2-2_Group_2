@@ -6,6 +6,7 @@ import Enums.Rotations;
 import Logic.GameController;
 import OptimalSearch.TreeRoot;
 import PathMaking.Point;
+import Patrolling.Position;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -422,12 +423,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     }
 
     /**
-     *  Question: Will this method be called one or reiteratively?
+     *  Question: Will this method be called once or reiteratively?
      * @return
      */
     public Moves getPatrolPath(int x, int y, Rotations rotation)
     {
-
+        Moves nextMove = null;
+        return nextMove;
     }
 
     /**
@@ -450,6 +452,46 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 lastSeen[i][j] = 0;
             }
         }
+    }
+
+    public void setSeenAll(int[][] lastSeen, int visionRange, int x, int y)
+    {
+        for(int i = 0; i < lastSeen.length; i++)
+        {
+            for(int j = 0; j < lastSeen[0].length; j++)
+            {
+                if(i > x - visionRange && i < x + visionRange
+                    && j > y - visionRange && j < y + visionRange)
+                {
+                    lastSeen[i][j] = 0;
+                }
+                else
+                {
+                    lastSeen[i][j]++;
+                }
+            }
+        }
+    }
+
+    public Position getMaxSquare(int[][] lastSeen)
+    {
+        int maxValue = 0;
+        int x = 0;
+        int y = 0;
+        for(int i = 0; i < lastSeen.length; i++)
+        {
+            for(int j = 0; j < lastSeen[0].length; j++)
+            {
+                if(lastSeen[i][j] > maxValue)
+                {
+                    maxValue = lastSeen[i][j];
+                    x = i;
+                    y = j;
+                }
+            }
+        }
+        Position highestPosition = new Position(x,y);
+        return highestPosition;
     }
 
 }
