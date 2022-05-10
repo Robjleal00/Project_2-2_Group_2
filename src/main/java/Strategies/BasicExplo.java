@@ -442,6 +442,26 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             case BACK ->{return Moves.TURN_LEFT;}
         }
 
+        if(horizontalDifference > 0  ){
+
+            if(verticalDifference > 0){
+
+            }
+            else if(verticalDifference < 0){
+
+            }
+
+        }
+        else if(horizontalDifference < 0 ){
+            if(verticalDifference > 0){
+
+            }
+            else if(verticalDifference < 0){
+
+            }
+
+        }
+
         return nextMove;
     }
 
