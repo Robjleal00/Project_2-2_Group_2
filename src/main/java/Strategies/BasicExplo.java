@@ -426,9 +426,22 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
      *  Question: Will this method be called once or reiteratively?
      * @return
      */
-    public Moves getPatrolPath(int x, int y, Rotations rotation)
+    public Moves getPatrolPath(Position targetPosition, Rotations rotation, Position agentPosition)
     {
         Moves nextMove = null;
+        // HorizontalDifference < 0 : left
+        //                      > 0 : right
+        // VDiff < 0 : Up
+        //       > 0 : Down
+        int horizontalDifference  = targetPosition.x - agentPosition.x;
+        int verticalDifference = targetPosition.y - agentPosition.y;
+        switch(rotation){
+            case LEFT -> {return Moves.TURN_AROUND;}
+            case RIGHT -> {return Moves.WALK;}
+            case FORWARD -> {return Moves.TURN_RIGHT;}
+            case BACK ->{return Moves.TURN_LEFT;}
+        }
+
         return nextMove;
     }
 
