@@ -15,8 +15,11 @@ public class IntruderSt extends Strategy{
     private final HashMap<Integer,int[]> objects;
     private boolean chased;
     private boolean searching;
+    Rotations[] avaliableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
     private final ArrayList<Point> visitedPoints;
     private boolean atGoal;
+    private int[] target;
+    private int[] start;
 
     //for A* Search
     //private int fn; // gn + hn = total cost of path
@@ -27,12 +30,14 @@ public class IntruderSt extends Strategy{
 // baysian pathfinding
     //at every move it checks whether it can see the target and/or a guard and/or a wall
 
-    public IntruderSt(HashMap<Integer, ArrayList<Integer>> explored, HashMap<Integer, ArrayList<Integer>> walls, HashMap<Integer, int[]> objects) {
+    public IntruderSt(HashMap<Integer, ArrayList<Integer>> explored, HashMap<Integer, ArrayList<Integer>> walls, HashMap<Integer, int[]> objects, int[] start, int[] target) {
         this.explored = explored;
         this.walls = walls;
         this.objects = objects;
         this.visitedPoints = new ArrayList<>();
         this.atGoal = false;
+        this.start = start;
+        this.target = target;
     }
 
     @Override
@@ -56,8 +61,8 @@ public class IntruderSt extends Strategy{
 
 
     //The goal will be in the direction of the target, but not the target itself
-    public void AStarSearch(int[] start, int[] tempTarget, ArrayList<Integer> h){
-        LinkedList<int[]> set = new LinkedList<>();
+    public void AStarSearch(int[] tempTarget, ArrayList<Integer> h){
+        LinkedList<int[]> set = new LinkedList<>(); //probably needs to be hashmap
         set.add(start);
 
         //The last entry in this list is the last node it came from
@@ -82,6 +87,7 @@ public class IntruderSt extends Strategy{
             set.remove(current);
 
             //for each neighbor of current
+
             /**
              * d(current, neighbor) (THIS COULD BE A METHOD THAT CONNECTS TO THE BAYSIAN)
              * is the weight of the edge from current to neighbor
