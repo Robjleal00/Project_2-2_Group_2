@@ -24,7 +24,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final HashMap<Integer,int[]> objects;
     private final Constraints constraints;
     private final ArrayList<Point> visitedPoints;
-    private int[][] agentSeenMap;
     boolean firstPhase;
     boolean patrolling;
     boolean chasing;
@@ -85,13 +84,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             int fixedY=(xy[1]*-1)+fixY;
             int[] fixed={fixedX,fixedY};
             this.agent.nowPatrol(fixed);
-            String[][] agentPrivateMap = makeMap(map);
-            agentSeenMap = makeLastSeenMap(agentPrivateMap);
+
 
         }
         if(patrolling){
-            int[] targetPosition = getMaxSquare(agentSeenMap,xy);
-            return getPatrolPath(targetPosition,rot, xy);
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] agentPrivateMap = makeMap(tr.giveMappings());
+            int[][] agentSeenMap = makeLastSeenMap(agentPrivateMap);
+            Position targetPosition = getMaxSquare(agentSeenMap);
+            Moves nextMove = getPatrolPath(targetPosition,rot, xy);
         }
 
 
@@ -449,15 +450,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
      *  Question: Will this method be called once or reiteratively?
      * @return
      */
-    public Moves getPatrolPath(int[] targetPosition, Rotations rotation, int[] agentPosition)
+    public Moves getPatrolPath(Position targetPosition, Rotations rotation, int[] agentPosition)
     {
         Moves nextMove = null;
         // HorizontalDifference < 0 : left
         //                      > 0 : right
         // VDiff < 0 : Up
         //       > 0 : Down
-        int horizontalDifference  = targetPosition[0] - agentPosition[0];
-        int verticalDifference = targetPosition[1] - agentPosition[1];
+        int horizontalDifference  = targetPosition.x - agentPosition[0];
+        int verticalDifference = targetPosition.y - agentPosition[1];
         switch(rotation){
             case LEFT -> {return Moves.TURN_AROUND;}
             case RIGHT -> {return Moves.WALK;}
