@@ -69,7 +69,7 @@ public class Explorer extends Entity { // example of an implemented entity
         else{
             switch (currentRotation) {
                 case FORWARD -> x -= d;
-                case BACK -> x = d;
+                case BACK -> x += d;
                 case RIGHT -> y += d;
                 case LEFT -> y -= d;
             }
