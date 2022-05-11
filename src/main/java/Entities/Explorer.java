@@ -15,6 +15,7 @@ public class Explorer extends Entity { // example of an implemented entity
     private final GameController gm;
     private final Strategy st;
     private final Variables vr;
+    boolean patrolling=false;
 
     public Explorer(EntityType type, GameController gm, Strategy st, Variables vr) {
         this.currentRotation = Rotations.FORWARD;
@@ -24,6 +25,7 @@ public class Explorer extends Entity { // example of an implemented entity
         this.gm = gm;
         this.st = st;
         this.vr=vr;
+        st.setAgent(this);
     }
 
     @Override
@@ -47,14 +49,30 @@ public class Explorer extends Entity { // example of an implemented entity
             case RIGHT -> setCurrentRotation(Rotations.FORWARD);
         }
     }
+    public void nowPatrol(int []xy){
+        this.x=xy[0];
+        this.y=xy[1];
 
+        patrolling=true;
+        if(currentRotation==Rotations.BACK || currentRotation==Rotations.FORWARD) currentRotation=currentRotation.turnAround();
+    }
     @Override
     public void walk(int d) {
-        switch (currentRotation) {
-            case FORWARD -> y+=d;
-            case BACK -> y-=d;
-            case RIGHT -> x+=d;
-            case LEFT -> x-=d;
+        if (!patrolling) {
+            switch (currentRotation) {
+                case FORWARD -> y += d;
+                case BACK -> y -= d;
+                case RIGHT -> x += d;
+                case LEFT -> x -= d;
+            }
+        }
+        else{
+            switch (currentRotation) {
+                case FORWARD -> x -= d;
+                case BACK -> x = d;
+                case RIGHT -> y += d;
+                case LEFT -> y -= d;
+            }
         }
     }
 

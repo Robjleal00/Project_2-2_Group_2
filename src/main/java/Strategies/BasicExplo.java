@@ -1,6 +1,7 @@
 package Strategies;
 
 import Config.Variables;
+import Entities.Explorer;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
@@ -27,6 +28,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean patrolling;
     boolean chasing;
     boolean exploDone;
+    private Explorer agent;
 
     public BasicExplo() {
         this.explored = new HashMap<>();
@@ -41,6 +43,10 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     public void setBooleans(boolean p, boolean c){
         this.patrolling=p;
         this.chasing=c;
+    }
+    @Override
+    public void setAgent(Explorer a){
+        this.agent=a;
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
@@ -67,8 +73,20 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
         }
-        if(exploDone){ System.out.println("I FINISHED");
+        if(exploDone) {
+            patrolling=true;
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] map = makeMap(tr.giveMappings());
+            int fixY=Integer.parseInt(map[0][1]);
+            int fixX=Integer.parseInt(map[0][2]);
+            //explorationPoints.get(j+fix+fixX).add(((i+fix)*-1)+fixY);
+            int fixedX=xy[0]+fixX;
+            int fixedY=(xy[1]*-1)+fixY;
+            int[] fixed={fixedX,fixedY};
+            this.agent.nowPatrol(fixed);
 
+
+        }
         if(patrolling){
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] agentPrivateMap = makeMap(tr.giveMappings());
@@ -76,7 +94,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             Position targetPosition = getMaxSquare(agentSeenMap);
             Moves nextMove = getPatrolPath(targetPosition,rot, xy);
         }
-        }
+
 
         return returner;
     }
