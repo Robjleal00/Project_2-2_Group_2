@@ -486,7 +486,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     case RIGHT ->{return Moves.TURN_LEFT;}
                 }
             }
-            if(verticalDifference < 0) { //move down
+            else if(verticalDifference < 0) { //move down
                 switch (rotation) {
                     case FORWARD -> {return Moves.TURN_AROUND;}
                     case BACK -> {return Moves.WALK;}
@@ -503,22 +503,23 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
 
-            if(horizontalDifference == 0){
-                if(verticalDifference > 0){ //move down
-                    switch(rotation){
-                        case FORWARD -> {return Moves.TURN_AROUND;}
-                        case BACK -> {return Moves.WALK;}
-                        case RIGHT -> {return Moves.TURN_RIGHT;}
-                        case LEFT ->{return Moves.TURN_LEFT;}
-                    }
+
+        }
+        else if(horizontalDifference == 0){
+            if(verticalDifference > 0){ //move down
+                switch(rotation){
+                    case FORWARD -> {return Moves.TURN_AROUND;}
+                    case BACK -> {return Moves.WALK;}
+                    case RIGHT -> {return Moves.TURN_RIGHT;}
+                    case LEFT ->{return Moves.TURN_LEFT;}
                 }
-                else if(verticalDifference < 0){ //move up
-                    switch (rotation) {
-                        case FORWARD -> {return Moves.TURN_AROUND;}
-                        case BACK -> {return Moves.WALK;}
-                        case RIGHT -> {return Moves.TURN_RIGHT;}
-                        case LEFT -> {return Moves.TURN_LEFT;}
-                    }
+            }
+            else if(verticalDifference < 0){ //move up
+                switch (rotation) {
+                    case FORWARD -> {return Moves.TURN_AROUND;}
+                    case BACK -> {return Moves.WALK;}
+                    case RIGHT -> {return Moves.TURN_RIGHT;}
+                    case LEFT -> {return Moves.TURN_LEFT;}
                 }
             }
         }
