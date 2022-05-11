@@ -475,7 +475,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
         }
-
         //Move to left
         else if(horizontalDifference < 0 ){
             if(verticalDifference > 0){ //move up
@@ -502,8 +501,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     case FORWARD ->{return Moves.TURN_LEFT;}
                 }
             }
-
-
         }
         else if(horizontalDifference == 0){
             if(verticalDifference > 0){ //move down
@@ -524,7 +521,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             }
         }
         return nextMove; //change this return
-
     }
 
     /**
@@ -551,29 +547,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
     }
 
-    //Move incrementation of all squares to the method beginning outside of this
-    public void setSeenAll(int[][] lastSeen, int visionRange, int x, int y)
-    {
-        for(int i = 0; i < lastSeen.length; i++)
-        {
-            for(int j = 0; j < lastSeen[0].length; j++)
-            {
-                if(i > x - visionRange && i < x + visionRange
-                    && j > y - visionRange && j < y + visionRange)
-                {
-                    lastSeen[i][j] = 0;
-                    System.out.println(lastSeen[i][j] + " ");
-                }
-                else
-                {
-                    lastSeen[i][j]++;
-                    System.out.println(lastSeen[i][j] + " ");
-                }
-            }
-        }
-    }
 
-    public Position getMaxSquare(int[][] lastSeen)
+    public int[] getMaxSquare(int[][] lastSeen, int[]xy)
     {
         int maxValue = 0;
         int x = 0;
@@ -586,12 +561,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 {
                     maxValue = lastSeen[i][j];
                     x = i;
+                    xy[0] = x;
                     y = j;
+                    xy[1] = y;
                 }
             }
         }
-        Position highestPosition = new Position(x,y);
-        return highestPosition;
+        return xy;
     }
 
 }
