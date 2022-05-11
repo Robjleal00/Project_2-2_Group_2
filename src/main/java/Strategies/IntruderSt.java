@@ -77,7 +77,6 @@ public class IntruderSt extends Strategy{
         fScore.add(0, h.get(0));
 
         while(!set.isEmpty()){
-
             //current = node in set having the lowest fScore
             int[] current = set.getLast();
             if(current == tempTarget){
@@ -86,8 +85,46 @@ public class IntruderSt extends Strategy{
 
             set.remove(current);
 
-            //for each neighbor of current
+            int current_distance  = Integer.MAX_VALUE;
 
+            int[] front1 = new int[2];
+            int[] front2 = new int[2];
+            int[] front3 = new int[2];
+            int[] front4 = new int[2];
+
+            front1[0] = current[0] - 1;
+            front1[1] = current[1];
+            front2[0] = current[0] + 1;
+            front2[1] = current[1];
+            front3[0] = current[0];
+            front3[1] = current[1] - 1;
+            front4[0] = current[0];
+            front4[1] = current[1] + 1;
+
+
+            if(manDist(current, target) < current_distance)
+                current_distance = manDist(current,target);
+
+            if(manDist(front1, target) < current_distance && !walls.get(front1[0]).contains(front1[1]))
+                current_distance = manDist(front1,target);
+
+
+            if(manDist(front2, target) < current_distance && !walls.get(front2[0]).contains(front2[1]))
+                current_distance = manDist(front2,target);
+
+
+            if(manDist(front3, target) < current_distance && !walls.get(front3[0]).contains(front3[1]))
+                current_distance = manDist(front3,target);
+
+
+            if(manDist(front4, target) < current_distance && !walls.get(front4[0]).contains(front4[1]))
+                current_distance = manDist(front4,target);
+
+
+
+
+
+            //for each neighbor of current
             /**
              * d(current, neighbor) (THIS COULD BE A METHOD THAT CONNECTS TO THE BAYSIAN)
              * is the weight of the edge from current to neighbor
@@ -106,6 +143,11 @@ public class IntruderSt extends Strategy{
         }
 
 
+    }
+
+    public int manDist(int[] start, int[] target) {
+        int distance = Math.abs(target[1]-start[1]) + Math.abs(target[0]-start[0]);
+        return distance;
     }
 
     public void reconstructPath(int[] path, int[]current){
