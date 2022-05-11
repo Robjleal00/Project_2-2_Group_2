@@ -25,6 +25,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final Constraints constraints;
     private final ArrayList<Point> visitedPoints;
     private int[][] agentSeenMap;
+    private int[][] lastSeen;
     boolean firstPhase;
     boolean patrolling;
     boolean chasing;
@@ -86,11 +87,11 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             int[] fixed={fixedX,fixedY};
             this.agent.nowPatrol(fixed);
             String[][] agentPrivateMap = makeMap(map);
-            agentSeenMap = makeLastSeenMap(agentPrivateMap);
+            lastSeen = makeLastSeenMap(agentPrivateMap);
 
         }
-        if(patrolling){
-            int[] targetPosition = getMaxSquare(agentSeenMap, xy);
+        if(patrolling&&exploDone){
+            int[] targetPosition = getMaxSquare(lastSeen, xy);
             return getPatrolPath(targetPosition,rot, xy);
         }
 
@@ -422,7 +423,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
      */
     public int[][] makeLastSeenMap(String[][] individualMap)
     {
-        int[][] lastSeen = new int[individualMap.length][individualMap[0].length];
+        lastSeen = new int[individualMap.length][individualMap[0].length];
 
         for(int i = 0; i < individualMap.length; i++)
         {
