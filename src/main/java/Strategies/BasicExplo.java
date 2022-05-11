@@ -24,6 +24,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final HashMap<Integer,int[]> objects;
     private final Constraints constraints;
     private final ArrayList<Point> visitedPoints;
+    private int[][] agentSeenMap;
     boolean firstPhase;
     boolean patrolling;
     boolean chasing;
@@ -84,15 +85,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             int fixedY=(xy[1]*-1)+fixY;
             int[] fixed={fixedX,fixedY};
             this.agent.nowPatrol(fixed);
-
+            String[][] agentPrivateMap = makeMap(map);
+            agentSeenMap = makeLastSeenMap(agentPrivateMap);
 
         }
         if(patrolling){
-            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
-            String[][] agentPrivateMap = makeMap(tr.giveMappings());
-            int[][] agentSeenMap = makeLastSeenMap(agentPrivateMap);
-            Position targetPosition = getMaxSquare(agentSeenMap);
-            Moves nextMove = getPatrolPath(targetPosition,rot, xy);
+            int[] targetPosition = getMaxSquare(agentSeenMap,xy);
+            return getPatrolPath(targetPosition,rot, xy);
         }
 
 
@@ -450,15 +449,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
      *  Question: Will this method be called once or reiteratively?
      * @return
      */
-    public Moves getPatrolPath(Position targetPosition, Rotations rotation, int[] agentPosition)
+    public Moves getPatrolPath(int[] targetPosition, Rotations rotation, int[] agentPosition)
     {
         Moves nextMove = null;
         // HorizontalDifference < 0 : left
         //                      > 0 : right
         // VDiff < 0 : Up
         //       > 0 : Down
-        int horizontalDifference  = targetPosition.x - agentPosition[0];
-        int verticalDifference = targetPosition.y - agentPosition[1];
+        int horizontalDifference  = targetPosition[0] - agentPosition[0];
+        int verticalDifference = targetPosition[1] - agentPosition[1];
         switch(rotation){
             case LEFT -> {return Moves.TURN_AROUND;}
             case RIGHT -> {return Moves.WALK;}
@@ -544,52 +543,50 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     /**
      *
      * @param lastSeen
-     * @param visionRange Not quite sure how to extract an integer value fron String[][] vision, but it
-     *                    represents how far the agent can see
-     * @param x,y         The agent's position on the int[][] map decomposed
+     * @param vr         represents how far the agent can see
+     * @param xy         The agent's position on the int[][] map decomposed
      *
      *
      *              Question: since lastSeen is respective to each guard, does that mean this method type should be void
      *                    or return the lastSeen 2D Array with the modified values?
      */
-    public void setSeen(int[][] lastSeen, int vr, int []xy,  Rotations rotation)
+    public void setSeen(int[][] lastSeen, Variables vr, int []xy,  Rotations rotation)
     {
+        int range = vr.eyeRange();
+        //Agent sees a block to its left and its right with a range of 5 units
         switch(rotation){
             case BACK -> {
-                for(int i = xy[0] - vr; i < xy[0] + vr; i++){
-                    for(int j = xy[1]; j < xy[1] + vr.eyerange; j++){
-
+                for(int i = xy[0] - 1; i < xy[0] + 1; i++){
+                    for(int j = xy[1]; j < xy[1] + range; j++){
+                        lastSeen[i][j] = 0;
                     }
-                } ;}
+                }
+            }
             case FORWARD -> {
-                for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++){
-                    for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++){
-
+                for(int i = xy[0] - 1; i < xy[0] + 1; i++){
+                    for(int j = xy[1] - range; j < xy[1] ; j++){
+                        lastSeen[i][j] = 0;
                     }
 
-                };}
+                }
+            }
             case LEFT -> {
-                for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++){
-                    for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++){
-
+                for(int i = xy[0] - range; i < xy[0]; i++){
+                    for(int j = xy[1] - 1; j < xy[1] + 1; j++){
+                        lastSeen[i][j] = 0;
                     }
-                };}
+                }
+            }
             case RIGHT ->{
-                for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++){
-                    for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++){
-
+                for(int i = xy[0]; i < xy[0] + range; i++){
+                    for(int j = xy[1] - 1; j < xy[1] + 1; j++){
+                        lastSeen[i][j] = 0;
                     }
-                };}
-        }
-
-        for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++)
-        {
-            for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++)
-            {
-                lastSeen[i][j] = 0;
-                System.out.println(lastSeen[i][j] + " ");
+                }
             }
         }
+
+
     }
 
 
