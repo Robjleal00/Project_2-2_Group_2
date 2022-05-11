@@ -70,7 +70,11 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         if(exploDone){ System.out.println("I FINISHED");
 
         if(patrolling){
-            //PATROLLING SHIT TO GO HERE
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] agentPrivateMap = makeMap(tr.giveMappings());
+            int[][] agentSeenMap = makeLastSeenMap(agentPrivateMap);
+            Position targetPosition = getMaxSquare(agentSeenMap);
+            Moves nextMove = getPatrolPath(targetPosition,rot, xy);
         }
         }
 
@@ -428,15 +432,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
      *  Question: Will this method be called once or reiteratively?
      * @return
      */
-    public Moves getPatrolPath(Position targetPosition, Rotations rotation, Position agentPosition)
+    public Moves getPatrolPath(Position targetPosition, Rotations rotation, int[] agentPosition)
     {
         Moves nextMove = null;
         // HorizontalDifference < 0 : left
         //                      > 0 : right
         // VDiff < 0 : Up
         //       > 0 : Down
-        int horizontalDifference  = targetPosition.x - agentPosition.x;
-        int verticalDifference = targetPosition.y - agentPosition.y;
+        int horizontalDifference  = targetPosition.x - agentPosition[0];
+        int verticalDifference = targetPosition.y - agentPosition[1];
         switch(rotation){
             case LEFT -> {return Moves.TURN_AROUND;}
             case RIGHT -> {return Moves.WALK;}
@@ -446,7 +450,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
         //move to right
         if(horizontalDifference > 0  ){
-
             if(verticalDifference > 0){//move up
                 switch(rotation){
                     case BACK -> {return Moves.TURN_AROUND;}
@@ -547,6 +550,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
     }
 
+    //Move incrementation of all squares to the method beginning outside of this
     public void setSeenAll(int[][] lastSeen, int visionRange, int x, int y)
     {
         for(int i = 0; i < lastSeen.length; i++)
