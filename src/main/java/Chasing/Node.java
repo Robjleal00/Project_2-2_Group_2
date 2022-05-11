@@ -95,6 +95,28 @@ public class Node implements Comparable<Node> {
         return null;
     }
 
+    public static void printPath(Node target){
+        Node n = target;
+
+        if(n==null)
+            return;
+
+        List<Integer> ids = new ArrayList<>();
+
+        while(n.parent != null){
+            ids.add(n.id);
+            n = n.parent;
+        }
+        ids.add(n.id);
+        Collections.reverse(ids);
+
+        for(int id : ids){
+            System.out.print(id + " ");
+        }
+        System.out.println("");
+
+    }
+
 }
 
 
