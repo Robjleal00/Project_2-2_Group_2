@@ -24,6 +24,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final HashMap<Integer,int[]> objects;
     private final Constraints constraints;
     private final ArrayList<Point> visitedPoints;
+    private int[][] agentSeenMap;
     boolean firstPhase;
     boolean patrolling;
     boolean chasing;
@@ -84,15 +85,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             int fixedY=(xy[1]*-1)+fixY;
             int[] fixed={fixedX,fixedY};
             this.agent.nowPatrol(fixed);
-
+            String[][] agentPrivateMap = makeMap(map);
+            agentSeenMap = makeLastSeenMap(agentPrivateMap);
 
         }
         if(patrolling){
-            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
-            String[][] agentPrivateMap = makeMap(tr.giveMappings());
-            int[][] agentSeenMap = makeLastSeenMap(agentPrivateMap);
             int[] targetPosition = getMaxSquare(agentSeenMap, xy);
-            Moves nextMove = getPatrolPath(targetPosition,rot, xy);
+            return getPatrolPath(targetPosition,rot, xy);
         }
 
 
