@@ -19,7 +19,7 @@ public class Intruder extends Entity{
 
 
 
-    public Intruder(EntityType type, GameController gm, Strategy st, Variables vr) {
+    public Intruder(EntityType type, GameController gm, Strategy st, Variables vr, Rotations currentRotation) {
 
         this.currentRotation = currentRotation;
         this.type = type;
@@ -39,6 +39,7 @@ public class Intruder extends Entity{
         String[][] vision = gm.giveVision(this);
         int[] xy = {x,y};
         st.decideOnMove(vision,xy, currentRotation,vr);
+        System.out.println("MOVE: " + super.getMove().toString());
         return super.getMove();
     }
 

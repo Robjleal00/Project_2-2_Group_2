@@ -748,6 +748,9 @@ Use this to construct with graphics.
         if(e.getType()==EntityType.GUARD){
             return "G"+addition;
         }
+        if(e.getType() == EntityType.INTRUDER){
+            return "I"+addition;
+        }
         return "ERROR";
     }
     private boolean canBePutThere(int []target) {

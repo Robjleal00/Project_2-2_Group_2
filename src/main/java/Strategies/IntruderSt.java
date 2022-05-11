@@ -3,11 +3,14 @@ package Strategies;
 import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
+import Logic.GameController;
+import ObjectsOnMap.Goal;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.*;
+
+import static java.util.Collections.max;
+import static java.util.Collections.min;
 
 public class IntruderSt extends Strategy{
     private final HashMap<Integer, ArrayList<Integer>> explored;
@@ -15,11 +18,13 @@ public class IntruderSt extends Strategy{
     private final HashMap<Integer,int[]> objects;
     private boolean chased;
     private boolean searching;
+    private final Constraints constraints;
     Rotations[] avaliableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
     private final ArrayList<Point> visitedPoints;
     private boolean atGoal;
-    private int[] target;
+    private Goal target;
     private int[] start;
+    private int[] direction;
 
     //for A* Search
     //private int fn; // gn + hn = total cost of path
@@ -30,13 +35,13 @@ public class IntruderSt extends Strategy{
 // baysian pathfinding
     //at every move it checks whether it can see the target and/or a guard and/or a wall
 
-    public IntruderSt(HashMap<Integer, ArrayList<Integer>> explored, HashMap<Integer, ArrayList<Integer>> walls, HashMap<Integer, int[]> objects, int[] start, int[] target) {
-        this.explored = explored;
-        this.walls = walls;
-        this.objects = objects;
-        this.visitedPoints = new ArrayList<>();
+    public IntruderSt(Goal target) {
+        this.explored = new HashMap<>();
+        this.walls = new HashMap<>();
+        this.objects = new HashMap<>();
+        this.constraints=new Constraints();
+        this.visitedPoints=new ArrayList<>();
         this.atGoal = false;
-        this.start = start;
         this.target = target;
     }
 
@@ -51,36 +56,269 @@ public class IntruderSt extends Strategy{
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
 
-        if(searching){
+        direction = direction(xy);
 
+        if(searching){
+            //Rotate until facing the direction of the target
+            //Move steps x and y of direction
+            //check at each move if it encounters a wall
+            //Save each visited point in visited points and explored
+
+            updateExploration(vision, xy, rot);
+            if (Math.abs(direction[0]) > Math.abs(direction[1]))
+                updateRotX(rot,direction[0]);
+            else
+                updateRotY(rot,direction[1]);
+
+            return Moves.WALK;
 
         }
-
-        return Moves.WALK;
+        return Moves.STUCK;
     }
 
+    public int[] direction(int[] start){
+        int[] t = target.getXy();
+        int x = start[0]-t[0];
+        int y = start[1]-t[1];
 
+        int gcd = gcdAlg(x, y);
+        int[] direction = new int[2];
+        direction[0] = x/gcd;
+        direction[1] = x/gcd;
+        System.out.println("DIRECTION: X = " + direction[0] + " Y= " + direction[1]);
+        return direction;
+    }
+
+    public int gcdAlg(int n1, int n2){
+        if(n2 == 0)
+            return n1;
+        return gcdAlg(n2, n1%n2);
+    }
+
+    public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
+        int eyeRange = vision.length;
+        int currentX = xy[0];
+        int currentY = xy[1];
+
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+                switch (rot) {
+                    case FORWARD -> {
+                        if(lookingAt.contains("E")){
+                            if(i!=0){
+                                constraints.setMAX_Y(currentY+1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX + j)) {
+                                    if (!explored.get(currentX + j).contains(currentY + i)) {
+                                        explored.get(currentX + j).add(currentY + i);
+                                    }
+
+                                } else {
+                                    explored.put(currentX + j, new ArrayList<>());
+                                    explored.get(currentX + j).add(currentY + i);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX+j,currentY+i};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX + j)) {
+                                    if (!walls.get(currentX + j).contains(currentY + i)) {
+                                        walls.get(currentX + j).add(currentY + i);
+                                    }
+
+                                } else {
+                                    walls.put(currentX + j, new ArrayList<>());
+                                    walls.get(currentX + j).add(currentY + i);
+                                }
+                            }
+                        }
+                    }
+                    case BACK -> {
+                        if(lookingAt.contains("E")) {
+                            if (i != 0) {
+                                constraints.setMIN_Y(currentY - 1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX - j)) {
+                                    if (!explored.get(currentX - j).contains(currentY - i)) {
+                                        explored.get(currentX - j).add(currentY - i);
+                                    }
+
+                                } else {
+                                    explored.put(currentX - j, new ArrayList<>());
+                                    explored.get(currentX - j).add(currentY - i);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX-j,currentY-i};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX - j)) {
+                                    if (!walls.get(currentX - j).contains(currentY - i)) {
+                                        walls.get(currentX - j).add(currentY - i);
+                                    }
+
+                                } else {
+                                    walls.put(currentX - j, new ArrayList<>());
+                                    walls.get(currentX - j).add(currentY - i);
+                                }
+                            }
+                        }
+                    }
+                    case LEFT -> {
+                        if(lookingAt.contains("E")) {
+                            if (i != 0) {
+                                constraints.setMIN_X(currentX - 1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX - i)) {
+                                    if (!explored.get(currentX - i).contains(currentY + j)) {
+                                        explored.get(currentX - i).add(currentY + j);
+                                    }
+
+                                } else {
+                                    explored.put(currentX - i, new ArrayList<>());
+                                    explored.get(currentX - i).add(currentY + j);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX-i,currentY+j};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX - i)) {
+                                    if (!walls.get(currentX - i).contains(currentY + j)) {
+                                        walls.get(currentX - i).add(currentY + j);
+                                    }
+
+                                } else {
+                                    walls.put(currentX - i, new ArrayList<>());
+                                    walls.get(currentX - i).add(currentY + j);
+                                }
+                            }
+                        }
+                    }
+                    case RIGHT -> {
+                        if(lookingAt.contains("E")) {
+                            if (i != 0) {
+                                constraints.setMAX_X(currentX + 1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX + i)) {
+                                    if (!explored.get(currentX + i).contains(currentY - j)) {
+                                        explored.get(currentX + i).add(currentY - j);
+                                    }
+
+                                } else {
+                                    explored.put(currentX + i, new ArrayList<>());
+                                    explored.get(currentX + i).add(currentY - j);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX+i,currentY-j};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX + i)) {
+                                    if (!walls.get(currentX + i).contains(currentY - j)) {
+                                        walls.get(currentX + i).add(currentY - j);
+                                    }
+
+                                } else {
+                                    walls.put(currentX + i, new ArrayList<>());
+                                    walls.get(currentX + i).add(currentY - j);
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    public Rotations updateRotY(Rotations rot, int direct){
+        System.out.println("ENTERED ROT Y");
+        switch (rot){
+            case UP -> {
+                if(direct < 0)
+                    return Rotations.DOWN;
+
+            }
+            case DOWN -> {
+                if(direct > 0)
+                    return Rotations.UP;
+            }
+        }
+        return rot;
+    }
+
+    public Rotations updateRotX(Rotations rot, int direct){
+        System.out.println("ENTERED ROT X");
+        switch (rot){
+            case RIGHT -> {
+                if(direct < 0)
+                    return Rotations.LEFT;
+
+            }
+            case LEFT -> {
+                if(direct > 0)
+                    return Rotations.RIGHT;
+            }
+        }
+        return rot;
+    }
+
+    /**ASTAR
+     */
     //The goal will be in the direction of the target, but not the target itself
-    public void AStarSearch(int[] tempTarget, ArrayList<Integer> h){
-        LinkedList<int[]> set = new LinkedList<>(); //probably needs to be hashmap
+
+    /*public LinkedList<int[]> AStarSearch(int h){ //H is the manhattan distance and g is the counter
+
+        int g = 0;
+        int f = g + h;
+
+        LinkedList<int[]> set = new LinkedList<>();
         set.add(start);
 
-        //The last entry in this list is the last node it came from
-        //It is null until the first move
         LinkedList<int[]> cameFrom = new LinkedList<>();
-
-        //index 0 in the set linked list corresponds to index 0 of the fscore
-        ArrayList<Integer> gScore = new ArrayList<>();
-        gScore.add(0, 0); //at the beginning g is 0
-
-        ArrayList<Integer> fScore = new ArrayList<>();
-        fScore.add(0, h.get(0));
 
         while(!set.isEmpty()){
             //current = node in set having the lowest fScore
             int[] current = set.getLast();
-            if(current == tempTarget){
-                //return the "reconstructPath" from cameFrom to current
+
+            if(current == target){ //or if manhattan distance == 0
+                cameFrom.add(current);
+                atGoal = true;
+                return cameFrom;
             }
 
             set.remove(current);
@@ -101,48 +339,44 @@ public class IntruderSt extends Strategy{
             front4[0] = current[0];
             front4[1] = current[1] + 1;
 
+            int[] closest_tile = new int[2];
 
             if(manDist(current, target) < current_distance)
                 current_distance = manDist(current,target);
 
-            if(manDist(front1, target) < current_distance && !walls.get(front1[0]).contains(front1[1]))
+            if(manDist(front1, target) < current_distance && !walls.get(front1[0]).contains(front1[1])) {
                 current_distance = manDist(front1,target);
+                closest_tile = front1;
 
+            }
 
-            if(manDist(front2, target) < current_distance && !walls.get(front2[0]).contains(front2[1]))
+            if(manDist(front2, target) < current_distance && !walls.get(front2[0]).contains(front2[1])){
                 current_distance = manDist(front2,target);
+                closest_tile = front2;
 
+            }
 
-            if(manDist(front3, target) < current_distance && !walls.get(front3[0]).contains(front3[1]))
+            if(manDist(front3, target) < current_distance && !walls.get(front3[0]).contains(front3[1])){
                 current_distance = manDist(front3,target);
+                closest_tile = front3;
 
+            }
 
-            if(manDist(front4, target) < current_distance && !walls.get(front4[0]).contains(front4[1]))
+            if(manDist(front4, target) < current_distance && !walls.get(front4[0]).contains(front4[1])){
                 current_distance = manDist(front4,target);
+                closest_tile = front4;
+            }
 
+            g++;
+            h = current_distance;
+            f = g + h;
 
-
-
-
-            //for each neighbor of current
-            /**
-             * d(current, neighbor) (THIS COULD BE A METHOD THAT CONNECTS TO THE BAYSIAN)
-             * is the weight of the edge from current to neighbor
-             * tentative_gScore is the distance from start to the neighbor through current
-             *
-             * so tentative_gScore = gScore[current] + d(current,neighbor)
-             * if(tentative_gScore < gScore[neighbor])
-             *      record this
-             *      cameFrom[neighbor] = current
-             *      gScore[neighbor] = tentative_gScore
-             *      fScore[neighbor] = tentative_gScore + h(neighbor)
-             *      if(neighbor is not in set)
-             *          set.add(neighbor)
-             */
-
+            cameFrom.add(current);
+            current = closest_tile;
+            set.add(current);
         }
 
-
+        return cameFrom;
     }
 
     public int manDist(int[] start, int[] target) {
@@ -150,15 +384,91 @@ public class IntruderSt extends Strategy{
         return distance;
     }
 
-    public void reconstructPath(int[] path, int[]current){
+     */
 
-    }
 
-    public void rotates(){
+    @Override
+    public void printMappings() {
+        Set<Integer> keySet= explored.keySet();
+        Integer[] exploredX=keySet.toArray(new Integer[0]);
+        int lowestXExplored= Integer.MAX_VALUE;
+        int highestXExplored=Integer.MIN_VALUE;
+        for (int val : exploredX) {
+            if (val > highestXExplored) highestXExplored = val;
+            if (val < lowestXExplored) lowestXExplored = val;
+        }
+        Set<Integer> wallkeySet= walls.keySet();
+        Integer[] wallX=wallkeySet.toArray(new Integer[0]);
+        int highestXWalls= Integer.MIN_VALUE;
+        int lowestXWalls=Integer.MAX_VALUE;
+        for (int val : wallX) {
+            if (val < lowestXWalls) lowestXWalls = val;
+            if (val > highestXWalls) highestXWalls = val;
+        }
+        int lowestYExplored=Integer.MAX_VALUE;
+        int highestYExplored=Integer.MIN_VALUE;
+        for (Integer x : exploredX) {
+            int lowest = min(explored.get(x));
+            int highest = max(explored.get(x));
+            if (lowest < lowestYExplored) lowestYExplored = lowest;
+            if (highest > highestYExplored) highestYExplored = highest;
+        }
+        int lowestYWalls=Integer.MAX_VALUE;
+        int highestYWalls=Integer.MIN_VALUE;
+        for (Integer x : wallX) {
+            int lowest = min(walls.get(x));
+            int highest = max(walls.get(x));
+            if (lowest < lowestYWalls) lowestYWalls = lowest;
+            if (highest > highestYWalls) highestYWalls = highest;
+        }
+        int lowestXTotal=Math.min(lowestXExplored,lowestXWalls);
+        int lowestYTotal=Math.min(lowestYWalls,lowestYExplored);
+        int highestXTotal=Math.max(highestXExplored,highestXWalls);
+        int highestYTotal=Math.max(highestYWalls,highestYExplored);
+        int spanX=highestXTotal-lowestXTotal;
+        int spanY=highestYTotal-lowestYTotal;
+        String[][]mindMap=new String[spanY+5][spanX+5];
+        for(int i :exploredX){
+            ArrayList<Integer> array=explored.get(i);
+            for (Integer integer : array) {
+                mindMap[((integer - highestYTotal) * -1) + 2][i - lowestXTotal + 2] = " ";
+            }
+        }
+        for(int i :wallX){
+            ArrayList<Integer> array=walls.get(i);
+            for (Integer integer : array) {
+                mindMap[((integer - highestYTotal) * -1) + 2][i - lowestXTotal + 2] = "W";
+            }
+        }
+        GameController printer=new GameController();
+        for(int i=0;i<=spanY+4;i++){
+            for(int j=0;j<=spanX+4;j++){
+                boolean connected=false;
+                if(mindMap[i][j]==null){
+                    if(i>0){
+                        if(Objects.equals(mindMap[i - 1][j], " "))connected=true;
+                    }
+                    if(i<spanY){
+                        if(Objects.equals(mindMap[i + 1][j], " "))connected=true;
+                    }
+                    if(j>0){
+                        if(Objects.equals(mindMap[i][j - 1], " "))connected=true;
+                    }
+                    if(j<spanX){
+                        if(Objects.equals(mindMap[i][j + 1], " "))connected=true;
+                    }
+                    if(connected){
+                        mindMap[i][j]="?";
+                    } else mindMap[i][j]="X";
+                }
 
-    }
-
-    public void Score(){
+            }
+        }
+        mindMap[0][0]="-3";
+        printer.printArray(mindMap);
+        //FIRST ONE IN MATRIX IS Y
+        // SECOND ONE IN MATRIX IS X
+        // GOTTA MOVE X's + LOWEST X TO REACH 0 SAME FOR Y
 
     }
 
