@@ -7,11 +7,10 @@ import java.util.PriorityQueue;
 
 public class Node implements Comparable<Node> {
 
-    // Id for readability of result purposes
     private static int idCounter = 0;
     public int id;
 
-    // Parent in the path
+    // Parent
     public Node parent = null;
 
     public List<Edge> neighbors;
@@ -19,7 +18,8 @@ public class Node implements Comparable<Node> {
     // Evaluation functions
     public double f = Double.MAX_VALUE;
     public double g = Double.MAX_VALUE;
-    // Hardcoded heuristic
+
+    // Heuristic
     public double h;
 
     Node(double h){
