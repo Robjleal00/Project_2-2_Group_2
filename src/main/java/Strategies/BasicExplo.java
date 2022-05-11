@@ -91,7 +91,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] agentPrivateMap = makeMap(tr.giveMappings());
             int[][] agentSeenMap = makeLastSeenMap(agentPrivateMap);
-            Position targetPosition = getMaxSquare(agentSeenMap);
+            int[] targetPosition = getMaxSquare(agentSeenMap, xy);
             Moves nextMove = getPatrolPath(targetPosition,rot, xy);
         }
 
@@ -450,7 +450,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
      *  Question: Will this method be called once or reiteratively?
      * @return
      */
-    public Moves getPatrolPath(Position targetPosition, Rotations rotation, int[] agentPosition)
+    public Moves getPatrolPath(int[] targetPosition, Rotations rotation, int[] agentPosition)
     {
         Moves nextMove = null;
         // HorizontalDifference < 0 : left
