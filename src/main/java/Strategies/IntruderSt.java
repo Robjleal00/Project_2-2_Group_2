@@ -66,11 +66,9 @@ public class IntruderSt extends Strategy{
 
             updateExploration(vision, xy, rot);
             if (Math.abs(direction[0]) > Math.abs(direction[1]))
-                updateRotX(rot,direction[0]);
+                return updateRotX(rot,direction[0]);
             else
-                updateRotY(rot,direction[1]);
-
-            return Moves.WALK;
+                return updateRotY(rot,direction[1]);
 
         }
         return Moves.STUCK;
@@ -265,36 +263,36 @@ public class IntruderSt extends Strategy{
 
     }
 
-    public Rotations updateRotY(Rotations rot, int direct){
+    public Moves updateRotY(Rotations rot, int direct){
         System.out.println("ENTERED ROT Y");
         switch (rot){
             case UP -> {
                 if(direct < 0)
-                    return Rotations.DOWN;
+                    return Moves.TURN_AROUND;
 
             }
             case DOWN -> {
                 if(direct > 0)
-                    return Rotations.UP;
+                    return Moves.TURN_AROUND;
             }
         }
-        return rot;
+        return Moves.WALK;
     }
 
-    public Rotations updateRotX(Rotations rot, int direct){
+    public Moves updateRotX(Rotations rot, int direct){
         System.out.println("ENTERED ROT X");
         switch (rot){
             case RIGHT -> {
                 if(direct < 0)
-                    return Rotations.LEFT;
+                    return Moves.TURN_LEFT;
 
             }
             case LEFT -> {
                 if(direct > 0)
-                    return Rotations.RIGHT;
+                    return Moves.TURN_RIGHT;
             }
         }
-        return rot;
+        return Moves.WALK;
     }
 
     /**ASTAR
