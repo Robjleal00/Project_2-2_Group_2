@@ -534,15 +534,42 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
      *              Question: since lastSeen is respective to each guard, does that mean this method type should be void
      *                    or return the lastSeen 2D Array with the modified values?
      */
-    public void setSeen(int[][] lastSeen, int visionRange, int x, int y)
+    public void setSeen(int[][] lastSeen, int vr, int []xy,  Rotations rotation)
     {
-        for(int i = x - visionRange; i < x + visionRange; i++)
+        switch(rotation){
+            case BACK -> {
+                for(int i = xy[0] - vr; i < xy[0] + vr; i++){
+                    for(int j = xy[1]; j < xy[1] + vr.eyerange; j++){
+
+                    }
+                } ;}
+            case FORWARD -> {
+                for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++){
+                    for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++){
+
+                    }
+
+                };}
+            case LEFT -> {
+                for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++){
+                    for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++){
+
+                    }
+                };}
+            case RIGHT ->{
+                for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++){
+                    for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++){
+
+                    }
+                };}
+        }
+
+        for(int i = xy[0] - visionRange; i < xy[0] + visionRange; i++)
         {
-            for(int j = y - visionRange; j < y + visionRange; j++)
+            for(int j = xy[1] - visionRange; j < xy[1] + visionRange; j++)
             {
                 lastSeen[i][j] = 0;
                 System.out.println(lastSeen[i][j] + " ");
-
             }
         }
     }
