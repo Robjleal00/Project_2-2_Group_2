@@ -457,8 +457,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         //                      > 0 : right
         // VDiff < 0 : Up
         //       > 0 : Down
-        int horizontalDifference  = targetPosition.x - agentPosition[0];
-        int verticalDifference = targetPosition.y - agentPosition[1];
+        int horizontalDifference  = targetPosition[0] - agentPosition[0];
+        int verticalDifference = targetPosition[1] - agentPosition[1];
         switch(rotation){
             case LEFT -> {return Moves.TURN_AROUND;}
             case RIGHT -> {return Moves.WALK;}
