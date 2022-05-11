@@ -411,11 +411,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 if(individualMap[i][j].contains("W"))
                 {
                     lastSeen[i][j] = -1;
+                    System.out.println(lastSeen[i][j] + " ");
                 }
                 else
                 {
                     // Make the security guard wish to check out everything
                     lastSeen[i][j] = 1;
+                    System.out.println(lastSeen[i][j] + " ");
                 }
             }
         }
@@ -539,6 +541,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             for(int j = y - visionRange; j < y + visionRange; j++)
             {
                 lastSeen[i][j] = 0;
+                System.out.println(lastSeen[i][j] + " ");
+
             }
         }
     }
@@ -553,10 +557,12 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     && j > y - visionRange && j < y + visionRange)
                 {
                     lastSeen[i][j] = 0;
+                    System.out.println(lastSeen[i][j] + " ");
                 }
                 else
                 {
                     lastSeen[i][j]++;
+                    System.out.println(lastSeen[i][j] + " ");
                 }
             }
         }
