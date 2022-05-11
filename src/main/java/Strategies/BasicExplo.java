@@ -86,8 +86,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             int fixedY=(xy[1]*-1)+fixY;
             int[] fixed={fixedX,fixedY};
             this.agent.nowPatrol(fixed);
-            String[][] agentPrivateMap = makeMap(map);
-            lastSeen = makeLastSeenMap(agentPrivateMap);
+            System.out.println("EXPLO DONE");
+            //String[][] agentPrivateMap = makeMap(map);
+            lastSeen = makeLastSeenMap(map);
 
         }
         if(patrolling&&exploDone){
@@ -404,13 +405,16 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         int x = 0;
         int y = 0;
 
+        System.out.println("NEW MAP:");
         for(int i = 2; i <mindMap.length-2;i++)
         {
+            System.out.println("hi IM IN THE LOOP");
             x = i-2;
             for(int j = 2; j < mindMap[0].length-2;j++)
             {
                 y = j-2;
                 newMap[x][y] = mindMap[i][j];
+                System.out.print(newMap[i][j]);
             }
         }
         return newMap;
@@ -424,6 +428,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     public int[][] makeLastSeenMap(String[][] individualMap)
     {
         lastSeen = new int[individualMap.length][individualMap[0].length];
+
+        System.out.println("Last seen array");
+        for(int i = 0; i < lastSeen.length; i++){
+            for(int j = 0; j < lastSeen[0].length;j++){
+                System.out.print(lastSeen[i][j] +" ");
+            }
+        }
 
         for(int i = 0; i < individualMap.length; i++)
         {
