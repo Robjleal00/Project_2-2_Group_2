@@ -26,6 +26,8 @@ public class IntruderSt extends Strategy{
     private int[] start;
     private int[] direction;
     private boolean movedX;
+    int moveXtimes;
+    int moveYtimes;
 
     //for A* Search
     //private int fn; // gn + hn = total cost of path
@@ -45,6 +47,8 @@ public class IntruderSt extends Strategy{
         this.atGoal = false;
         this.target = target;
         this.direction = direction(start);
+        this.moveXtimes = Math.abs(direction[0]);
+        this.moveYtimes = Math.abs(direction[1]);
         this.movedX = false;
     }
 
@@ -81,12 +85,14 @@ public class IntruderSt extends Strategy{
 
              */
 
+
+            //ONCE IT SEES THE TARGET IT JUST GOES FOR IT
+
             updateExploration(vision, xy, rot);
             System.out.println("Rotation in decide on move: " + rot.toString());
 
-            int moveXtimes = Math.abs(direction[0]);
-            int moveYtimes = Math.abs(direction[1]);
-
+            System.out.println("moveXtimes: " + moveXtimes);
+            System.out.println("moveYtimes: " + moveYtimes);
 
             if(moveXtimes != 0){
                 returner = updateRotX(rot,direction[0]);
@@ -100,8 +106,12 @@ public class IntruderSt extends Strategy{
                 if (returner.equals(Moves.WALK))
                     moveYtimes--;
             }
-            else
+            else {
                 direction(xy);
+                moveXtimes = Math.abs(direction[0]);
+                moveYtimes = Math.abs(direction[1]);
+                returner = decideOnMove(vision, xy, rot, vr);
+            }
 
         }
 
@@ -321,6 +331,18 @@ public class IntruderSt extends Strategy{
             case BACK -> { //I THINK THIS IS THE OPPOSITE OF WHAT WE THINK BASED ON HOW THE MAP IS BEING PRINTED
                 if(direct < 0)
                     return Moves.TURN_AROUND;
+            }
+            case RIGHT -> {
+                if(direct < 0)
+                    return Moves.TURN_LEFT;
+                else if(direct > 0)
+                    return Moves.TURN_RIGHT;
+            }
+            case LEFT -> {
+                if(direct > 0)
+                    return Moves.TURN_LEFT;
+                else if(direct < 0)
+                    return Moves.TURN_RIGHT;
             }
 
         }
