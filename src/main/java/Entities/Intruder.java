@@ -38,10 +38,9 @@ public class Intruder extends Entity{
     public Moves getMove() {
         String[][] vision = gm.giveVision(this);
         int[] xy = {x,y};
+        System.out.println("XY: " + xy[0] + ", " + xy[1]);
         Moves decision = st.decideOnMove(vision,xy, currentRotation,vr);
-        System.out.println("MOVE super: " + super.getMove().toString());
         System.out.println("MOVE decision: " + decision.toString());
-        //return super.getMove();
         return decision;
     }
 

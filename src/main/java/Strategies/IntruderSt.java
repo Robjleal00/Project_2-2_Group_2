@@ -54,22 +54,21 @@ public class IntruderSt extends Strategy{
         this.chased = false;
     }
 
+    boolean walked = false;
     //Searching
     //after every move it rotates 90 degrees and checks it its facing the right direction as well
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
 
-        //direction = direction(xy);
         Moves returner = Moves.STUCK;
         if(searching){
             //Rotate until facing the direction of the target
             //Move steps x and y of direction
             //check at each move if it encounters a wall
             //Save each visited point in visited points and explored
-            direction(xy);
-            updateExploration(vision, xy, rot);
-            System.out.println("Rotation in decide on move: " + rot.toString());
-            if(Math.abs(direction[0]) >= Math.abs(direction[1])){
+
+            /*
+            if(Math.abs(direction[0]) > Math.abs(direction[1])){
                 returner = updateRotX(rot,direction[0]);
                 System.out.println("RETURNED: "+ returner.toString());
                 //return updateRotX(rot,direction[0]);
@@ -79,19 +78,36 @@ public class IntruderSt extends Strategy{
                 System.out.println("RETURNED: "+ returner.toString());
                 //return updateRotY(rot,direction[1]);
             }
-            /*if(!getMovedX()){
+
+             */
+
+            updateExploration(vision, xy, rot);
+            System.out.println("Rotation in decide on move: " + rot.toString());
+
+            int moveXtimes = Math.abs(direction[0]);
+            int moveYtimes = Math.abs(direction[1]);
+
+
+            if(moveXtimes != 0){
                 returner = updateRotX(rot,direction[0]);
                 System.out.println("RETURNED: "+ returner.toString());
-                this.movedX = true;
+                if (returner.equals(Moves.WALK))
+                    moveXtimes--;
             }
-            else{
-                returner = updateRotX(rot,direction[1]);
+            else if(moveXtimes == 0 && moveYtimes != 0){
+                returner = updateRotY(rot,direction[1]);
                 System.out.println("RETURNED: "+ returner.toString());
-                this.movedX = false;
-            }*/
+                if (returner.equals(Moves.WALK))
+                    moveYtimes--;
+            }
+            else
+                direction(xy);
+
         }
+
         return returner;
     }
+
 
     public int[] direction(int[] start){ //TO CHECK
         System.out.println("start: " + start[0] + ", " + start[1]);
@@ -118,6 +134,10 @@ public class IntruderSt extends Strategy{
 
     public boolean getMovedX(){
         return movedX;
+    }
+
+    public void setMovedX(boolean movedX){
+        this.movedX = movedX;
     }
 
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
@@ -294,14 +314,15 @@ public class IntruderSt extends Strategy{
         System.out.println("ENTERED ROT Y");
         switch (rot){
             case FORWARD -> {
-                if(direct < 0)
+                if(direct > 0)
                     return Moves.TURN_AROUND;
 
             }
             case BACK -> { //I THINK THIS IS THE OPPOSITE OF WHAT WE THINK BASED ON HOW THE MAP IS BEING PRINTED
-                if(direct > 0)
+                if(direct < 0)
                     return Moves.TURN_AROUND;
             }
+
         }
         return Moves.WALK;
     }
