@@ -1,6 +1,7 @@
 package Logic;
 
 import Entities.Entity;
+import Entities.Intruder;
 import Enums.EntityType;
 import Enums.Moves;
 import Enums.Rotations;
@@ -171,13 +172,13 @@ Use this to construct with graphics.
         }
         return mappy;
     }
-    public boolean noWallsOnTheWay(int[]pos,int[]target,Rotations rot){
+    public boolean noWallsOnTheWay(int[]pos,int[]target,Rotations rot, Entity e){
         switch(rot){
             case LEFT -> {
                 int length=pos[0]-target[0];
                 for(int i=1;i<=length;i++){
                     int[] nextTarget={pos[0]-i,pos[1]};
-                    if(!canBePutThere(nextTarget))return false;
+                    if(!canBePutThere(nextTarget, e))return false;
                 }
                 return true;
             }
@@ -185,7 +186,7 @@ Use this to construct with graphics.
                 int length=target[0]-pos[0];
                 for(int i=1;i<=length;i++){
                     int[] nextTarget={pos[0]+i,pos[1]};
-                    if(!canBePutThere(nextTarget))return false;
+                    if(!canBePutThere(nextTarget, e))return false;
                 }
                 return true;
             }
@@ -193,7 +194,7 @@ Use this to construct with graphics.
                 int length=target[1]-pos[1];
                 for(int i=1;i<=length;i++){
                     int[] nextTarget={pos[0],pos[1]+i};
-                    if(!canBePutThere(nextTarget))return false;
+                    if(!canBePutThere(nextTarget, e))return false;
                 }
                 return true;
             }
@@ -201,7 +202,7 @@ Use this to construct with graphics.
                 int length=pos[1]-target[1];
                 for(int i=1;i<=length;i++){
                     int[] nextTarget={pos[0],pos[1]-i};
-                    if(!canBePutThere(nextTarget))return false;
+                    if(!canBePutThere(nextTarget, e))return false;
                 }
                 return true;
             }
@@ -435,7 +436,7 @@ Use this to construct with graphics.
                 if(tp==null)return -1;
                 else{
                     int[]target=tp.getTarget();
-                    if(canBePutThere(target)) {
+                    if(canBePutThere(target, e)) {
                         e.setPosition(entityInitialPoses.get(e).newPosition(target));
                         removeFromMap(pos);
                         putOnMap(symbol(e),target);
@@ -539,7 +540,7 @@ Use this to construct with graphics.
                 switch (rotation) {
                     case UP -> {
                         int[] targetlocation = {pos[0] , pos[1]- walkSpeed};
-                            if (canBePutThere(targetlocation) && noWallsOnTheWay(pos, targetlocation, rotation)) {
+                            if (canBePutThere(targetlocation, e) && noWallsOnTheWay(pos, targetlocation, rotation, e)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
@@ -549,7 +550,7 @@ Use this to construct with graphics.
                                     for (int i = walkSpeed; i > 0; i--) {
                                         int[] nexttargetlocation = {pos[0] , pos[1]- i};
                                         if (existsInBoard(nexttargetlocation)) {
-                                            if (canBePutThere(nexttargetlocation) && noWallsOnTheWay(pos, nexttargetlocation, rotation)) {
+                                            if (canBePutThere(nexttargetlocation, e) && noWallsOnTheWay(pos, nexttargetlocation, rotation, e)) {
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -564,7 +565,7 @@ Use this to construct with graphics.
                     }
                     case DOWN -> {
                         int[] targetlocation = {pos[0] , pos[1]+ walkSpeed};
-                            if (canBePutThere(targetlocation)&&noWallsOnTheWay(pos,targetlocation,rotation)) {
+                            if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
@@ -574,7 +575,7 @@ Use this to construct with graphics.
                                     for(int i=walkSpeed;i>0;i--){
                                         int[] nexttargetlocation = {pos[0] , pos[1]+ i};
                                         if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation)&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
+                                            if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -589,7 +590,7 @@ Use this to construct with graphics.
                     }
                     case RIGHT -> {
                         int[] targetlocation = {pos[0]+ walkSpeed, pos[1] };
-                            if (canBePutThere(targetlocation)&&noWallsOnTheWay(pos,targetlocation,rotation)) {
+                            if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
@@ -599,7 +600,7 @@ Use this to construct with graphics.
                                     for(int i=walkSpeed;i>0;i--){
                                         int[] nexttargetlocation = {pos[0]+i , pos[1]};
                                         if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation)&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
+                                            if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -614,7 +615,7 @@ Use this to construct with graphics.
                     }
                     case LEFT -> {
                         int[] targetlocation = {pos[0]- walkSpeed, pos[1] };
-                            if (canBePutThere(targetlocation)&&noWallsOnTheWay(pos,targetlocation,rotation)) {
+                            if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
                                 putOnMap(symbol(e), targetlocation);
                                 removeFromMap(pos);
                                 entityLocations.put(e, targetlocation);
@@ -624,7 +625,7 @@ Use this to construct with graphics.
                                     for(int i=walkSpeed;i>0;i--){
                                         int[] nexttargetlocation = {pos[0]-i, pos[1]};
                                         if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation)&&noWallsOnTheWay(pos,nexttargetlocation,rotation)){
+                                            if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
                                                 putOnMap(symbol(e), nexttargetlocation);
                                                 removeFromMap(pos);
                                                 entityLocations.put(e, nexttargetlocation);
@@ -753,8 +754,15 @@ Use this to construct with graphics.
         }
         return "ERROR";
     }
-    private boolean canBePutThere(int []target) {
-        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength)return Objects.equals(map[target[1]][target[0]], " ");
+    private boolean canBePutThere(int []target, Entity e) {
+        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength){
+            if(e.getType() == EntityType.INTRUDER){
+                if (Objects.equals(map[target[1]][target[0]], "V1"))
+                    return true;
+                else return Objects.equals(map[target[1]][target[0]], " ");
+            }
+            else return Objects.equals(map[target[1]][target[0]], " ");
+        }
         else return false;
     }
     private boolean existsInBoard(int[] pos) {

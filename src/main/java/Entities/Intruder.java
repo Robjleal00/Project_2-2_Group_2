@@ -26,7 +26,7 @@ public class Intruder extends Entity{
         this.gm = gm;
         this.st = st;
         this.vr = vr;
-        //true false inititally when looking for goal and not avoiding guards
+        //true false initially when looking for goal and not avoiding guards
         st.setBooleans(true, false);
     }
     @Override
