@@ -452,14 +452,14 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 // Since a wall isn't really worth visiting, I just assigned an arbitrary negative number
                 if(individualMap[i][j].contains("W"))
                 {
-                    lastSeen[i][j] = -1;
+                    lastSeen[i][j] = 10;
                     System.out.println(lastSeen[i][j] + " ");
                 }
                 else
                 {
                     // Make the security guard wish to check out everything
                     lastSeen[i][j] = 1;
-                    System.out.println(lastSeen[i][j] + " ");
+                    System.out.println(lastSeen[i][j] + "-");
                 }
             }
         }
