@@ -48,19 +48,6 @@ public class TreeRoot { //more stuff for basic explo
         this.visitedPoints=visitedPoints;
         this.objects=objects;
     }
-
-    // ------------------ START: Kai & Asha ------------------
-    public  ArrayList<TreeNode> createMoves(){
-        ArrayList<TreeNode> possibleMoves = new ArrayList<>();
-        for (Moves avaliableMove : avaliableMoves) {
-            possibleMoves.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr));
-        }
-        return possibleMoves;
-    }
-
-
-    // ------------------ END: Kai & Asha ------------------
-
     public Moves getMove() {
         ArrayList<Double> values = new ArrayList<>();
         for (Moves avaliableMove : avaliableMoves) {

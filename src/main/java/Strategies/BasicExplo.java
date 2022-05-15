@@ -633,5 +633,26 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         return xy;
     }
 
+
+
+
+    //--------------- Start of DFS ------------------
+
+    public int depthFirstSearch(int depth)
+    {
+        int maxValue = 0;
+        if(depth == 0)
+        {
+            return maxValue;
+        }
+        //If depth is not 0 we create more children and explore them
+        else
+        {
+            depthFirstSearch(depth - 1);
+        }
+        return maxValue;
+    }
+
+
 }
 
