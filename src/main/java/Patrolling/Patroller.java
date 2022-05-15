@@ -3,30 +3,61 @@ package Patrolling;
 import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
+import Strategies.Constraints;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 
 
-public class Patroller {
-    private int maxDepth;
-    public int dfsRecursive(int depth, int[] xy, Moves availableMoves, int[][] lastSeen, Rotations rotation)
-    {
 
+public class Patroller {
+    private final Moves[] availableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
+    private Constraints constraints;
+    private Variables vr;
+    private final int walkSpeed = vr.walkSpeed();
+
+    private int maxDepth;
+    public int dfsRecursive(int depth, int[] xy, int[][] lastSeen, Rotations rotation)
+    {
+        int maxValue = 0;
         if(depth != 0)
         {
-            int maxValue = 0;
             //Create an array list to keep track of all our values
-            ArrayList<int> nodeValues = new ArrayList<>();
+            ArrayList<int> nodeValues = new ArrayList<int>();
 
-            // Store the values of all possibilities and return the highest one
-            for(availableMoves : availableMoves)
+            // Store the values of all possible moves and return the highest one
+            for(Moves availableMove : availableMoves)
             {
+                //Prior to that, we'll have to give the child node the new rotation of the agent
+                //we will also need to give it the new xy coordinates of the agent
                 Rotations newRotation = null;
-                int nodeValue = dfsRecursive(depth - 1, xy ,getChildrensMoves(xy, lastSeen, rotation), lastSeen, newRotation);
-                nodeValues.add(nodeValue);
+                int[] newPosition = null;
+                if(availableMove.equals(Moves.TURN_LEFT))
+                {
+                    newRotation = turnLeft(rotation);
+                    newPosition = xy;
+                }
+                else if(availableMove.equals(Moves.TURN_RIGHT))
+                {
+                    newRotation = turnRight(rotation);
+                    newPosition = xy;
+                }
+                else if(availableMove.equals(Moves.WALK) || availableMove.equals(Moves.USE_TELEPORTER))
+                {
+                    newRotation = rotation;
+                    newPosition = walk(xy, newRotation);
+                }
+                else if(availableMove.equals(Moves.TURN_AROUND))
+                {
+                    newRotation = turnAround(rotation);
+                    newPosition = xy;
+                }
+
+
+                maxValue += dfsRecursive(depth - 1, xy , lastSeen, newRotation);
+                nodeValues.add(maxValue);
             }
+            /*
             for(int i = 0; i < nodeValues.size(); i++)
             {
                 if(maxValue < nodeValues.get(i))
@@ -35,6 +66,8 @@ public class Patroller {
                 }
             }
             return maxValue;
+
+            */
         }
         else
         {
@@ -155,5 +188,184 @@ public class Patroller {
             }
         }
         return newLastSeen;
+    }
+
+
+    // Copied from TreeNode/TreeRoot
+
+    public int[] walk(int[] xy, Rotations rot) {
+        int[] origin = xy.clone();
+        switch (rot) {
+            case FORWARD -> { //y increase
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[1] += howMuch;
+            }
+            case BACK -> { //y decrease
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[1] -= howMuch;
+            }
+
+            case RIGHT -> { //x increase
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[0] += howMuch;
+            }
+
+            case LEFT -> { //x decrease
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[0] -= howMuch;
+
+            }
+        }
+        if (constraints.isLegal(xy)) return xy;
+        else return origin;
+    }
+
+    private int howMuchCanIWalk(int[]pos,Rotations rot){
+        switch(rot){
+            case LEFT -> {//x decrease
+                for(int i=walkSpeed;i>0;i--){
+                    int[]targetCell={pos[0]-i,pos[1]};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
+                        return i;
+                }
+
+            }
+            case RIGHT -> {//x increase
+                for(int i=walkSpeed;i>0;i--){
+                    int[]targetCell={pos[0]+i,pos[1]};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
+                        return i;
+                }
+            }
+            case FORWARD ->{//y increase
+                for(int i=walkSpeed;i>0;i--){
+                    int[]targetCell={pos[0],pos[1]+i};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
+                        return i;
+                }
+            }
+            case BACK -> {//y decrease
+                for(int i=walkSpeed;i>0;i--){
+                    int[]targetCell={pos[0],pos[1]-i};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
+                        return i;
+                }
+            }
+        }
+        return 0;
+    }
+
+    /* Needs to be modified to account for walls
+    private boolean noWallsInTheWay(int[]pos,int[]target,Rotations rot){
+        switch(rot){
+            case FORWARD -> {//y increase
+                int distance = target[1]-pos[1];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0])){
+                        if(walls.get(pos[0]).contains(pos[1]+i)){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+            case BACK -> {//y decrease
+                int distance = pos[1]-target[1];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0])){
+                        if(walls.get(pos[0]).contains(pos[1]-i)){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+            case RIGHT -> {//x increase
+                int distance = target[0]-pos[0];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0]+i)){
+                        if(walls.get(pos[0]+i).contains(pos[1])){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+            case LEFT -> {//x decrease
+                int distance = pos[0]-target[0];
+                for(int i=distance;i>0;i--){
+                    if(walls.containsKey(pos[0]-i)){
+                        if(walls.get(pos[0]-i).contains(pos[1])){
+                            return false;
+                        }
+                    }
+
+                }
+            }
+
+        }
+        return true;
+    }
+    */
+
+
+    public Rotations turnLeft(Rotations rot) {
+        switch (rot) {
+            case BACK -> {
+                return (Rotations.RIGHT);
+            }
+            case LEFT -> {
+                return (Rotations.BACK);
+            }
+            case FORWARD -> {
+                return (Rotations.LEFT);
+            }
+            case RIGHT -> {
+                return (Rotations.FORWARD);
+            }
+            default -> {
+                return Rotations.LEFT;
+            }
+        }
+    }
+
+    public Rotations turnRight(Rotations rot) {
+        switch (rot) {
+            case FORWARD -> {
+                return (Rotations.RIGHT);
+            }
+            case RIGHT -> {
+                return (Rotations.BACK);
+            }
+            case LEFT -> {
+                return (Rotations.FORWARD);
+            }
+            case BACK -> {
+                return (Rotations.LEFT);
+            }
+            default -> {
+                return Rotations.LEFT;
+            }
+        }
+    }
+
+    public Rotations turnAround(Rotations rot) {
+        switch (rot) {
+            case FORWARD -> {
+                return (Rotations.BACK);
+            }
+            case RIGHT -> {
+                return (Rotations.LEFT);
+            }
+            case LEFT -> {
+                return (Rotations.RIGHT);
+            }
+            case BACK -> {
+                return (Rotations.FORWARD);
+            }
+            default -> {
+                return Rotations.LEFT;
+            }
+        }
     }
 }

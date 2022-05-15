@@ -98,7 +98,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 4, constraints,vr,visitedPoints,objects);
             //STEP 2: generate the children all possible moves R,L,U,P
             returnedMoves = new ArrayList<>();
-            returnedMoves = tr.createMoves();
+            //returnedMoves = tr.createMoves();
 
 
             int[] targetPosition = getMaxSquare(lastSeen, xy);
