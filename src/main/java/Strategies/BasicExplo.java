@@ -5,6 +5,7 @@ import Entities.Explorer;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
+import OptimalSearch.TreeNode;
 import OptimalSearch.TreeRoot;
 import PathMaking.Point;
 import Patrolling.Position;
@@ -31,6 +32,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean chasing;
     boolean exploDone;
     private Explorer agent;
+    private ArrayList<TreeNode> returnedMoves;
 
     public BasicExplo() {
         this.explored = new HashMap<>();
@@ -92,6 +94,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
         }
         if(patrolling&&exploDone){
+            //STEP 1: create Tree root
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 4, constraints,vr,visitedPoints,objects);
+            //STEP 2: generate the children all possible moves R,L,U,P
+            returnedMoves = new ArrayList<>();
+            returnedMoves = tr.createMoves();
+
+
             int[] targetPosition = getMaxSquare(lastSeen, xy);
             return getPatrolPath(targetPosition,rot, xy);
         }
