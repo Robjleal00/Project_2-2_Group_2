@@ -3,6 +3,7 @@ package Patrolling;
 import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
+import ObjectsOnMap.Teleporter;
 import Strategies.Constraints;
 
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class Patroller {
     private Constraints constraints;
     private Variables vr;
     private final int walkSpeed = vr.walkSpeed();
+    private String[][] map;
 
     //TODO: create method that checks if teleporter is part of availableMoves -- ASHA
     private boolean isTeleporterAvailable(Rotations rotation, int [] xy, String[][]Map){
@@ -39,26 +41,30 @@ public class Patroller {
                 //we will also need to give it the new xy coordinates of the agent
                 Rotations newRotation = null;
                 int[] newPosition = null;
-                //TODO: change to switch statement  --KAI
-                if(availableMove.equals(Moves.TURN_LEFT))
+                switch(availableMove)
                 {
-                    newRotation = rotation.turnLeft();
-                    newPosition = xy.clone();
-                }
-                else if(availableMove.equals(Moves.TURN_RIGHT))
-                {
-                    newRotation = rotation.turnRight();
-                    newPosition = xy.clone();
-                }
-                else if(availableMove.equals(Moves.WALK) || availableMove.equals(Moves.USE_TELEPORTER))
-                {
-                    newRotation = rotation;
-                    newPosition = walk(xy, newRotation);
-                }
-                else if(availableMove.equals(Moves.TURN_AROUND))
-                {
-                    newRotation = rotation.turnAround();
-                    newPosition = xy.clone();
+                    case TURN_AROUND -> {
+                        newRotation = rotation.turnAround();
+                        newPosition = xy.clone();
+                    }
+                    case WALK -> {
+                        xy = walk(xy, rotation);
+                        newPosition = walk(xy, newRotation);
+                    }
+                    case TURN_RIGHT -> {
+                        newRotation = rotation.turnRight();
+                        newPosition = xy.clone();
+                    }
+                    case TURN_LEFT -> {
+                        newRotation = rotation.turnLeft();
+                        newPosition = xy.clone();
+                    }
+                    case USE_TELEPORTER -> {
+                        newRotation = rotation;
+                        //TODO: add teleporter methods
+                        Teleporter tp = new Teleporter(1,1,1,2,2);
+                        newPosition = tp.getTarget();
+                    }
                 }
                 //TODO: Currently creates one map that it will give to all children, need to change setSeen appropriately  --KAI
                 int[][] nodesLastSeenMap = setSeen(lastSeen, vr, newPosition, newRotation);
@@ -89,8 +95,42 @@ public class Patroller {
     }
 
     //Root method
-    public Moves dfs(int[] xy)
+    public Moves dfs(int[] xy, Rotations rotation)
     {
+        for(Moves availableMove : availableMoves)
+        {
+            // Annoying since a lot of moves won't have the teleporter, yet it still checks repeatedly
+            Rotations newRotation = null;
+            int[] newPosition = null;
+            switch (availableMove) {
+                case TURN_AROUND -> {
+                    newRotation = rotation.turnAround();
+                    newPosition = xy.clone();
+                }
+                case WALK -> {
+                    xy = walk(xy, rotation);
+                    newPosition = walk(xy, newRotation);
+                }
+                case TURN_RIGHT -> {
+                    newRotation = rotation.turnRight();
+                    newPosition = xy.clone();
+                }
+                case TURN_LEFT -> {
+                    newRotation = rotation.turnLeft();
+                    newPosition = xy.clone();
+                }
+                case USE_TELEPORTER -> {
+                    if (isTeleporterAvailable(rotation, xy, map)) {
+                        newRotation = rotation;
+                        //TODO: add teleporter methods
+                        Teleporter tp = new Teleporter(1, 1, 1, 2, 2);
+                        newPosition = tp.getTarget();
+                    } else {
+                        return Moves.STUCK;
+                    }
+                }
+            }
+        }
         //TODO: Have to loop through the children, creates 4 children at first --KAI
         //TODO: when you create children, give them a move and let them execute it themselves, less "super" code required
         // same concept as TreeRoot: getMove()
@@ -110,6 +150,7 @@ public class Patroller {
     }
 
     //Returns the SUM of all seen squares, MUST be called before setSeen
+    // Additionally now it also sets all seen square values to 0
     public int getValue(int[][] lastSeen, Variables vr, int[] xy, Rotations rotation)
     {
         int value = 0;
@@ -119,6 +160,7 @@ public class Patroller {
                 for(int i = xy[0] - 1; i < xy[0] + 1; i++){
                     for(int j = xy[1]; j < xy[1] + range; j++){
                         value  += lastSeen[i][j];
+                        lastSeen[i][j] = 0;
                     }
                 }
             }
@@ -126,14 +168,15 @@ public class Patroller {
                 for(int i = xy[0] - 1; i < xy[0] + 1; i++){
                     for(int j = xy[1] - range; j < xy[1] ; j++){
                         value  += lastSeen[i][j];
+                        lastSeen[i][j] = 0;
                     }
-
                 }
             }
             case LEFT -> {
                 for(int i = xy[0] - range; i < xy[0]; i++){
                     for(int j = xy[1] - 1; j < xy[1] + 1; j++){
                         value  += lastSeen[i][j];
+                        lastSeen[i][j] = 0;
                     }
                 }
             }
@@ -141,6 +184,7 @@ public class Patroller {
                 for(int i = xy[0]; i < xy[0] + range; i++){
                     for(int j = xy[1] - 1; j < xy[1] + 1; j++){
                         value  += lastSeen[i][j];
+                        lastSeen[i][j] = 0;
                     }
                 }
             }
@@ -168,41 +212,6 @@ public class Patroller {
             for(int j = 0; j < lastSeen[0].length; j++)
             {
                 newLastSeen[i][j] = lastSeen[i][j];
-            }
-        }
-        //For every different node the agent will see something else, here it will set all seen squares to 0 for its
-        //own version
-        int range = vr.eyeRange();
-        //Agent sees a block to its left and its right with a range of 5 units
-        switch(rotation){
-            case BACK -> {
-                for(int i = xy[0] - 1; i < xy[0] + 1; i++){
-                    for(int j = xy[1]; j < xy[1] + range; j++){
-                        newLastSeen[i][j] = 0;
-                    }
-                }
-            }
-            case FORWARD -> {
-                for(int i = xy[0] - 1; i < xy[0] + 1; i++){
-                    for(int j = xy[1] - range; j < xy[1] ; j++){
-                        newLastSeen[i][j] = 0;
-                    }
-
-                }
-            }
-            case LEFT -> {
-                for(int i = xy[0] - range; i < xy[0]; i++){
-                    for(int j = xy[1] - 1; j < xy[1] + 1; j++){
-                        newLastSeen[i][j] = 0;
-                    }
-                }
-            }
-            case RIGHT ->{
-                for(int i = xy[0]; i < xy[0] + range; i++){
-                    for(int j = xy[1] - 1; j < xy[1] + 1; j++){
-                        newLastSeen[i][j] = 0;
-                    }
-                }
             }
         }
         return newLastSeen;
