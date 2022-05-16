@@ -4,11 +4,15 @@ import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
 import ObjectsOnMap.Teleporter;
+import PathMaking.Point;
 import Strategies.Constraints;
+import OptimalSearch.TreeRoot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
+import static com.sun.jndi.ldap.LdapSchemaCtx.deepClone;
 
 
 public class Patroller {
@@ -17,13 +21,44 @@ public class Patroller {
     private Variables vr;
     private final int walkSpeed = vr.walkSpeed();
     private String[][] map;
+    private final int[] xy;
 
-    //TODO: create method that checks if teleporter is part of availableMoves -- ASHA
-    private boolean isTeleporterAvailable(Rotations rotation, int [] xy, String[][]Map){
-
-
+    public Patroller(int []xy){
+        this.xy = xy;
     }
+
+
+
     //TODO: Teleporter is stored in BasicExplo, but the HM coordinates need to be transformed into the Array vals --ASHA
+    private boolean teleporterCanBeUsed(Rotations rotation, int [] xy, String[][] map, int []posTeleporter){
+
+        if(xy[0]==posTeleporter[0]){
+            if(posTeleporter[1]==xy[1]+1){
+                if(rotation == Rotations.DOWN){
+                    return true;
+                }
+            }else if(posTeleporter[1]==xy[1]-1){
+                if(rotation == Rotations.UP){
+                    return true;
+                }
+            }
+        }
+        if(xy[1]==posTeleporter[1]){
+            if(posTeleporter[0]==xy[0]+1){
+                if(rotation == Rotations.LEFT){
+                    return true;
+                }
+            }
+            if(posTeleporter[0]==xy[0]-1){
+                if(rotation == Rotations.RIGHT){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
     private int maxDepth;
     //Node method
     public int dfsRecursive(int depth, int[] xy, int[][] lastSeen, Rotations rotation)
@@ -32,7 +67,7 @@ public class Patroller {
         if(depth != 0)
         {
             //Create an array list to keep track of all our values
-            ArrayList<int> nodeValues = new ArrayList<int>();
+            ArrayList<Integer> nodeValues = new ArrayList<Integer>();
 
             // Store the values of all possible moves and return the highest one
             for(Moves availableMove : availableMoves)
