@@ -16,8 +16,12 @@ public class Patroller {
     private Variables vr;
     private final int walkSpeed = vr.walkSpeed();
 
-    //TODO: create method that checks if teleporter is part of availableMoves
-    //TODO: Teleporter is stored in BasicExplo, but the HM coordinates need to be transformed into the Array vals
+    //TODO: create method that checks if teleporter is part of availableMoves -- ASHA
+    private boolean isTeleporterAvailable(Rotations rotation, int [] xy, String[][]Map){
+
+
+    }
+    //TODO: Teleporter is stored in BasicExplo, but the HM coordinates need to be transformed into the Array vals --ASHA
     private int maxDepth;
     //Node method
     public int dfsRecursive(int depth, int[] xy, int[][] lastSeen, Rotations rotation)
@@ -35,10 +39,10 @@ public class Patroller {
                 //we will also need to give it the new xy coordinates of the agent
                 Rotations newRotation = null;
                 int[] newPosition = null;
-                //TODO: change to switch statement
+                //TODO: change to switch statement  --KAI
                 if(availableMove.equals(Moves.TURN_LEFT))
                 {
-                    //TODO: change rotations to use rot.turnLeft(), etc...
+                    //TODO: change rotations to use rot.turnLeft(), etc...  --KAI
                     newRotation = turnLeft(rotation);
                     newPosition = xy.clone();
                 }
@@ -57,7 +61,7 @@ public class Patroller {
                     newRotation = turnAround(rotation);
                     newPosition = xy.clone();
                 }
-                //TODO: Currently creates one map that it will give to all children, need to change setSeen appropriately
+                //TODO: Currently creates one map that it will give to all children, need to change setSeen appropriately  --KAI
                 int[][] nodesLastSeenMap = setSeen(lastSeen, vr, newPosition, newRotation);
 
                 maxValue += dfsRecursive(depth - 1, newPosition , lastSeen, newRotation);
@@ -88,7 +92,7 @@ public class Patroller {
     //Root method
     public Moves dfs(int[] xy)
     {
-        //TODO: Have to loop through the children, creates 4 children at first
+        //TODO: Have to loop through the children, creates 4 children at first --KAI
         //TODO: when you create children, give them a move and let them execute it themselves, less "super" code required
         // same concept as TreeRoot: getMove()
         //dfsRecurisve() = treenode
@@ -208,7 +212,7 @@ public class Patroller {
 
     // Copied from TreeNode/TreeRoot
 
-    //TODO: Remake howMuchCanIWalk and noWallsInTheWay
+    //TODO: Remake howMuchCanIWalk and noWallsInTheWay -- ASHA
     public int[] walk(int[] xy, Rotations rot) {
         int[] origin = xy.clone();
         switch (rot) {
@@ -326,7 +330,7 @@ public class Patroller {
     */
 
 
-    //TODO: Change turns from in the
+    //TODO: Change turns from in the  --KAI
     //return rot.t
     public Rotations turnLeft(Rotations rot) {
         return rot.turnLeft();
