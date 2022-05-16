@@ -107,7 +107,10 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             return getPatrolPath(targetPosition,rot, xy);
 
              */
-            Patroller patroller = new Patroller();
+            //We run this method multiple times, so we get new map everytime?
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] map = makeMap(tr.giveMappings());
+            Patroller patroller = new Patroller(xy);
         }
 
 
