@@ -11,12 +11,15 @@ import java.util.Collections;
 
 
 public class Patroller {
-    private final Moves[] availableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
+    private final Moves[] availableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND, Moves.USE_TELEPORTER};
     private Constraints constraints;
     private Variables vr;
     private final int walkSpeed = vr.walkSpeed();
 
+    //TODO: create method that checks if teleporter is part of availableMoves
+    //TODO: Teleporter is stored in BasicExplo, but the HM coordinates need to be transformed into the Array vals
     private int maxDepth;
+    //Node method
     public int dfsRecursive(int depth, int[] xy, int[][] lastSeen, Rotations rotation)
     {
         int maxValue = 0;
@@ -32,15 +35,17 @@ public class Patroller {
                 //we will also need to give it the new xy coordinates of the agent
                 Rotations newRotation = null;
                 int[] newPosition = null;
+                //TODO: change to switch statement
                 if(availableMove.equals(Moves.TURN_LEFT))
                 {
+                    //TODO: change rotations to use rot.turnLeft(), etc...
                     newRotation = turnLeft(rotation);
-                    newPosition = xy;
+                    newPosition = xy.clone();
                 }
                 else if(availableMove.equals(Moves.TURN_RIGHT))
                 {
                     newRotation = turnRight(rotation);
-                    newPosition = xy;
+                    newPosition = xy.clone();
                 }
                 else if(availableMove.equals(Moves.WALK) || availableMove.equals(Moves.USE_TELEPORTER))
                 {
@@ -50,9 +55,10 @@ public class Patroller {
                 else if(availableMove.equals(Moves.TURN_AROUND))
                 {
                     newRotation = turnAround(rotation);
-                    newPosition = xy;
+                    newPosition = xy.clone();
                 }
-
+                //TODO: Currently creates one map that it will give to all children, need to change setSeen appropriately
+                int[][] nodesLastSeenMap = setSeen(lastSeen, vr, newPosition, newRotation);
 
                 maxValue += dfsRecursive(depth - 1, newPosition , lastSeen, newRotation);
                 nodeValues.add(maxValue);
@@ -79,7 +85,15 @@ public class Patroller {
         return maxValue;
     }
 
-    // public void dfs(int[] xy)
+    //Root method
+    public Moves dfs(int[] xy)
+    {
+        //TODO: Have to loop through the children, creates 4 children at first
+        //TODO: when you create children, give them a move and let them execute it themselves, less "super" code required
+        // same concept as TreeRoot: getMove()
+        //dfsRecurisve() = treenode
+        return null;
+    }
 
     /**
      *      Since we need to know what possible moves the children can make we'll have to do the calculations ourselves,
@@ -194,6 +208,7 @@ public class Patroller {
 
     // Copied from TreeNode/TreeRoot
 
+    //TODO: Remake howMuchCanIWalk and noWallsInTheWay
     public int[] walk(int[] xy, Rotations rot) {
         int[] origin = xy.clone();
         switch (rot) {
@@ -217,8 +232,8 @@ public class Patroller {
 
             }
         }
-        if (constraints.isLegal(xy)) return xy;
-        else return origin;
+        return xy;
+
     }
 
     private int howMuchCanIWalk(int[]pos,Rotations rot){
@@ -238,6 +253,7 @@ public class Patroller {
                         return i;
                 }
             }
+            //TODO: Forward doesn't increase Y ANYMORE IT INCREASES X
             case FORWARD ->{//y increase
                 for(int i=walkSpeed;i>0;i--){
                     int[]targetCell={pos[0],pos[1]+i};
@@ -310,44 +326,14 @@ public class Patroller {
     */
 
 
+    //TODO: Change turns from in the
+    //return rot.t
     public Rotations turnLeft(Rotations rot) {
-        switch (rot) {
-            case BACK -> {
-                return (Rotations.RIGHT);
-            }
-            case LEFT -> {
-                return (Rotations.BACK);
-            }
-            case FORWARD -> {
-                return (Rotations.LEFT);
-            }
-            case RIGHT -> {
-                return (Rotations.FORWARD);
-            }
-            default -> {
-                return Rotations.LEFT;
-            }
-        }
+        return rot.turnLeft();
     }
 
     public Rotations turnRight(Rotations rot) {
-        switch (rot) {
-            case FORWARD -> {
-                return (Rotations.RIGHT);
-            }
-            case RIGHT -> {
-                return (Rotations.BACK);
-            }
-            case LEFT -> {
-                return (Rotations.FORWARD);
-            }
-            case BACK -> {
-                return (Rotations.LEFT);
-            }
-            default -> {
-                return Rotations.LEFT;
-            }
-        }
+        return rot.turnRight();
     }
 
     public Rotations turnAround(Rotations rot) {
