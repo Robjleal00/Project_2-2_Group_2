@@ -42,13 +42,12 @@ public class Patroller {
                 //TODO: change to switch statement  --KAI
                 if(availableMove.equals(Moves.TURN_LEFT))
                 {
-                    //TODO: change rotations to use rot.turnLeft(), etc...  --KAI
-                    newRotation = turnLeft(rotation);
+                    newRotation = rotation.turnLeft();
                     newPosition = xy.clone();
                 }
                 else if(availableMove.equals(Moves.TURN_RIGHT))
                 {
-                    newRotation = turnRight(rotation);
+                    newRotation = rotation.turnRight();
                     newPosition = xy.clone();
                 }
                 else if(availableMove.equals(Moves.WALK) || availableMove.equals(Moves.USE_TELEPORTER))
@@ -58,7 +57,7 @@ public class Patroller {
                 }
                 else if(availableMove.equals(Moves.TURN_AROUND))
                 {
-                    newRotation = turnAround(rotation);
+                    newRotation = rotation.turnAround();
                     newPosition = xy.clone();
                 }
                 //TODO: Currently creates one map that it will give to all children, need to change setSeen appropriately  --KAI
@@ -329,34 +328,4 @@ public class Patroller {
     }
     */
 
-
-    //TODO: Change turns from in the  --KAI
-    //return rot.t
-    public Rotations turnLeft(Rotations rot) {
-        return rot.turnLeft();
-    }
-
-    public Rotations turnRight(Rotations rot) {
-        return rot.turnRight();
-    }
-
-    public Rotations turnAround(Rotations rot) {
-        switch (rot) {
-            case FORWARD -> {
-                return (Rotations.BACK);
-            }
-            case RIGHT -> {
-                return (Rotations.LEFT);
-            }
-            case LEFT -> {
-                return (Rotations.RIGHT);
-            }
-            case BACK -> {
-                return (Rotations.FORWARD);
-            }
-            default -> {
-                return Rotations.LEFT;
-            }
-        }
-    }
 }
