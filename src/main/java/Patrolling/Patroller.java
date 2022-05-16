@@ -54,8 +54,9 @@ public class Patroller {
                 }
 
 
-                maxValue += dfsRecursive(depth - 1, xy , lastSeen, newRotation);
+                maxValue += dfsRecursive(depth - 1, newPosition , lastSeen, newRotation);
                 nodeValues.add(maxValue);
+                return getValue(lastSeen, vr, newPosition, newRotation);
             }
             /*
             for(int i = 0; i < nodeValues.size(); i++)
@@ -91,7 +92,7 @@ public class Patroller {
         return null;
     }
 
-    //Returns the SUM of all seen squares
+    //Returns the SUM of all seen squares, MUST be called before setSeen
     public int getValue(int[][] lastSeen, Variables vr, int[] xy, Rotations rotation)
     {
         int value = 0;

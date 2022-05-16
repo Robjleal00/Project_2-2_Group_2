@@ -8,6 +8,7 @@ import Logic.GameController;
 import OptimalSearch.TreeNode;
 import OptimalSearch.TreeRoot;
 import PathMaking.Point;
+import Patrolling.Patroller;
 import Patrolling.Position;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -94,6 +95,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
         }
         if(patrolling&&exploDone){
+            /*
             //STEP 1: create Tree root
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 4, constraints,vr,visitedPoints,objects);
             //STEP 2: generate the children all possible moves R,L,U,P
@@ -103,6 +105,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
             int[] targetPosition = getMaxSquare(lastSeen, xy);
             return getPatrolPath(targetPosition,rot, xy);
+
+             */
+            Patroller patroller = new Patroller();
         }
 
 
