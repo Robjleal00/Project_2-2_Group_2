@@ -103,7 +103,9 @@ public class Patroller {
                 }
                 //Finished to-do: Currently creates one map that it will give to all children, need to change setSeen appropriately  --KAI
                 //^ Changed this so that it does the following:
-                // 1. First calculates the value of the current node
+                // 0. First increment the values of all squares of lastSeen by 1, before value calculation
+                incrementLastSeen(lastSeen);
+                // 1. First calculates the value of the current node, getValue also sets seen squares to 0
                 maxValue += getValue(lastSeen, vr, newPosition, newRotation);
                 // 2. Creates a new lastSeen map, passes it to the child node
                 int[][] nodesLastSeenMap = createNewLastSeen(lastSeen, vr, newPosition, newRotation);
@@ -372,5 +374,16 @@ public class Patroller {
         return true;
     }
     */
+
+    public void incrementLastSeen(int[][] lastSeen)
+    {
+        for(int i = 0; i < lastSeen.length; i++)
+        {
+            for(int j = 0; j < lastSeen[0]. length; j++)
+            {
+                lastSeen[i][j]++;
+            }
+        }
+    }
 
 }
