@@ -9,6 +9,7 @@ import Enums.Rotations;
 import java.util.*;
 
 import Config.*;
+import ObjectsOnMap.Goal;
 import ObjectsOnMap.ObjectOnMap;
 import ObjectsOnMap.Teleporter;
 import javafx.application.Platform;
@@ -754,7 +755,7 @@ Use this to construct with graphics.
         }
         return "ERROR";
     }
-    private boolean canBePutThere(int []target, Entity e) {
+    private boolean canBePutThere(int []target, Entity e) { // TODO: APPARENTLY THIS IS WRONG
         if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength){
             if(e.getType() == EntityType.INTRUDER){
                 if (Objects.equals(map[target[1]][target[0]], "V1"))
@@ -778,5 +779,76 @@ Use this to construct with graphics.
     private void checkWin(int turns) {
         if (allUnseenTiles.isEmpty()) isRunning = false;
         if(turns>MAX_TURNS) isRunning=false;
+    }
+
+    //returns a rotation based on the angle calculated (taking into consideration also the agents rotation)
+    public Moves getDirection(Entity intEntity){ //Rotation or move?
+        //get position
+        int[] targetLoc = new int[2];
+        for(ObjectOnMap ob : objects){
+            if(ob instanceof Goal)
+                 targetLoc = ob.getXy(); break;
+        }
+
+        int[] intruderLoc = entityLocations.get(intEntity);
+
+        //calculate the angle
+        double tanTheta = (targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
+        double angle = Math.atan(tanTheta);
+        int degAngle = (int) Math.toDegrees(angle);
+
+        //get the current rotation of the intruder
+        //From the rotation hashmap
+        Rotations rot = entityRotationsHashMap.get(intEntity);
+
+        switch (rot){
+            case FORWARD -> { //or is it Up
+                if(degAngle > 45 && degAngle < 135)
+                    return Moves.WALK;
+                else if(degAngle <= 45 && degAngle >= 315)
+                    return Moves.TURN_RIGHT;
+                else if(degAngle >225 && degAngle < 315)
+                    return Moves.TURN_AROUND;
+                else
+                    return Moves.TURN_LEFT;
+            }
+
+            case DOWN -> {
+                if(degAngle > 45 && degAngle < 135)
+                    return Moves.TURN_AROUND;
+                else if(degAngle <= 45 && degAngle >= 315)
+                    return Moves.TURN_LEFT;
+                else if(degAngle >225 && degAngle < 315)
+                    return Moves.WALK;
+                else
+                    return Moves.TURN_RIGHT;
+            }
+
+            case RIGHT -> {
+                if(degAngle > 45 && degAngle < 135)
+                    return Moves.TURN_LEFT;
+                else if(degAngle <= 45 && degAngle >= 315)
+                    return Moves.WALK;
+                else if(degAngle >225 && degAngle < 315)
+                    return Moves.TURN_RIGHT;
+                else
+                    return Moves.TURN_AROUND;
+            }
+
+            case LEFT -> {
+                if(degAngle > 45 && degAngle < 135)
+                    return Moves.TURN_RIGHT;
+                else if(degAngle <= 45 && degAngle >= 315)
+                    return Moves.TURN_AROUND;
+                else if(degAngle >225 && degAngle < 315)
+                    return Moves.TURN_LEFT;
+                else
+                    return Moves.WALK;
+            }
+        }
+
+        //Tell it that the target is on the diagonal
+
+        return Moves.WALK;
     }
 }

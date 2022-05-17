@@ -17,11 +17,11 @@ public class Intruder extends Entity{
     private final Variables vr;
 
 
-
-
-    public Intruder(EntityType type, GameController gm, Strategy st, Variables vr, Rotations currentRotation) {
-
-        this.currentRotation = currentRotation;
+    //TODO: Compare this to Explorer class
+    public Intruder(EntityType type, GameController gm, Strategy st, Variables vr) {
+        this.x = 0;
+        this.y = 0;
+        this.currentRotation = Rotations.FORWARD;
         this.type = type;
         this.gm = gm;
         this.st = st;
@@ -29,9 +29,10 @@ public class Intruder extends Entity{
         //true false initially when looking for goal and not avoiding guards
         st.setBooleans(true, false);
     }
+
     @Override
     public EntityType getType() {
-        return super.getType();
+        return type;
     }
 
     @Override
@@ -39,6 +40,7 @@ public class Intruder extends Entity{
         String[][] vision = gm.giveVision(this);
         int[] xy = {x,y};
         System.out.println("XY: " + xy[0] + ", " + xy[1]);
+        Moves directMove = gm.getDirection(this);
         Moves decision = st.decideOnMove(vision,xy, currentRotation,vr);
         System.out.println("MOVE decision: " + decision.toString());
         return decision;
@@ -46,17 +48,12 @@ public class Intruder extends Entity{
 
     @Override
     public void turnLeft() {
-        this.currentRotation=currentRotation.turnLeft();
-    }
-
-    @Override
-    public void turnRight() {
-        this.currentRotation=currentRotation.turnRight();
-    }
-
-    @Override
-    public void turnAround() {
-        this.currentRotation=currentRotation.turnAround();
+        switch (currentRotation) {
+            case BACK -> setCurrentRotation(Rotations.RIGHT);
+            case LEFT -> setCurrentRotation(Rotations.BACK);
+            case FORWARD -> setCurrentRotation(Rotations.LEFT);
+            case RIGHT -> setCurrentRotation(Rotations.FORWARD);
+        }
     }
 
     @Override
@@ -69,14 +66,57 @@ public class Intruder extends Entity{
         }
     }
 
+
     @Override
-    public void showMeWhatUSaw() {
+    public void turnRight() {
+        switch (currentRotation) {
+            case FORWARD -> setCurrentRotation(Rotations.RIGHT);
+            case RIGHT -> setCurrentRotation(Rotations.BACK);
+            case LEFT -> setCurrentRotation(Rotations.FORWARD);
+            case BACK -> setCurrentRotation(Rotations.LEFT);
+        }
+    }
+
+    @Override
+    public void turnAround() {
+        switch (currentRotation) {
+            case FORWARD -> setCurrentRotation(Rotations.BACK);
+            case RIGHT -> setCurrentRotation(Rotations.LEFT);
+            case LEFT -> setCurrentRotation(Rotations.RIGHT);
+            case BACK -> setCurrentRotation(Rotations.FORWARD);
+        }
+    }
+    @Override
+    public void showMeWhatUSaw(){
         st.printMappings();
+    }
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     @Override
     public void setPosition(int[] xy) {
         this.x=xy[0];
         this.y=xy[1];
+    }
+
+    public Rotations getCurrentRotation() {
+        return currentRotation;
+    }
+
+    public void setCurrentRotation(Rotations currentRotation) {
+        this.currentRotation = currentRotation;
     }
 }

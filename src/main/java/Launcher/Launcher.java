@@ -105,15 +105,12 @@ public class Launcher {
         gm.printMap();
         Goal target = new Goal(1, 6,4);
         gm.addObject(target);
-        int[] xy = {3,1};
-        Intruder intruderOne = new Intruder(EntityType.INTRUDER,gm,new IntruderSt(xy,target),vr, Rotations.BACK);
-        intruderOne.setPosition(xy);
-        gm.addEntity(intruderOne,3,1,Rotations.DOWN);
-        //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
+        gm.init();
 
+        //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         //gm.addObject(t1);
         //gm.addWall(0,5,19,5);
-        gm.init();
        // gm.print("D");
         //gm.print(12);
         System.out.println("STARTED");

@@ -45,9 +45,19 @@ public class IntruderSt extends Strategy{
         this.visitedPoints=new ArrayList<>();
         this.atGoal = false;
         this.target = target;
-        this.direction = direction(start);
-        this.moveXtimes = Math.abs(direction[0]);
-        this.moveYtimes = Math.abs(direction[1]);
+        //this.direction = direction(start);
+        //this.moveXtimes = Math.abs(direction[0]);
+        //this.moveYtimes = Math.abs(direction[1]);
+    }
+
+    public IntruderSt(){
+        this.explored = new HashMap<>();
+        this.walls = new HashMap<>();
+        this.objects = new HashMap<>();
+        this.constraints=new Constraints();
+        this.visitedPoints=new ArrayList<>();
+        this.atGoal = false;
+
     }
 
     @Override
@@ -56,11 +66,15 @@ public class IntruderSt extends Strategy{
         this.chased = false;
     }
 
-    boolean walked = false;
-    //Searching
-    //after every move it rotates 90 degrees and checks it its facing the right direction as well
     @Override
-    public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
+    public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr){
+
+        return Moves.STUCK;
+    }
+
+
+    //@Override
+    /*public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
 
         Moves returner = Moves.STUCK;
         if(searching){
@@ -220,7 +234,7 @@ public class IntruderSt extends Strategy{
             }
         }
         return Moves.WALK;
-    }
+    }*/
 
 
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
