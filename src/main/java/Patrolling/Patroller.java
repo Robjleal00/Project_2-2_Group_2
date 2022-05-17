@@ -9,10 +9,10 @@ import Strategies.Constraints;
 import OptimalSearch.TreeRoot;
 
 import java.util.ArrayList;
-import java.util.Collections;
+import static java.util.Collections.max;
 import java.util.HashMap;
 
-import static com.sun.jndi.ldap.LdapSchemaCtx.deepClone;
+//import static com.sun.jndi.ldap.LdapSchemaCtx.deepClone;
 
 
 public class Patroller {
@@ -101,24 +101,20 @@ public class Patroller {
                         newPosition = tp.getTarget();
                     }
                 }
-                //TODO: Currently creates one map that it will give to all children, need to change setSeen appropriately  --KAI
-                int[][] nodesLastSeenMap = setSeen(lastSeen, vr, newPosition, newRotation);
+                //Finished to-do: Currently creates one map that it will give to all children, need to change setSeen appropriately  --KAI
+                //^ Changed this so that it does the following:
+                // 1. First calculates the value of the current node
+                maxValue += getValue(lastSeen, vr, newPosition, newRotation);
+                // 2. Creates a new lastSeen map, passes it to the child node
+                int[][] nodesLastSeenMap = createNewLastSeen(lastSeen, vr, newPosition, newRotation);
 
-                maxValue += dfsRecursive(depth - 1, newPosition , lastSeen, newRotation);
+                // 3. Addition the child's value to the parent
+                maxValue += dfsRecursive(depth - 1, newPosition , nodesLastSeenMap, newRotation);
                 nodeValues.add(maxValue);
-                return getValue(lastSeen, vr, newPosition, newRotation);
-            }
-            /*
-            for(int i = 0; i < nodeValues.size(); i++)
-            {
-                if(maxValue < nodeValues.get(i))
-                {
-                    maxValue = nodeValues.get(i);
-                }
-            }
-            return maxValue;
 
-            */
+                //Decremented: Don't think it's necessary to have a return value in this clause
+                // return getValue(lastSeen, vr, newPosition, newRotation);
+            }
         }
         else
         {
@@ -130,8 +126,9 @@ public class Patroller {
     }
 
     //Root method
-    public Moves dfs(int[] xy, Rotations rotation)
+    public Moves dfs(int[] xy, Rotations rotation, int[][] lastSeen)
     {
+        ArrayList<Integer> childValues = new ArrayList<Integer>();
         for(Moves availableMove : availableMoves)
         {
             // Annoying since a lot of moves won't have the teleporter, yet it still checks repeatedly
@@ -155,22 +152,26 @@ public class Patroller {
                     newPosition = xy.clone();
                 }
                 case USE_TELEPORTER -> {
-                    if (isTeleporterAvailable(rotation, xy, map)) {
+                    /*
+                    if (teleporterCanBeUsed(rotation, xy, map, tp)) {
                         newRotation = rotation;
                         //TODO: add teleporter methods
                         Teleporter tp = new Teleporter(1, 1, 1, 2, 2);
                         newPosition = tp.getTarget();
                     } else {
                         return Moves.STUCK;
-                    }
+                    } */
                 }
             }
+
+            childValues.add(dfsRecursive(4, newPosition , lastSeen, newRotation));
         }
-        //TODO: Have to loop through the children, creates 4 children at first --KAI
+        int maxValue= max(childValues);
+        int index = childValues.indexOf(maxValue);
+        // TODO: Won't index > 4? So it'll return an out of bounds exception for this
+        return availableMoves[index];
         //TODO: when you create children, give them a move and let them execute it themselves, less "super" code required
-        // same concept as TreeRoot: getMove()
-        //dfsRecurisve() = treenode
-        return null;
+        // ^ Not sure how to implement this, but I believe my implementation should suffice for now
     }
 
     /**
@@ -237,7 +238,7 @@ public class Patroller {
      * @param rotation
      * @return
      */
-    public int[][] setSeen(int[][] lastSeen, Variables vr, int []xy, Rotations rotation)
+    public int[][] createNewLastSeen(int[][] lastSeen, Variables vr, int []xy, Rotations rotation)
     {
         int[][] newLastSeen = new int[lastSeen.length][lastSeen[0].length];
 
@@ -300,7 +301,7 @@ public class Patroller {
                         return i;
                 }
             }
-            //TODO: Forward doesn't increase Y ANYMORE IT INCREASES X
+            //REMINDER: Forward doesn't increase Y ANYMORE IT INCREASES X
             case FORWARD ->{//y increase
                 for(int i=walkSpeed;i>0;i--){
                     int[]targetCell={pos[0],pos[1]+i};
