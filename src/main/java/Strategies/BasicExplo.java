@@ -8,6 +8,7 @@ import Logic.GameController;
 import OptimalSearch.TreeNode;
 import OptimalSearch.TreeRoot;
 import PathMaking.Point;
+import Patrolling.CoordinateTransformer;
 import Patrolling.Patroller;
 import Patrolling.Position;
 import com.google.gson.Gson;
@@ -24,6 +25,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final HashMap<Integer,int[]> objects;
+    private final HashMap<Integer,int[]> teleporterGoal;
+    private final HashMap<int[],int[]> teleporterAll;
     private final Constraints constraints;
     private final ArrayList<Point> visitedPoints;
     private int[][] agentSeenMap;
@@ -34,6 +37,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean exploDone;
     private Explorer agent;
     private ArrayList<TreeNode> returnedMoves;
+    private CoordinateTransformer coordT = null;
+    private int lastUsedTeleporter;
+    private boolean TELEPORTED=false;
 
     public BasicExplo() {
         this.explored = new HashMap<>();
@@ -43,6 +49,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         this.firstPhase=true;
         this.visitedPoints=new ArrayList<>();
         this.exploDone=false;
+        this.teleporterGoal=new HashMap<>();
+        this.teleporterAll=new HashMap<>();
     }
     @Override
     public void setBooleans(boolean p, boolean c){
@@ -55,6 +63,10 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     }
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
+        if(TELEPORTED){
+            teleporterGoal.putIfAbsent(lastUsedTeleporter,xy);
+            TELEPORTED=false;
+        }
         Moves returner = Moves.STUCK;
         updateExploration(vision, xy, rot);
         if(!explored(xy))visitedPoints.add(new Point(xy,new ArrayList<>()));
@@ -84,6 +96,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             String[][] map = makeMap(tr.giveMappings());
             int fixY=Integer.parseInt(map[0][1]);
             int fixX=Integer.parseInt(map[0][2]);
+            CoordinateTransformer ct=new CoordinateTransformer(fixX, fixY);
+            this.coordT=ct;
+            agent.setCT(ct);
             //explorationPoints.get(j+fix+fixX).add(((i+fix)*-1)+fixY);
             int fixedX=xy[0]+fixX;
             int fixedY=(xy[1]*-1)+fixY;
@@ -92,7 +107,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             System.out.println("EXPLO DONE");
             //String[][] agentPrivateMap = makeMap(map);
             lastSeen = makeLastSeenMap(map);
-
+            for(Integer i:objects.keySet()){
+                if(teleporterGoal.containsKey(i)){
+                    int[] origin = ct.transform(objects.get(i));
+                    int[] goal = ct.transform(teleporterGoal.get(i));
+                    teleporterAll.put(origin,goal);
+                }
+            }
         }
         if(patrolling&&exploDone){
             /*
@@ -110,11 +131,36 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             //We run this method multiple times, so we get new map everytime?
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
-            Patroller patroller = new Patroller(xy);
+            Patroller patroller = new Patroller(xy,rot,vr,map,teleporterAll,lastSeen);
+            returner = patroller.dfs(4);
         }
 
-
+        if(returner==Moves.USE_TELEPORTER){
+            for(Integer i:objects.keySet()){
+                int [] position=objects.get(i);
+                if(itsNextToMe(position,xy)){
+                lastUsedTeleporter=i;
+                break;
+                }
+            }
+        }
         return returner;
+    }
+    @Override
+    public void teleported(){
+        TELEPORTED=true;
+    }
+    boolean itsNextToMe(int[]pos,int[]xy){
+        if(xy[0]==pos[0]){
+            if(pos[1]==xy[1]+1)return true;
+            if(pos[1]==xy[1]-1)return true;
+        }
+        if(xy[1]==pos[1]){
+            if(pos[0]==xy[0]+1)return true;
+            if(pos[0]==xy[0]-1)return true;
+        }
+        return false;
+
     }
     public boolean explored(int[]xy){
         for(Point p : visitedPoints){

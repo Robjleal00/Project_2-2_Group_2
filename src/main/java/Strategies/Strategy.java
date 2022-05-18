@@ -15,4 +15,5 @@ public class Strategy { // Template for making strategies, basic explo is an imp
     }
     public void setBooleans(boolean b, boolean c){}
     public void setAgent(Explorer e){}
+    public void teleported(){}
 }
