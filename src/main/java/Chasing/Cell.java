@@ -16,6 +16,9 @@ public class Cell {
     public int finalCost; // G + H width
     // g(n) is the cost of the path from the start node n to the end node (goal node)
     // h(n) is heuristic that estimates the cost of the cheapest path from n to the goal node
+    public boolean solution; // we use this to check if the cell is part of the solution path
+
+
 
     public Cell(int i, int j) {
         this.i = i;
@@ -27,7 +30,5 @@ public class Cell {
     public String toString() {
         return "[" + i + ", " + j + "]";
     }
-
-
 
 }
