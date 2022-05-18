@@ -69,6 +69,8 @@ public class IntruderSt extends Strategy{
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr){
 
+
+        //Always check what the intruder sees
         return Moves.STUCK;
     }
 

@@ -41,6 +41,7 @@ public class GameController { // self explanatory
     private int maxExploNum;
     private int walkSpeed;
     private MainApp graphicsUpdater;
+    private Rotations globalRotation;
     private final int MAX_TURNS=1000;
 /*
 Use this to construct with graphics.
@@ -646,12 +647,18 @@ Use this to construct with graphics.
     }
     public void addEntity(Entity e, int h, int l, Rotations rot) {
         entities.add(e);
+        this.globalRotation = rot;
         int[] yx = {h, l};
         entityLocations.put(e, yx);
         entityRotationsHashMap.put(e, rot);
         putOnMap(symbol(e), h, l);
         entityInitialPoses.put(e,new Pose(rot,yx));
     }
+
+    public Rotations getGlobalRotation(){
+        return globalRotation;
+    }
+
     public void addObject(ObjectOnMap o) {
         objects.add(o);
         int[] yx = o.getXy();
@@ -782,7 +789,7 @@ Use this to construct with graphics.
     }
 
     //returns a rotation based on the angle calculated (taking into consideration also the agents rotation)
-    public Moves getDirection(Entity intEntity){ //Rotation or move?
+    public Rotations getDirection(Entity intEntity){ //Rotation or move?
         //get position
         int[] targetLoc = new int[2];
         for(ObjectOnMap ob : objects){
@@ -790,65 +797,27 @@ Use this to construct with graphics.
                  targetLoc = ob.getXy(); break;
         }
 
-        int[] intruderLoc = entityLocations.get(intEntity);
+        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
 
+        int[] intruderLoc = entityLocations.get(intEntity);
+        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
         //calculate the angle
         double tanTheta = (targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
         double angle = Math.atan(tanTheta);
         int degAngle = (int) Math.toDegrees(angle);
+        System.out.println("Deg angle : " + degAngle);
 
         //get the current rotation of the intruder
         //From the rotation hashmap
         Rotations rot = entityRotationsHashMap.get(intEntity);
-
-        switch (rot){
-            case FORWARD -> { //or is it Up
-                if(degAngle > 45 && degAngle < 135)
-                    return Moves.WALK;
-                else if(degAngle <= 45 && degAngle >= 315)
-                    return Moves.TURN_RIGHT;
-                else if(degAngle >225 && degAngle < 315)
-                    return Moves.TURN_AROUND;
-                else
-                    return Moves.TURN_LEFT;
-            }
-
-            case DOWN -> {
-                if(degAngle > 45 && degAngle < 135)
-                    return Moves.TURN_AROUND;
-                else if(degAngle <= 45 && degAngle >= 315)
-                    return Moves.TURN_LEFT;
-                else if(degAngle >225 && degAngle < 315)
-                    return Moves.WALK;
-                else
-                    return Moves.TURN_RIGHT;
-            }
-
-            case RIGHT -> {
-                if(degAngle > 45 && degAngle < 135)
-                    return Moves.TURN_LEFT;
-                else if(degAngle <= 45 && degAngle >= 315)
-                    return Moves.WALK;
-                else if(degAngle >225 && degAngle < 315)
-                    return Moves.TURN_RIGHT;
-                else
-                    return Moves.TURN_AROUND;
-            }
-
-            case LEFT -> {
-                if(degAngle > 45 && degAngle < 135)
-                    return Moves.TURN_RIGHT;
-                else if(degAngle <= 45 && degAngle >= 315)
-                    return Moves.TURN_AROUND;
-                else if(degAngle >225 && degAngle < 315)
-                    return Moves.TURN_LEFT;
-                else
-                    return Moves.WALK;
-            }
-        }
-
-        //Tell it that the target is on the diagonal
-
-        return Moves.WALK;
+        //RETURNS ROTATION IT NEEDS TO BE IN
+        if(degAngle > 45 && degAngle < 135)
+            return Rotations.UP;
+        else if((degAngle <= 45 && degAngle > 0) || (degAngle >= 315 && degAngle < 360))
+            return Rotations.RIGHT;
+        else if(degAngle >225 && degAngle < 315)
+            return Rotations.DOWN;
+        else
+            return Rotations.LEFT;
     }
 }
