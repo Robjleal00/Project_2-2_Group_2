@@ -11,7 +11,6 @@ import OptimalSearch.TreeRoot;
 import java.util.ArrayList;
 import static java.util.Collections.max;
 import java.util.HashMap;
-import java.util.Objects;
 
 //import static com.sun.jndi.ldap.LdapSchemaCtx.deepClone;
 
@@ -23,79 +22,152 @@ public class Patroller {
     private final int walkSpeed = vr.walkSpeed();
     private String[][] map;
     private final int[] xy;
-    private final Rotations rot;
-    private final HashMap<int[],int[]>teleporters;
-    private final int[][] lastSeen;
-    private final int mapLength;
-    private final int mapHeight;
 
-    public Patroller(int []xy,Rotations rot,Variables vr,String[][] map,HashMap<int[],int[]>teleporters,int[][]lastSeen){
+    public Patroller(int []xy){
         this.xy = xy;
-        this.rot=rot;
-        this.vr=vr;
-        this.map=map;
-        this.teleporters=teleporters;
-        this.lastSeen=lastSeen;
-        this.mapHeight=map.length;
-        this.mapLength=map[0].length;
     }
 
 
 
     //TODO: Teleporter is stored in BasicExplo, but the HM coordinates need to be transformed into the Array vals --ASHA
-    //Node method
-    private int dfsRecursive(int depth,Moves move,int[] xy,Rotations rot,int[][]lastSeen)
-    {
-        int ownValue;        //execute the move
-        switch(move){
-            case TURN_AROUND -> {
-                rot=rot.turnAround();
-            }
-            case TURN_LEFT -> {
-                rot=rot.turnLeft();
-            }
-            case TURN_RIGHT -> {
-                rot=rot.turnRight();
-            }
-            case WALK -> {
-                xy=walk(xy.clone(),rot);
-            }
-            case USE_TELEPORTER -> {
-                int [] target = canTeleport(xy,rot);
-                xy=target;
-            }
+    private boolean teleporterCanBeUsed(Rotations rotation, int [] xy, int []posTeleporter){
 
+        if(xy[0]==posTeleporter[0]){
+            if(posTeleporter[1]==xy[1]+1){
+                if(rotation == Rotations.DOWN){
+                    return true;
+                }
+            }else if(posTeleporter[1]==xy[1]-1){
+                if(rotation == Rotations.UP){
+                    return true;
+                }
+            }
         }
-        ownValue=getValue(lastSeen,xy,rot);
+        if(xy[1]==posTeleporter[1]){
+            if(posTeleporter[0]==xy[0]+1){
+                if(rotation == Rotations.LEFT){
+                    return true;
+                }
+            }
+            if(posTeleporter[0]==xy[0]-1){
+                if(rotation == Rotations.RIGHT){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    private int maxDepth;
+    //Node method
+    public int dfsRecursive(int depth, int[] xy, int[][] lastSeen, Rotations rotation)
+    {
+        int maxValue = 0;
         if(depth != 0)
         {
-            int[][] deepclone=createNewLastSeen(lastSeen);
-            ArrayList<Integer> childValues = new ArrayList<Integer>();
+            //Create an array list to keep track of all our values
+            ArrayList<Integer> nodeValues = new ArrayList<Integer>();
+
+            // Store the values of all possible moves and return the highest one
             for(Moves availableMove : availableMoves)
             {
-                childValues.add(dfsRecursive(depth-1,availableMove,xy.clone(),rot,deepclone));
+                //Prior to that, we'll have to give the child node the new rotation of the agent
+                //we will also need to give it the new xy coordinates of the agent
+                Rotations newRotation = null;
+                int[] newPosition = null;
+                switch(availableMove)
+                {
+                    case TURN_AROUND -> {
+                        newRotation = rotation.turnAround();
+                        newPosition = xy.clone();
+                    }
+                    case WALK -> {
+                        xy = walk(xy, rotation);
+                        newPosition = walk(xy, newRotation);
+                    }
+                    case TURN_RIGHT -> {
+                        newRotation = rotation.turnRight();
+                        newPosition = xy.clone();
+                    }
+                    case TURN_LEFT -> {
+                        newRotation = rotation.turnLeft();
+                        newPosition = xy.clone();
+                    }
+                    case USE_TELEPORTER -> {
+                        newRotation = rotation;
+                        //TODO: add teleporter methods
+                        Teleporter tp = new Teleporter(1,1,1,2,2);
+                        newPosition = tp.getTarget();
+                    }
+                }
+                //Finished to-do: Currently creates one map that it will give to all children, need to change setSeen appropriately  --KAI
+                //^ Changed this so that it does the following:
+                // 0. First increment the values of all squares of lastSeen by 1, before value calculation
+                incrementLastSeen(lastSeen);
+                // 1. First calculates the value of the current node, getValue also sets seen squares to 0
+                maxValue += getValue(lastSeen, vr, newPosition, newRotation);
+                // 2. Creates a new lastSeen map, passes it to the child node
+                int[][] nodesLastSeenMap = createNewLastSeen(lastSeen, vr, newPosition, newRotation);
+
+                // 3. Addition the child's value to the parent
+                maxValue += dfsRecursive(depth - 1, newPosition , nodesLastSeenMap, newRotation);
+                nodeValues.add(maxValue);
+
+                //Decremented: Don't think it's necessary to have a return value in this clause
+                // return getValue(lastSeen, vr, newPosition, newRotation);
             }
-            return ownValue+max(childValues);
         }
-        else {
+        else
+        {
             //Reached the end of the DFS, return the value of current child back up so that the parent can decide
             //which has the highest value
-            // return maxValue;
-            return ownValue;
+            return maxValue;
         }
+        return maxValue;
     }
 
     //Root method
-    public Moves dfs(int maxDepth)
+    public Moves dfs(int[] xy, Rotations rotation, int[][] lastSeen)
     {
-        incrementLastSeen(lastSeen);
         ArrayList<Integer> childValues = new ArrayList<Integer>();
-        int[][] deepclone=createNewLastSeen(lastSeen);
         for(Moves availableMove : availableMoves)
         {
-             childValues.add(dfsRecursive(maxDepth,availableMove,xy.clone(),rot,deepclone));
-        }
+            // Annoying since a lot of moves won't have the teleporter, yet it still checks repeatedly
+            Rotations newRotation = null;
+            int[] newPosition = null;
+            switch (availableMove) {
+                case TURN_AROUND -> {
+                    newRotation = rotation.turnAround();
+                    newPosition = xy.clone();
+                }
+                case WALK -> {
+                    xy = walk(xy, rotation);
+                    newPosition = walk(xy, newRotation);
+                }
+                case TURN_RIGHT -> {
+                    newRotation = rotation.turnRight();
+                    newPosition = xy.clone();
+                }
+                case TURN_LEFT -> {
+                    newRotation = rotation.turnLeft();
+                    newPosition = xy.clone();
+                }
+                case USE_TELEPORTER -> {
+                    /*
+                    if (teleporterCanBeUsed(rotation, xy, map, tp)) {
+                        newRotation = rotation;
+                        //TODO: add teleporter methods
+                        Teleporter tp = new Teleporter(1, 1, 1, 2, 2);
+                        newPosition = tp.getTarget();
+                    } else {
+                        return Moves.STUCK;
+                    } */
+                }
+            }
 
+            childValues.add(dfsRecursive(4, newPosition , lastSeen, newRotation));
+        }
         int maxValue= max(childValues);
         int index = childValues.indexOf(maxValue);
         // TODO: Won't index > 4? So it'll return an out of bounds exception for this
@@ -104,40 +176,51 @@ public class Patroller {
         // ^ Not sure how to implement this, but I believe my implementation should suffice for now
     }
 
+    /**
+     *      Since we need to know what possible moves the children can make we'll have to do the calculations ourselves,
+     *      I assume since Cloud said we can't reuse any code and all of ours will be separate
+     * @param xy
+     * @return
+     */
+    public Moves getChildrensMoves(int[] xy, int[][] lastSeen, Rotations rotation)
+    {
+        return null;
+    }
+
     //Returns the SUM of all seen squares, MUST be called before setSeen
     // Additionally now it also sets all seen square values to 0
-    public int getValue(int[][] lastSeen, int[] xy, Rotations rotation)
+    public int getValue(int[][] lastSeen, Variables vr, int[] xy, Rotations rotation)
     {
         int value = 0;
         int range = vr.eyeRange();
         switch(rotation){
             case BACK -> {
-                for(int i = xy[1] - 1; i < xy[1] + 1; i++){
-                    for(int j = xy[0]; j < xy[0] + range; j++){
+                for(int i = xy[0] - 1; i < xy[0] + 1; i++){
+                    for(int j = xy[1]; j < xy[1] + range; j++){
                         value  += lastSeen[i][j];
                         lastSeen[i][j] = 0;
                     }
                 }
             }
             case FORWARD -> {
-                for(int i = xy[1] - 1; i < xy[1] + 1; i++){
-                    for(int j = xy[0] - range; j < xy[0] ; j++){
+                for(int i = xy[0] - 1; i < xy[0] + 1; i++){
+                    for(int j = xy[1] - range; j < xy[1] ; j++){
                         value  += lastSeen[i][j];
                         lastSeen[i][j] = 0;
                     }
                 }
             }
             case LEFT -> {
-                for(int i = xy[1] - range; i < xy[1]; i++){
-                    for(int j = xy[0] - 1; j < xy[0] + 1; j++){
+                for(int i = xy[0] - range; i < xy[0]; i++){
+                    for(int j = xy[1] - 1; j < xy[1] + 1; j++){
                         value  += lastSeen[i][j];
                         lastSeen[i][j] = 0;
                     }
                 }
             }
             case RIGHT ->{
-                for(int i = xy[1]; i < xy[1] + range; i++){
-                    for(int j = xy[0] - 1; j < xy[0] + 1; j++){
+                for(int i = xy[0]; i < xy[0] + range; i++){
+                    for(int j = xy[1] - 1; j < xy[1] + 1; j++){
                         value  += lastSeen[i][j];
                         lastSeen[i][j] = 0;
                     }
@@ -152,9 +235,12 @@ public class Patroller {
      *          A) be used to get the value
      *          B) increment unseen squares in the next iteration for this specific child node
      * @param lastSeen
-     * @return deepclone of lastSeen
+     * @param vr
+     * @param xy
+     * @param rotation
+     * @return
      */
-    private int[][] createNewLastSeen(int[][] lastSeen)
+    public int[][] createNewLastSeen(int[][] lastSeen, Variables vr, int []xy, Rotations rotation)
     {
         int[][] newLastSeen = new int[lastSeen.length][lastSeen[0].length];
 
@@ -169,59 +255,30 @@ public class Patroller {
         return newLastSeen;
     }
 
-    private int [] canTeleport(int[]xy, Rotations rot){
-        for(int[]xyT : teleporters.keySet()){
-            switch (rot){
-                case LEFT -> {
-                    if(xyT[0]==xy[0]&&xyT[1]==xy[1]-1){
-                        return teleporters.get(xyT);
-                    }
-                }
-                case RIGHT -> {
-                    if(xyT[0]==xy[0]&&xyT[1]==xy[1]+1){
-                        return teleporters.get(xyT);
-                    }
-                }
-                case FORWARD -> {
-                    if(xyT[0]==xy[0]-1&&xyT[1]==xy[1]){
-                        return teleporters.get(xyT);
-                    }
-                }
-                case DOWN -> {
-                    if(xyT[0]==xy[0]+1&&xyT[1]==xy[1]){
-                        return teleporters.get(xyT);
-                    }
-                }
-            }
-        }
-        int a =-1;
-        int []b={a,a};
-        return b;
-    }
-
 
     // Copied from TreeNode/TreeRoot
 
     //TODO: Remake howMuchCanIWalk and noWallsInTheWay -- ASHA
-    private int[] walk(int[] xy, Rotations rot) {
+    public int[] walk(int[] xy, Rotations rot) {
+        int[] origin = xy.clone();
         switch (rot) {
-            case FORWARD -> { //x decrease
+            case FORWARD -> { //y increase
                 int howMuch = howMuchCanIWalk(xy, rot);
-                xy[0] -= howMuch;
+                xy[1] += howMuch;
             }
-            case BACK -> { //x increase
+            case BACK -> { //y decrease
+                int howMuch = howMuchCanIWalk(xy, rot);
+                xy[1] -= howMuch;
+            }
+
+            case RIGHT -> { //x increase
                 int howMuch = howMuchCanIWalk(xy, rot);
                 xy[0] += howMuch;
             }
 
-            case RIGHT -> { //y increase
+            case LEFT -> { //x decrease
                 int howMuch = howMuchCanIWalk(xy, rot);
-                xy[1] += howMuch;
-            }
-
-            case LEFT -> { //y decrease
-                int howMuch = howMuchCanIWalk(xy, rot);
-                xy[1] -= howMuch;
+                xy[0] -= howMuch;
 
             }
         }
@@ -231,33 +288,33 @@ public class Patroller {
 
     private int howMuchCanIWalk(int[]pos,Rotations rot){
         switch(rot){
-            case LEFT -> {//y decrease
+            case LEFT -> {//x decrease
                 for(int i=walkSpeed;i>0;i--){
-                    int[]targetCell={pos[0],pos[1]-1};
-                    if(noWallsOnTheWay(pos,targetCell,rot))
+                    int[]targetCell={pos[0]-i,pos[1]};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
                         return i;
                 }
 
             }
-            case RIGHT -> {//y increase
+            case RIGHT -> {//x increase
                 for(int i=walkSpeed;i>0;i--){
-                    int[]targetCell={pos[0],pos[1]+1};
-                    if(noWallsOnTheWay(pos,targetCell,rot))
+                    int[]targetCell={pos[0]+i,pos[1]};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
                         return i;
                 }
             }
             //REMINDER: Forward doesn't increase Y ANYMORE IT INCREASES X
-            case FORWARD ->{//x decrease
+            case FORWARD ->{//y increase
                 for(int i=walkSpeed;i>0;i--){
-                    int[]targetCell={pos[0]-i,pos[1]};
-                    if(noWallsOnTheWay(pos,targetCell,rot))
+                    int[]targetCell={pos[0],pos[1]+i};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
                         return i;
                 }
             }
-            case BACK -> {//x increase
+            case BACK -> {//y decrease
                 for(int i=walkSpeed;i>0;i--){
-                    int[]targetCell={pos[0]+i,pos[1]};
-                    if(noWallsOnTheWay(pos,targetCell,rot))
+                    int[]targetCell={pos[0],pos[1]-i};
+                    //if(noWallsInTheWay(pos,targetCell,rot))
                         return i;
                 }
             }
@@ -317,48 +374,8 @@ public class Patroller {
         return true;
     }
     */
-    private boolean noWallsOnTheWay(int[]pos,int[]target,Rotations rot){
-        switch(rot){
-            case LEFT -> {
-                int length=pos[1]-target[1];
-                for(int i=1;i<=length;i++){
-                    int[] nextTarget={pos[0],pos[1]-i};
-                    if(!canBePutThere(nextTarget))return false;
-                }
-                return true;
-            }
-            case RIGHT -> {
-                int length=target[1]-pos[1];
-                for(int i=1;i<=length;i++){
-                    int[] nextTarget={pos[0],pos[1]+i};
-                    if(!canBePutThere(nextTarget))return false;
-                }
-                return true;
-            }
-            case DOWN -> {
-                int length=target[0]-pos[0];
-                for(int i=1;i<=length;i++){
-                    int[] nextTarget={pos[0]+i,pos[1]};
-                    if(!canBePutThere(nextTarget))return false;
-                }
-                return true;
-            }
-            case UP -> {
-                int length=pos[0]-target[0];
-                for(int i=1;i<=length;i++){
-                    int[] nextTarget={pos[0]-i,pos[1]};
-                    if(!canBePutThere(nextTarget))return false;
-                }
-                return true;
-            }
-        }
-        return false;
-    }
-    private boolean canBePutThere(int []target) {
-        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength)return Objects.equals(map[target[1]][target[0]], " ");
-        else return false;
-    }
-    private void incrementLastSeen(int[][] lastSeen)
+
+    public void incrementLastSeen(int[][] lastSeen)
     {
         for(int i = 0; i < lastSeen.length; i++)
         {
