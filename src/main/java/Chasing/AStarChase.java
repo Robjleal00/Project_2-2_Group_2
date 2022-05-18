@@ -193,7 +193,7 @@ public class AStarChase {
             grid[current.i][current.j].solution = true;
 
             while (current.parent != null) {
-                System.out.println(" -> " + current.parent);
+                System.out.print(" -> " + current.parent);
                 grid[current.parent.i][current.parent.j].solution = true;
                 current = current.parent;
             }
