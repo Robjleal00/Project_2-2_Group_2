@@ -176,7 +176,7 @@ public class AStarChase {
                 if (grid[i][j] != null)
                     System.out.printf("%-3d", grid[i][j].finalCost);
                 else
-                    System.out.println("BL ");
+                    System.out.printf("BL ");
             }
             System.out.println();
         }
