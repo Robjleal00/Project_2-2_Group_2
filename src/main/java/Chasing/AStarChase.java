@@ -154,11 +154,11 @@ public class AStarChase {
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
                 if (i == startI && j == startJ)
-                    System.out.printf("SO "); // the soure cell
+                    System.out.printf("SO "); // the source cell
                 else if(i == endI && j == endJ)
                     System.out.printf("DE "); // Destination cell
                 else if(grid[i][j] != null)
-                    System.out.printf("%-3d ", 0);
+                    System.out.printf("%-3d", 0);
                 else
                     System.out.printf("BL "); //block cell
             }
@@ -207,7 +207,7 @@ public class AStarChase {
                     else if (i == endI && j == endJ)
                         System.out.printf("DE "); // Destination cell
                     else if (grid[i][j] != null)
-                        System.out.printf("%-3s ", grid[i][j].solution ? "X" : "0");
+                        System.out.printf("%-3s", grid[i][j].solution ? "X" : "0");
                     else
                         System.out.printf("BL "); //block cell
                 }
