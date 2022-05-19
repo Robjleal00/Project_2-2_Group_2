@@ -108,12 +108,12 @@ public class AStarChase {
 
                 if (current.j - 1 >= 0) {
                     t = grid[current.i - 1][current.j - 1];
-                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST);
+                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST + 1000);
                 }
 
                 if (current.j + 1 < grid[0].length) {
                     t = grid[current.i - 1][current.j + 1];
-                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST);
+                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST + 1000);
                 }
             }
             if (current.j - 1 >= 0) {
@@ -131,12 +131,12 @@ public class AStarChase {
 
                 if (current.j - 1 >= 0) {
                     t = grid[current.i + 1][current.j - 1];
-                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST);
+                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST + 1000);
                 }
 
                 if (current.j + 1 < grid[0].length) {
                     t = grid[current.i + 1][current.j + 1];
-                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST);
+                    updateCostIfNeeded(current, t, current.finalCost + DIAGONAL_COST + 1000);
                 }
 
             }
