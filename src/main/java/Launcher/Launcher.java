@@ -99,11 +99,11 @@ public class Launcher {
         Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Explorer(EntityType.GUARD,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         gm.addObject(t1);
         gm.addWall(0,5,19,5);
-       // gm.init();
+        gm.init();
        // gm.print("D");
         //gm.print(12);
         System.out.println("STARTED");

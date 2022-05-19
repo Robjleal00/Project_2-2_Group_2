@@ -93,9 +93,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         if(exploDone) {
             patrolling=true;
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
-            String[][] map = makeMap(tr.giveMappings());
-            int fixY=Integer.parseInt(map[0][1]);
-            int fixX=Integer.parseInt(map[0][2]);
+            String[][] map;
+            //NEW
+            String[][] secondMap = tr.giveMappings();
+            map = makeMap(secondMap);
+            //
+            int fixY=Integer.parseInt(secondMap[0][1]);
+            int fixX=Integer.parseInt(secondMap[0][2]);
             CoordinateTransformer ct=new CoordinateTransformer(fixX, fixY);
             this.coordT=ct;
             agent.setCT(ct);
@@ -471,13 +475,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         System.out.println("NEW MAP:");
         for(int i = 2; i <mindMap.length-2;i++)
         {
-            System.out.println("hi IM IN THE LOOP");
+            //System.out.println("hi IM IN THE LOOP");
             x = i-2;
             for(int j = 2; j < mindMap[0].length-2;j++)
             {
                 y = j-2;
                 newMap[x][y] = mindMap[i][j];
-                System.out.print(newMap[i][j]);
+                //System.out.print(newMap[i][j]);
             }
         }
         return newMap;
