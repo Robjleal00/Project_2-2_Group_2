@@ -20,7 +20,7 @@ public class Patroller {
     private final Moves[] availableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND, Moves.USE_TELEPORTER};
     private Constraints constraints;
     private Variables vr;
-    private int walkSpeed;
+    private final int walkSpeed ;
     private String[][] map;
     private final int[] xy;
     private final Rotations rot;
@@ -38,7 +38,7 @@ public class Patroller {
         this.lastSeen=lastSeen;
         this.mapHeight=map.length;
         this.mapLength=map[0].length;
-        walkSpeed = vr.walkSpeed();
+        this.walkSpeed=vr.walkSpeed();
     }
 
 

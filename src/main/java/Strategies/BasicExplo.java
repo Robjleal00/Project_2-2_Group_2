@@ -93,21 +93,16 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         if(exploDone) {
             patrolling=true;
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
-            String[][] map;
-            //NEW
-            String[][] secondMap = tr.giveMappings();
-            map = makeMap(secondMap);
-            //
+            String[][] map = makeMap(tr.giveMappings());
+            String[][] secondMap=tr.giveMappings();
             int fixY=Integer.parseInt(secondMap[0][1]);
             int fixX=Integer.parseInt(secondMap[0][2]);
             CoordinateTransformer ct=new CoordinateTransformer(fixX, fixY);
             this.coordT=ct;
             agent.setCT(ct);
             //explorationPoints.get(j+fix+fixX).add(((i+fix)*-1)+fixY);
-            int fixedX=xy[0]+fixX;
-            int fixedY=(xy[1]*-1)+fixY;
-            int[] fixed={fixedX,fixedY};
-            this.agent.nowPatrol(fixed);
+            xy=ct.transform(xy);
+            this.agent.nowPatrol(xy);
             System.out.println("EXPLO DONE");
             //String[][] agentPrivateMap = makeMap(map);
             lastSeen = makeLastSeenMap(map);
@@ -475,13 +470,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         System.out.println("NEW MAP:");
         for(int i = 2; i <mindMap.length-2;i++)
         {
-            //System.out.println("hi IM IN THE LOOP");
+            System.out.println("hi IM IN THE LOOP");
             x = i-2;
             for(int j = 2; j < mindMap[0].length-2;j++)
             {
                 y = j-2;
                 newMap[x][y] = mindMap[i][j];
-                //System.out.print(newMap[i][j]);
+               // System.out.print(newMap[i][j]);
             }
         }
         return newMap;
