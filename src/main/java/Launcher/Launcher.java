@@ -99,7 +99,7 @@ public class Launcher {
         Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Explorer(EntityType.GUARD,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         gm.addObject(t1);
         gm.addWall(0,5,19,5);
@@ -113,16 +113,22 @@ public class Launcher {
                 idleness[i][j]=5;
             }
         }
-        for(int i=0;i<200;i++){
-            for(int j=0;j<200;j++){
-                idleness[i][j]--;
-            }
-        }
+        idleness[2][3]=0;
+
         System.out.println("ENDED");
     }
  /*
  gives testing map, do what u want here
-  */
+  */ public void incrementLastSeen(int[][] lastSeen)
+ {
+     for(int i = 0; i < lastSeen.length; i++)
+     {
+         for(int j = 0; j < lastSeen[0]. length; j++)
+         {
+             lastSeen[i][j]++;
+         }
+     }
+ }
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         FileReader fileReader = new FileReader();
