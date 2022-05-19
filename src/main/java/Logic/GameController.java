@@ -658,6 +658,7 @@ Use this to construct with graphics.
     public Rotations getGlobalRotation(){
         return globalRotation;
     }
+    public void setGlobalRotation(Rotations globalRotation){this.globalRotation = globalRotation;}
 
     public void addObject(ObjectOnMap o) {
         objects.add(o);
@@ -797,27 +798,65 @@ Use this to construct with graphics.
                  targetLoc = ob.getXy(); break;
         }
 
-        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
-
-        int[] intruderLoc = entityLocations.get(intEntity);
-        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
-        //calculate the angle
-        double tanTheta = (targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
-        double angle = Math.atan(tanTheta);
-        int degAngle = (int) Math.toDegrees(angle);
-        System.out.println("Deg angle : " + degAngle);
-
         //get the current rotation of the intruder
         //From the rotation hashmap
         Rotations rot = entityRotationsHashMap.get(intEntity);
-        //RETURNS ROTATION IT NEEDS TO BE IN
-        if(degAngle > 45 && degAngle < 135)
-            return Rotations.UP;
-        else if((degAngle <= 45 && degAngle > 0) || (degAngle >= 315 && degAngle < 360))
-            return Rotations.RIGHT;
-        else if(degAngle >225 && degAngle < 315)
-            return Rotations.DOWN;
-        else
-            return Rotations.LEFT;
+
+
+        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+        int[] intruderLoc = entityLocations.get(intEntity);
+        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
+        //calculate the angle
+        System.out.println("Targ Y: " + targetLoc[1] + ", Targ X" + targetLoc[0]);
+        System.out.println("Intruder Y: " + intruderLoc[1] + ", Intruder X" + intruderLoc[0]);
+        System.out.println("Subtraction Target: " + (targetLoc[1] - intruderLoc[1]));
+        System.out.println("Subtraction Intruder: " + (targetLoc[0]-intruderLoc[0]));
+
+        double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
+        System.out.println("tanTheta: " + tanTheta);
+        double angle = Math.atan(tanTheta);
+        int degAngle = (int) Math.toDegrees(angle);
+        System.out.println("Deg angle : " + degAngle);
+        if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
+            degAngle = 90+degAngle;
+            if(degAngle > 45 && degAngle < 135) {
+                setGlobalRotation(Rotations.UP);
+                return Rotations.UP;
+            }
+            else if((degAngle <= 45 && degAngle > 0) || (degAngle >= 315 && degAngle < 360)) {
+                setGlobalRotation(Rotations.RIGHT);
+                return Rotations.RIGHT;
+            }
+            else if(degAngle >225 && degAngle < 315){
+
+                setGlobalRotation(Rotations.DOWN);
+                return Rotations.DOWN;
+            }
+            else{
+                setGlobalRotation(Rotations.LEFT);
+                return Rotations.LEFT;
+            }
+        }
+        else{
+            //RETURNS ROTATION IT NEEDS TO BE IN
+            if(degAngle > 45 && degAngle < 135) {
+                setGlobalRotation(Rotations.DOWN);
+                return Rotations.DOWN;//reversed
+            }
+            else if((degAngle <= 45 && degAngle > 0) || (degAngle >= 315 && degAngle < 360)) {
+                setGlobalRotation(Rotations.LEFT);
+                return Rotations.LEFT;
+            }
+            else if(degAngle >225 && degAngle < 315){
+
+                setGlobalRotation(Rotations.UP);
+                return Rotations.UP;//Reversed
+            }
+            else{
+                setGlobalRotation(Rotations.RIGHT);
+                return Rotations.RIGHT;
+            }
+        }
+
     }
 }
