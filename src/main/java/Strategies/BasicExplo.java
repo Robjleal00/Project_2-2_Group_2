@@ -90,7 +90,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
         }
-        if(exploDone) {
+        if(exploDone && !patrolling) {
             patrolling=true;
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
@@ -131,7 +131,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             Patroller patroller = new Patroller(xy,rot,vr,map,teleporterAll,lastSeen);
-            returner = patroller.dfs(4);
+            returner = patroller.dfs(1);
         }
 
         if(returner==Moves.USE_TELEPORTER){
@@ -470,7 +470,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         System.out.println("NEW MAP:");
         for(int i = 2; i <mindMap.length-2;i++)
         {
-            System.out.println("hi IM IN THE LOOP");
             x = i-2;
             for(int j = 2; j < mindMap[0].length-2;j++)
             {
@@ -491,13 +490,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     {
         lastSeen = new int[individualMap.length][individualMap[0].length];
 
-        System.out.println("Last seen array");
-        for(int i = 0; i < lastSeen.length; i++){
-            for(int j = 0; j < lastSeen[0].length;j++){
-                System.out.print(lastSeen[i][j] +" ");
-            }
-        }
-
         for(int i = 0; i < individualMap.length; i++)
         {
             for(int j = 0; j < individualMap[0].length; j++)
@@ -506,13 +498,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 if(individualMap[i][j].contains("W"))
                 {
                     lastSeen[i][j] = 10;
-                    System.out.println(lastSeen[i][j] + " ");
+
                 }
                 else
                 {
                     // Make the security guard wish to check out everything
                     lastSeen[i][j] = 1;
-                    System.out.println(lastSeen[i][j] + "-");
+
                 }
             }
         }

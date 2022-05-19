@@ -115,32 +115,47 @@ public class Patroller {
             case BACK -> {
                 for(int i = xy[1] - 1; i < xy[1] + 1; i++){
                     for(int j = xy[0]; j < xy[0] + range; j++){
-                        value  += lastSeen[i][j];
-                        lastSeen[i][j] = 0;
+                        if(i >= 0  && j >= 0 && i < mapHeight && j < mapLength)
+                        {
+                            value  += lastSeen[i][j];
+                            lastSeen[i][j] = 0;
+                        }
                     }
                 }
             }
             case FORWARD -> {
                 for(int i = xy[1] - 1; i < xy[1] + 1; i++){
                     for(int j = xy[0] - range; j < xy[0] ; j++){
-                        value  += lastSeen[i][j];
-                        lastSeen[i][j] = 0;
+                        if(i >= 0  && j >= 0 && i < mapHeight && j < mapLength)
+                        {
+
+                            value  += lastSeen[i][j];
+                            lastSeen[i][j] = 0;
+                        }
                     }
                 }
             }
             case LEFT -> {
                 for(int i = xy[1] - range; i < xy[1]; i++){
                     for(int j = xy[0] - 1; j < xy[0] + 1; j++){
-                        value  += lastSeen[i][j];
-                        lastSeen[i][j] = 0;
+                        if(i >= 0  && j >= 0 && i < mapHeight && j < mapLength)
+                        {
+
+                            value  += lastSeen[i][j];
+                            lastSeen[i][j] = 0;
+                        }
                     }
                 }
             }
             case RIGHT ->{
                 for(int i = xy[1]; i < xy[1] + range; i++){
                     for(int j = xy[0] - 1; j < xy[0] + 1; j++){
-                        value  += lastSeen[i][j];
-                        lastSeen[i][j] = 0;
+                        if(i >= 0  && j >= 0 && i < mapHeight && j < mapLength)
+                        {
+
+                            value  += lastSeen[i][j];
+                            lastSeen[i][j] = 0;
+                        }
                     }
                 }
             }
