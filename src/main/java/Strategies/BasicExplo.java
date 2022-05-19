@@ -68,6 +68,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TELEPORTED=false;
         }
         Moves returner = Moves.STUCK;
+        if(!exploDone){
         updateExploration(vision, xy, rot);
         if(!explored(xy))visitedPoints.add(new Point(xy,new ArrayList<>()));
         int eyeRange=vision.length;
@@ -75,9 +76,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         if(firstPhase) {
             if (!Objects.equals(vision[check][1], " ")) {
                 System.out.println("FOUND A WALL");
-               firstPhase=false;
-            }else return Moves.WALK;
-
+                firstPhase = false;
+            } else return Moves.WALK;
+        }
         }
         if(!firstPhase&&!exploDone) {
             TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
