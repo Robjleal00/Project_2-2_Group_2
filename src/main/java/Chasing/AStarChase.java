@@ -1,5 +1,6 @@
 package Chasing;
 
+import java.util.Comparator;
 import java.util.PriorityQueue;
 
 public class AStarChase {
@@ -28,9 +29,7 @@ public class AStarChase {
     public AStarChase(int width, int height, int si, int sj, int ei, int ej, int[][] blocks) {
         grid = new Cell[width][height];
         closedCells = new boolean[width][height];
-        openCells = new PriorityQueue<Cell>((Cell c1, Cell c2) -> {
-            return c1.finalCost < c2.finalCost ? -1 : c1.finalCost > c2.finalCost ? 1 : 0;
-        });
+        openCells = new PriorityQueue<Cell>(Comparator.comparingInt((Cell c) -> c.finalCost));
 
         startCell(si, sj);
         endCell(ei, ej);
@@ -158,9 +157,9 @@ public class AStarChase {
                 else if(i == endI && j == endJ)
                     System.out.printf("DE "); // Destination cell
                 else if(grid[i][j] != null)
-                    System.out.printf("%-3d", 0);
+                    System.out.printf("%-3d", 0); // empty cells with padding
                 else
-                    System.out.printf("BL "); //block cell
+                    System.out.printf("BL "); // block cell
             }
 
             System.out.println();
