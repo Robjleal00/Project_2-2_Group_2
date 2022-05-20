@@ -43,6 +43,7 @@ public class GameController { // self explanatory
     private MainApp graphicsUpdater;
     private Rotations globalRotation;
     private final int MAX_TURNS=1000;
+    private final boolean DEBUG = false;
 /*
 Use this to construct with graphics.
  */
@@ -655,8 +656,9 @@ Use this to construct with graphics.
         entityInitialPoses.put(e,new Pose(rot,yx));
     }
 
-    public Rotations getGlobalRotation(){
-        return globalRotation;
+    public Rotations getGlobalRotation(Entity e){
+
+        return entityRotationsHashMap.get(e);
     }
     public void setGlobalRotation(Rotations globalRotation){this.globalRotation = globalRotation;}
 
@@ -800,21 +802,25 @@ Use this to construct with graphics.
 
         //get the current rotation of the intruder
         //From the rotation hashmap
+
         Rotations rot = entityRotationsHashMap.get(intEntity); //ALSO THIS NEEDS TO BE CHANGED FOR MULTIPLE INTRUDERS
+        System.out.println("ROTATION INTRUDER (GLOBAL): " + rot.toString());
         int[] intruderLoc = entityLocations.get(intEntity);
+        System.out.println("LOCATION INTRUDER (GLOBAL): " + intruderLoc[0] + "," + intruderLoc[1]);
 
         //Stopping condition
         if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
             isRunning = false;
 
         //calculate the angle
-        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
-        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
-        System.out.println("Targ Y: " + targetLoc[1] + ", Targ X" + targetLoc[0]);
-        System.out.println("Intruder Y: " + intruderLoc[1] + ", Intruder X" + intruderLoc[0]);
-        System.out.println("Subtraction Y: " + (targetLoc[1] - intruderLoc[1]));
-        System.out.println("Subtraction X: " + (targetLoc[0]-intruderLoc[0]));
-
+        if(DEBUG) {
+            System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+            System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
+            System.out.println("Targ Y: " + targetLoc[1] + ", Targ X" + targetLoc[0]);
+            System.out.println("Intruder Y: " + intruderLoc[1] + ", Intruder X" + intruderLoc[0]);
+            System.out.println("Subtraction Y: " + (targetLoc[1] - intruderLoc[1]));
+            System.out.println("Subtraction X: " + (targetLoc[0] - intruderLoc[0]));
+        }
         double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
         System.out.println("tanTheta: " + tanTheta);
         double angle = Math.atan(tanTheta);

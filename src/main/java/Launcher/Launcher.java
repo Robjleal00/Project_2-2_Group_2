@@ -106,7 +106,7 @@ public class Launcher {
         Goal target = new Goal(1, 8,10);
         //gm.addWall(0,5,19,5);
         gm.addObject(target);
-        //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,2,Rotations.DOWN);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,2,Rotations.DOWN);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,18,Rotations.UP);
         gm.init();
 

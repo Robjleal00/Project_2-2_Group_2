@@ -17,7 +17,7 @@ public class Intruder extends Entity{
     private final Variables vr;
     private Rotations globalRotation;
     private boolean walked;
-    private final boolean DEBUG = false;
+    private final boolean DEBUG = true;
 
 
     //TODO: Compare this to Explorer class
@@ -42,7 +42,7 @@ public class Intruder extends Entity{
     @Override
     public Moves getMove() {
         String[][] vision = gm.giveVision(this);
-        globalRotation = gm.getGlobalRotation();
+        globalRotation = gm.getGlobalRotation(this);
 
         int[] xy = {x,y};
         st.updateExploration(vision, xy, currentRotation);
