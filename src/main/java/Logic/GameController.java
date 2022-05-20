@@ -809,16 +809,17 @@ Use this to construct with graphics.
         //calculate the angle
         System.out.println("Targ Y: " + targetLoc[1] + ", Targ X" + targetLoc[0]);
         System.out.println("Intruder Y: " + intruderLoc[1] + ", Intruder X" + intruderLoc[0]);
-        System.out.println("Subtraction Target: " + (targetLoc[1] - intruderLoc[1]));
-        System.out.println("Subtraction Intruder: " + (targetLoc[0]-intruderLoc[0]));
+        System.out.println("Subtraction Y: " + (targetLoc[1] - intruderLoc[1]));
+        System.out.println("Subtraction X: " + (targetLoc[0]-intruderLoc[0]));
 
         double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
         System.out.println("tanTheta: " + tanTheta);
         double angle = Math.atan(tanTheta);
         int degAngle = (int) Math.toDegrees(angle);
         System.out.println("Deg angle : " + degAngle);
+        //if on the same x axis, and 90deg
         if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
-            degAngle = 90+degAngle;
+            degAngle = 90 + degAngle;
             if(degAngle > 45 && degAngle < 135) {
                 setGlobalRotation(Rotations.UP);
                 return Rotations.UP;
@@ -838,6 +839,8 @@ Use this to construct with graphics.
             }
         }
         else{
+            if(targetLoc[1] < intruderLoc[1] && targetLoc[0] == intruderLoc[0])
+                degAngle = 275;
             //RETURNS ROTATION IT NEEDS TO BE IN
             if(degAngle > 45 && degAngle < 135) {
                 setGlobalRotation(Rotations.DOWN);
