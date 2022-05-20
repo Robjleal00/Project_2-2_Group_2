@@ -103,10 +103,11 @@ public class Launcher {
         Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
-        Goal target = new Goal(1, 8,4);
+        Goal target = new Goal(1, 8,10);
         //gm.addWall(0,5,19,5);
         gm.addObject(target);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,7,Rotations.DOWN);
+        //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,2,Rotations.DOWN);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,18,Rotations.UP);
         gm.init();
 
         //Teleporter t1 = new Teleporter(1,3 ,3,8,8);

@@ -793,20 +793,23 @@ Use this to construct with graphics.
     public Rotations getDirection(Entity intEntity){ //Rotation or move?
         //get position
         int[] targetLoc = new int[2];
-        for(ObjectOnMap ob : objects){
+        for(ObjectOnMap ob : objects){ //PROBABLY NEEDS TO BE CHANGED IF WE WANT TO RUN MULTIPLE INTRUDERS
             if(ob instanceof Goal)
                  targetLoc = ob.getXy(); break;
         }
 
         //get the current rotation of the intruder
         //From the rotation hashmap
-        Rotations rot = entityRotationsHashMap.get(intEntity);
-
-
-        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+        Rotations rot = entityRotationsHashMap.get(intEntity); //ALSO THIS NEEDS TO BE CHANGED FOR MULTIPLE INTRUDERS
         int[] intruderLoc = entityLocations.get(intEntity);
-        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
+
+        //Stopping condition
+        if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
+            isRunning = false;
+
         //calculate the angle
+        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
         System.out.println("Targ Y: " + targetLoc[1] + ", Targ X" + targetLoc[0]);
         System.out.println("Intruder Y: " + intruderLoc[1] + ", Intruder X" + intruderLoc[0]);
         System.out.println("Subtraction Y: " + (targetLoc[1] - intruderLoc[1]));
