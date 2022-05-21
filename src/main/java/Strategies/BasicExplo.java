@@ -35,6 +35,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean patrolling;
     boolean chasing;
     boolean exploDone;
+    boolean seenIntruder;
     private Explorer agent;
     private ArrayList<TreeNode> returnedMoves;
     private CoordinateTransformer coordT = null;
