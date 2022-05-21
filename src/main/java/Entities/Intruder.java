@@ -41,98 +41,27 @@ public class Intruder extends Entity{
     @Override
     public Moves getMove() {
         String[][] vision = gm.giveVision(this);
-        globalRotation = gm.getGlobalRotation();
 
         int[] xy = {x,y};
         System.out.println("XY: " + xy[0] + ", " + xy[1]);
-        System.out.println("Current Global rotation: " + globalRotation);
         System.out.println("Current Local Rotation before move: " + currentRotation.toString());
 
 
-        if(walked == false){
+        if(walked == false ){
             walked = true;
             return Moves.WALK;
         }
+        else{
+            Moves move = gm.getDirection(this);
 
-        Rotations directRot = gm.getDirection(this);
-        Rotations transRotation = translate(directRot, globalRotation);
-
-        Moves decision = Moves.STUCK;
-        switch(transRotation){
-            case FORWARD -> {
-                if(currentRotation == Rotations.FORWARD) {
-                    decision = Moves.WALK;
-                }
-                else if(currentRotation == Rotations.RIGHT) {
-                    decision = Moves.TURN_LEFT;
-                    turnLeft();
-                }
-                else if(currentRotation == Rotations.LEFT) {
-                    decision = Moves.TURN_RIGHT;
-                    turnRight();
-                }
-                else {
-                    decision = Moves.TURN_AROUND;
-                    turnAround();
-                }
+            System.out.println("MOVE CHOSEN: " + move.toString());
+            if(move != Moves.WALK){
+                walked = false;
             }
-            case BACK -> {
-                if(currentRotation == Rotations.FORWARD) {
-                    decision = Moves.TURN_AROUND;
-                    turnAround();
-                }
-                else if(currentRotation == Rotations.RIGHT) {
-                    decision = Moves.TURN_RIGHT;
-                    turnRight();
-                }
-                else if(currentRotation == Rotations.LEFT) {
-                    decision = Moves.TURN_LEFT;
-                    turnLeft();
-                }
-                else decision = Moves.WALK;
-            }
-            case RIGHT -> {
-                if(currentRotation == Rotations.FORWARD) {
-                    decision = Moves.TURN_LEFT;
-                    turnLeft();
-                }
-                else if(currentRotation == Rotations.RIGHT)
-                    decision = Moves.WALK;
-                else if(currentRotation == Rotations.LEFT) {
-                    decision = Moves.TURN_AROUND;
-                    turnAround();
-                }
-                else{
-                    decision = Moves.TURN_RIGHT;
-                    turnRight();
-                }
-            }
-            case LEFT -> {
-                if(currentRotation == Rotations.FORWARD) {
-                    decision = Moves.TURN_LEFT;
-                    turnRight();
-                }
-                else if(currentRotation == Rotations.RIGHT) {
-                    decision = Moves.TURN_AROUND;
-                    turnAround();
-                }
-                else if(currentRotation == Rotations.LEFT)
-                    decision = Moves.WALK;
-                else {
-                    decision = Moves.TURN_RIGHT;
-                    turnLeft();
-                }
-            }
+            return move;
         }
-        System.out.println("MOVE direction (Global): " + directRot.toString());
-        System.out.println("Current Local Rotation after move: " + currentRotation.toString());
-        System.out.println("Decision: " + decision.toString());
+       // return gm.getDirection(this);
 
-
-
-        if(decision != Moves.WALK)
-            walked = false;
-        return decision;
     }
 
     @Override

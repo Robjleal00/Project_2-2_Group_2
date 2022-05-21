@@ -655,9 +655,7 @@ public class GameController { // self explanatory
         entityInitialPoses.put(e,new Pose(rot,yx));
     }
 
-    public Rotations getGlobalRotation(){
-        return globalRotation;
-    }
+
     public void setGlobalRotation(Rotations globalRotation){this.globalRotation = globalRotation;}
 
     public void addObject(ObjectOnMap o) {
@@ -790,7 +788,7 @@ public class GameController { // self explanatory
     }
 
     //returns a rotation based on the angle calculated (taking into consideration also the agents rotation)
-    public Rotations getDirection(Entity intEntity){ //Rotation or move?
+    public Moves getDirection(Entity intEntity){ //Rotation or move?
         //get position
         int[] targetLoc = new int[2];
         for(ObjectOnMap ob : objects){
@@ -800,7 +798,7 @@ public class GameController { // self explanatory
 
         //get the current rotation of the intruder
         //From the rotation hashmap
-        Rotations rot = entityRotationsHashMap.get(intEntity);
+        //Rotations rot = entityRotationsHashMap.get(intEntity);
         int[] intruderLoc = entityLocations.get(intEntity);
 
         //Stopping condition
@@ -808,56 +806,89 @@ public class GameController { // self explanatory
             isRunning = false;
 
 
-        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
-        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
-
         double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
         double angle = Math.atan(tanTheta);
         int degAngle = (int) Math.toDegrees(angle);
 
+        System.out.println("Global rotation: " + globalRotation.toString());
+        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
         System.out.println("tanTheta: " + tanTheta);
         System.out.println("Deg angle : " + degAngle);
 
-        if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
-            degAngle = 90+degAngle;
-            if(degAngle > 45 && degAngle < 135) {
-                setGlobalRotation(Rotations.UP);
-                return Rotations.UP;
-            }
-            else if((degAngle <= 45 && degAngle > 0) || (degAngle >= 315 && degAngle < 360)) {
-                setGlobalRotation(Rotations.RIGHT);
-                return Rotations.RIGHT;
-            }
-            else if(degAngle >225 && degAngle < 315){
-
+        if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]) {
+            degAngle = 90 + degAngle;
+        }
+        //DOESN't WORK IF INTRUDER SPAWNS ABOVE THE TARGET
+        if(degAngle > 45 && degAngle < 135) {
+            if(globalRotation == Rotations.UP) {
                 setGlobalRotation(Rotations.DOWN);
-                return Rotations.DOWN;
+                return Moves.TURN_AROUND;
             }
-            else{
-                setGlobalRotation(Rotations.LEFT);
-                return Rotations.LEFT;
+            else if(globalRotation == Rotations.DOWN) {
+                setGlobalRotation(Rotations.DOWN);
+                return Moves.WALK;
+            }
+            else if(globalRotation == Rotations.RIGHT){
+                setGlobalRotation(Rotations.DOWN);
+                return Moves.TURN_RIGHT;
+            }
+            else {
+                setGlobalRotation(Rotations.DOWN);
+                return Moves.TURN_LEFT;
+            }
+        }
+        else if((degAngle <= 45 && degAngle >= 0) || (degAngle >= 315 && degAngle < 360)) {
+            if(globalRotation == Rotations.UP) {
+                setGlobalRotation(Rotations.RIGHT);
+                return Moves.TURN_RIGHT;
+            }
+            else if(globalRotation == Rotations.DOWN) {
+                setGlobalRotation(Rotations.RIGHT);
+                return Moves.TURN_LEFT;
+            }
+            else if(globalRotation == Rotations.RIGHT) {
+                setGlobalRotation(Rotations.RIGHT);
+                return Moves.WALK;
+            }
+            else {
+                setGlobalRotation(Rotations.RIGHT);
+                return Moves.TURN_AROUND;
+            }
+        }
+        else if(degAngle >225 && degAngle < 315){
+            if(globalRotation == Rotations.UP)
+                return Moves.WALK;
+            else if(globalRotation == Rotations.DOWN) {
+                setGlobalRotation(Rotations.UP);
+                return Moves.TURN_AROUND;
+            }
+            else if(globalRotation == Rotations.RIGHT) {
+                setGlobalRotation(Rotations.UP);
+                return Moves.TURN_LEFT;
+            }
+            else {
+                setGlobalRotation(Rotations.UP);
+                return Moves.TURN_RIGHT;
+
             }
         }
         else{
-            if(targetLoc[1] < intruderLoc[1] && targetLoc[0] == intruderLoc[0])
-                degAngle = 275;
-            //RETURNS ROTATION IT NEEDS TO BE IN
-            if(degAngle > 45 && degAngle < 135) {
-                setGlobalRotation(Rotations.DOWN);
-                return Rotations.DOWN;//reversed
-            }
-            else if((degAngle <= 45 && degAngle > 0) || (degAngle >= 315 && degAngle < 360)) {
+            if(globalRotation == Rotations.UP) {
                 setGlobalRotation(Rotations.LEFT);
-                return Rotations.LEFT;
+                return Moves.TURN_LEFT;
             }
-            else if(degAngle >225 && degAngle < 315){
-
-                setGlobalRotation(Rotations.UP);
-                return Rotations.UP;//Reversed
+            else if(globalRotation == Rotations.DOWN) {
+                setGlobalRotation(Rotations.LEFT);
+                return Moves.TURN_RIGHT;
             }
-            else{
-                setGlobalRotation(Rotations.RIGHT);
-                return Rotations.RIGHT;
+            else if(globalRotation == Rotations.RIGHT) {
+                setGlobalRotation(Rotations.LEFT);
+                return Moves.TURN_AROUND;
+            }
+            else {
+                setGlobalRotation(Rotations.LEFT);
+                return Moves.WALK;
             }
         }
 
