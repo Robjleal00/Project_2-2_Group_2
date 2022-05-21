@@ -103,10 +103,10 @@ public class Launcher {
         Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
-        Goal target = new Goal(1, 6,8);
+        Goal target = new Goal(1, 6,4);
         //gm.addWall(0,5,19,5);
         gm.addObject(target);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 4,15,Rotations.DOWN);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 4,11,Rotations.UP);
         gm.init();
 

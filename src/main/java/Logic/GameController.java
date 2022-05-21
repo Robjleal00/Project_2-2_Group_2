@@ -814,11 +814,18 @@ public class GameController { // self explanatory
         System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
         System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
         System.out.println("tanTheta: " + tanTheta);
-        System.out.println("Deg angle : " + degAngle);
+        //System.out.println("Deg angle : " + degAngle);
 
         if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]) {
             degAngle = 90 + degAngle;
         }
+        else if(degAngle < 0 && targetLoc[1] < intruderLoc[1]) {
+            degAngle = degAngle + 360;
+        }
+        else if(targetLoc[1] > intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
+            degAngle = degAngle + 270;
+        }
+        System.out.println("Deg angle : " + degAngle);
         //DOESN't WORK IF INTRUDER SPAWNS ABOVE THE TARGET
         if(degAngle > 45 && degAngle < 135) {
             if(globalRotation == Rotations.UP) {
