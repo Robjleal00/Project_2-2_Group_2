@@ -10,10 +10,6 @@ public class Strategy { // Template for making strategies, basic explo is an imp
         return Moves.WALK;
     }
 
-    public Rotations translate(Rotations direction, Rotations global, Rotations currentRotation){ return Rotations.FORWARD;}
-
-    public void updateExploration(String[][] vision, int[] xy, Rotations rot){}
-
     public void printMappings() {
     }
     public void setBooleans(boolean b, boolean c){}

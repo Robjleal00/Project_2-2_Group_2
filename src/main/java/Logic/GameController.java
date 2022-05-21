@@ -43,10 +43,9 @@ public class GameController { // self explanatory
     private MainApp graphicsUpdater;
     private Rotations globalRotation;
     private final int MAX_TURNS=1000;
-    private final boolean DEBUG = false;
-/*
-Use this to construct with graphics.
- */
+    /*
+    Use this to construct with graphics.
+     */
     public GameController(int height, int length,MainApp graphics) {
         moveMap=new HashMap<>();
         allUnseenTiles = new ArrayList<>();
@@ -148,7 +147,7 @@ Use this to construct with graphics.
             }
             turns++;
             //checkWin(turns);
-             Thread.sleep(200);
+            Thread.sleep(200);
         }
         if(wasBroken){
             System.out.println("EXPLORATION WAS CANCELLED DUE TO ALL AGENTS GETTING STUCK ");
@@ -237,13 +236,13 @@ Use this to construct with graphics.
                     for (int j = -1; j < 2; j++) {
                         int[] lookingAt = {position[0] +j, position[1] -i};
                         if (canSee[j + 1]) {
-                                if (existsInBoard(lookingAt)) {
-                                    String symbol = map[lookingAt[1]][lookingAt[0]];
-                                    vision[eyeRange - (i + 1)][j + 1] = symbol;
-                                    if (Objects.equals(symbol, "W")) {
-                                        canSee[j + 1] = false;
-                                    }
+                            if (existsInBoard(lookingAt)) {
+                                String symbol = map[lookingAt[1]][lookingAt[0]];
+                                vision[eyeRange - (i + 1)][j + 1] = symbol;
+                                if (Objects.equals(symbol, "W")) {
+                                    canSee[j + 1] = false;
                                 }
+                            }
                         } else {
                             if (j != 0 && canSee[1]) {
                                 int[] pos_of_it = {lookingAt[0]+1, lookingAt[1]};
@@ -408,7 +407,7 @@ Use this to construct with graphics.
         return(a[0]==b[0]&&a[1]==b[1]);
     }
     private Teleporter findTeleporter(int[]pos){
-       int [] first = {pos[0],pos[1]+1};
+        int [] first = {pos[0],pos[1]+1};
         int [] second = {pos[0],pos[1]-1};
         int [] third = {pos[0]+1,pos[1]};
         int [] fourth = {pos[0]-1,pos[1]};
@@ -543,103 +542,103 @@ Use this to construct with graphics.
                 switch (rotation) {
                     case UP -> {
                         int[] targetlocation = {pos[0] , pos[1]- walkSpeed};
-                            if (canBePutThere(targetlocation, e) && noWallsOnTheWay(pos, targetlocation, rotation, e)) {
-                                putOnMap(symbol(e), targetlocation);
-                                removeFromMap(pos);
-                                entityLocations.put(e, targetlocation);
-                                return walkSpeed;
-                            } else {
-                                if (walkSpeed > 1) {
-                                    for (int i = walkSpeed; i > 0; i--) {
-                                        int[] nexttargetlocation = {pos[0] , pos[1]- i};
-                                        if (existsInBoard(nexttargetlocation)) {
-                                            if (canBePutThere(nexttargetlocation, e) && noWallsOnTheWay(pos, nexttargetlocation, rotation, e)) {
-                                                putOnMap(symbol(e), nexttargetlocation);
-                                                removeFromMap(pos);
-                                                entityLocations.put(e, nexttargetlocation);
-                                                return i;
-                                            }
+                        if (canBePutThere(targetlocation, e) && noWallsOnTheWay(pos, targetlocation, rotation, e)) {
+                            putOnMap(symbol(e), targetlocation);
+                            removeFromMap(pos);
+                            entityLocations.put(e, targetlocation);
+                            return walkSpeed;
+                        } else {
+                            if (walkSpeed > 1) {
+                                for (int i = walkSpeed; i > 0; i--) {
+                                    int[] nexttargetlocation = {pos[0] , pos[1]- i};
+                                    if (existsInBoard(nexttargetlocation)) {
+                                        if (canBePutThere(nexttargetlocation, e) && noWallsOnTheWay(pos, nexttargetlocation, rotation, e)) {
+                                            putOnMap(symbol(e), nexttargetlocation);
+                                            removeFromMap(pos);
+                                            entityLocations.put(e, nexttargetlocation);
+                                            return i;
                                         }
-
                                     }
-                                } else return -1;
-                            }
+
+                                }
+                            } else return -1;
+                        }
                         return -1;
                     }
                     case DOWN -> {
                         int[] targetlocation = {pos[0] , pos[1]+ walkSpeed};
-                            if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
-                                putOnMap(symbol(e), targetlocation);
-                                removeFromMap(pos);
-                                entityLocations.put(e, targetlocation);
-                                return walkSpeed;
-                            } else {
-                                if(walkSpeed>1){
-                                    for(int i=walkSpeed;i>0;i--){
-                                        int[] nexttargetlocation = {pos[0] , pos[1]+ i};
-                                        if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
-                                                putOnMap(symbol(e), nexttargetlocation);
-                                                removeFromMap(pos);
-                                                entityLocations.put(e, nexttargetlocation);
-                                                return i;
-                                            }
+                        if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
+                            putOnMap(symbol(e), targetlocation);
+                            removeFromMap(pos);
+                            entityLocations.put(e, targetlocation);
+                            return walkSpeed;
+                        } else {
+                            if(walkSpeed>1){
+                                for(int i=walkSpeed;i>0;i--){
+                                    int[] nexttargetlocation = {pos[0] , pos[1]+ i};
+                                    if(existsInBoard(nexttargetlocation)){
+                                        if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
+                                            putOnMap(symbol(e), nexttargetlocation);
+                                            removeFromMap(pos);
+                                            entityLocations.put(e, nexttargetlocation);
+                                            return i;
                                         }
-
                                     }
-                                }else return -1;
-                            }
+
+                                }
+                            }else return -1;
+                        }
                         return -1;
                     }
                     case RIGHT -> {
                         int[] targetlocation = {pos[0]+ walkSpeed, pos[1] };
-                            if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
-                                putOnMap(symbol(e), targetlocation);
-                                removeFromMap(pos);
-                                entityLocations.put(e, targetlocation);
-                                return walkSpeed;
-                             }else {
-                                if(walkSpeed>1){
-                                    for(int i=walkSpeed;i>0;i--){
-                                        int[] nexttargetlocation = {pos[0]+i , pos[1]};
-                                        if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
-                                                putOnMap(symbol(e), nexttargetlocation);
-                                                removeFromMap(pos);
-                                                entityLocations.put(e, nexttargetlocation);
-                                                return i;
-                                            }
+                        if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
+                            putOnMap(symbol(e), targetlocation);
+                            removeFromMap(pos);
+                            entityLocations.put(e, targetlocation);
+                            return walkSpeed;
+                        }else {
+                            if(walkSpeed>1){
+                                for(int i=walkSpeed;i>0;i--){
+                                    int[] nexttargetlocation = {pos[0]+i , pos[1]};
+                                    if(existsInBoard(nexttargetlocation)){
+                                        if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
+                                            putOnMap(symbol(e), nexttargetlocation);
+                                            removeFromMap(pos);
+                                            entityLocations.put(e, nexttargetlocation);
+                                            return i;
                                         }
-
                                     }
-                                }else return -1;
-                            }
-                       return -1;
+
+                                }
+                            }else return -1;
+                        }
+                        return -1;
                     }
                     case LEFT -> {
                         int[] targetlocation = {pos[0]- walkSpeed, pos[1] };
-                            if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
-                                putOnMap(symbol(e), targetlocation);
-                                removeFromMap(pos);
-                                entityLocations.put(e, targetlocation);
-                                return walkSpeed;
-                             }else {
-                                if(walkSpeed>1){
-                                    for(int i=walkSpeed;i>0;i--){
-                                        int[] nexttargetlocation = {pos[0]-i, pos[1]};
-                                        if(existsInBoard(nexttargetlocation)){
-                                            if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
-                                                putOnMap(symbol(e), nexttargetlocation);
-                                                removeFromMap(pos);
-                                                entityLocations.put(e, nexttargetlocation);
-                                                return i;
-                                            }
+                        if (canBePutThere(targetlocation, e)&&noWallsOnTheWay(pos,targetlocation,rotation, e)) {
+                            putOnMap(symbol(e), targetlocation);
+                            removeFromMap(pos);
+                            entityLocations.put(e, targetlocation);
+                            return walkSpeed;
+                        }else {
+                            if(walkSpeed>1){
+                                for(int i=walkSpeed;i>0;i--){
+                                    int[] nexttargetlocation = {pos[0]-i, pos[1]};
+                                    if(existsInBoard(nexttargetlocation)){
+                                        if(canBePutThere(nexttargetlocation, e)&&noWallsOnTheWay(pos,nexttargetlocation,rotation, e)){
+                                            putOnMap(symbol(e), nexttargetlocation);
+                                            removeFromMap(pos);
+                                            entityLocations.put(e, nexttargetlocation);
+                                            return i;
                                         }
-
                                     }
-                                }else return -1;
-                            }
-                         return -1;
+
+                                }
+                            }else return -1;
+                        }
+                        return -1;
                     }
                 }
             }
@@ -656,9 +655,8 @@ Use this to construct with graphics.
         entityInitialPoses.put(e,new Pose(rot,yx));
     }
 
-    public Rotations getGlobalRotation(Entity e){
-
-        return entityRotationsHashMap.get(e);
+    public Rotations getGlobalRotation(){
+        return globalRotation;
     }
     public void setGlobalRotation(Rotations globalRotation){this.globalRotation = globalRotation;}
 
@@ -795,40 +793,33 @@ Use this to construct with graphics.
     public Rotations getDirection(Entity intEntity){ //Rotation or move?
         //get position
         int[] targetLoc = new int[2];
-        for(ObjectOnMap ob : objects){ //PROBABLY NEEDS TO BE CHANGED IF WE WANT TO RUN MULTIPLE INTRUDERS
+        for(ObjectOnMap ob : objects){
             if(ob instanceof Goal)
-                 targetLoc = ob.getXy(); break;
+                targetLoc = ob.getXy(); break;
         }
 
         //get the current rotation of the intruder
         //From the rotation hashmap
-
-        Rotations rot = entityRotationsHashMap.get(intEntity); //ALSO THIS NEEDS TO BE CHANGED FOR MULTIPLE INTRUDERS
-        System.out.println("ROTATION INTRUDER (GLOBAL): " + rot.toString());
+        Rotations rot = entityRotationsHashMap.get(intEntity);
         int[] intruderLoc = entityLocations.get(intEntity);
-        System.out.println("LOCATION INTRUDER (GLOBAL): " + intruderLoc[0] + "," + intruderLoc[1]);
 
         //Stopping condition
         if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
             isRunning = false;
 
-        //calculate the angle
-        if(DEBUG) {
-            System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
-            System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
-            System.out.println("Targ Y: " + targetLoc[1] + ", Targ X" + targetLoc[0]);
-            System.out.println("Intruder Y: " + intruderLoc[1] + ", Intruder X" + intruderLoc[0]);
-            System.out.println("Subtraction Y: " + (targetLoc[1] - intruderLoc[1]));
-            System.out.println("Subtraction X: " + (targetLoc[0] - intruderLoc[0]));
-        }
+
+        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
+
         double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
-        System.out.println("tanTheta: " + tanTheta);
         double angle = Math.atan(tanTheta);
         int degAngle = (int) Math.toDegrees(angle);
+
+        System.out.println("tanTheta: " + tanTheta);
         System.out.println("Deg angle : " + degAngle);
-        //if on the same x axis, and 90deg
+
         if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
-            degAngle = 90 + degAngle;
+            degAngle = 90+degAngle;
             if(degAngle > 45 && degAngle < 135) {
                 setGlobalRotation(Rotations.UP);
                 return Rotations.UP;
