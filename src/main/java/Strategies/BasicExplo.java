@@ -104,6 +104,12 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             agent.setCT(ct);
             //explorationPoints.get(j+fix+fixX).add(((i+fix)*-1)+fixY);
             xy=ct.transform(xy);
+
+            //Attempt at debugging #1, invert rotation if agent is facing forward or backwards
+            if(rot.equals(Rotations.FORWARD) || rot.equals(Rotations.BACK))
+            {
+                rot = rot.turnAround();
+            }
             this.agent.nowPatrol(xy);
             System.out.println("EXPLO DONE");
             //String[][] agentPrivateMap = makeMap(map);
@@ -117,22 +123,10 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             }
         }
         if(patrolling&&exploDone){
-            /*
-            //STEP 1: create Tree root
-            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 4, constraints,vr,visitedPoints,objects);
-            //STEP 2: generate the children all possible moves R,L,U,P
-            returnedMoves = new ArrayList<>();
-            //returnedMoves = tr.createMoves();
-
-
-            int[] targetPosition = getMaxSquare(lastSeen, xy);
-            return getPatrolPath(targetPosition,rot, xy);
-
-             */
-            //We run this method multiple times, so we get new map everytime?
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             Patroller patroller = new Patroller(xy,rot,vr,map,teleporterAll,lastSeen);
+
             returner = patroller.dfs(1);
         }
 

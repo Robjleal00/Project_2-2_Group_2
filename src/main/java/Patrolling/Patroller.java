@@ -68,6 +68,7 @@ public class Patroller {
 
         }
         ownValue=getValue(lastSeen,xy,rot);
+        //System.out.println("MOVE: "+move.toString()+" HAS VALUE: "+ownValue);
         if(depth != 0)
         {
             int[][] deepclone=createNewLastSeen(lastSeen);
@@ -99,7 +100,7 @@ public class Patroller {
 
         int maxValue= max(childValues);
         int index = childValues.indexOf(maxValue);
-        // TODO: Won't index > 4? So it'll return an out of bounds exception for this
+        System.out.println(availableMoves[index].toString()+" with INDEX:"+index);
         return availableMoves[index];
         //TODO: when you create children, give them a move and let them execute it themselves, less "super" code required
         // ^ Not sure how to implement this, but I believe my implementation should suffice for now
@@ -128,7 +129,6 @@ public class Patroller {
                     for(int j = xy[0] - range; j < xy[0] ; j++){
                         if(i >= 0  && j >= 0 && i < mapHeight && j < mapLength)
                         {
-
                             value  += lastSeen[i][j];
                             lastSeen[i][j] = 0;
                         }
@@ -140,7 +140,6 @@ public class Patroller {
                     for(int j = xy[0] - 1; j < xy[0] + 1; j++){
                         if(i >= 0  && j >= 0 && i < mapHeight && j < mapLength)
                         {
-
                             value  += lastSeen[i][j];
                             lastSeen[i][j] = 0;
                         }
@@ -152,7 +151,6 @@ public class Patroller {
                     for(int j = xy[0] - 1; j < xy[0] + 1; j++){
                         if(i >= 0  && j >= 0 && i < mapHeight && j < mapLength)
                         {
-
                             value  += lastSeen[i][j];
                             lastSeen[i][j] = 0;
                         }
