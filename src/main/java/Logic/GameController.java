@@ -44,6 +44,7 @@ public class GameController { // self explanatory
     private Rotations globalRotation;
     private final int MAX_TURNS=1000;
     private Rotations intruderGlobalRotation;
+
     /*
     Use this to construct with graphics.
      */
@@ -914,5 +915,97 @@ public class GameController { // self explanatory
     }
     public Rotations getIntRot() {
         return intruderGlobalRotation;
+    }
+
+    public Moves getNextBestMove(Entity intEntity){
+        Moves returner = Moves.STUCK;
+        int[] targetLoc = new int[2];
+        for(ObjectOnMap ob : objects){
+            if(ob instanceof Goal)
+                targetLoc = ob.getXy(); break;
+        }
+
+
+        int[] intruderLoc = entityLocations.get(intEntity);
+
+        int ydif = targetLoc[1]-intruderLoc[1];
+        int xdif = targetLoc[0] - intruderLoc[0];
+
+        if (Math.abs(ydif) < Math.abs(xdif)) {
+            if (ydif < 0) {
+                if(intruderGlobalRotation == Rotations.UP)
+                    returner = Moves.WALK;
+                else if(intruderGlobalRotation == Rotations.DOWN) {
+                    setGlobalRotationIntruder(Rotations.UP);
+                    returner = Moves.TURN_AROUND;
+                }
+                else if(intruderGlobalRotation == Rotations.RIGHT) {
+                    setGlobalRotationIntruder(Rotations.UP);
+                    returner = Moves.TURN_LEFT;
+                }
+                else {
+                    setGlobalRotationIntruder(Rotations.UP);
+                    returner = Moves.TURN_RIGHT;
+
+                }
+            }
+            else {
+                if(intruderGlobalRotation == Rotations.UP) {
+                    setGlobalRotationIntruder(Rotations.DOWN);
+                    returner = Moves.TURN_AROUND;
+                }
+                else if(intruderGlobalRotation == Rotations.DOWN) {
+                    setGlobalRotationIntruder(Rotations.DOWN);
+                    returner = Moves.WALK;
+                }
+                else if(intruderGlobalRotation == Rotations.RIGHT){
+                    setGlobalRotationIntruder(Rotations.DOWN);
+                    returner = Moves.TURN_RIGHT;
+                }
+                else {
+                    setGlobalRotationIntruder(Rotations.DOWN);
+                    returner = Moves.TURN_LEFT;
+                }
+            }
+        }
+        else  {
+            if (xdif<0) {
+                if(intruderGlobalRotation == Rotations.UP) {
+                    setGlobalRotationIntruder(Rotations.LEFT);
+                    returner = Moves.TURN_LEFT;
+                }
+                else if(intruderGlobalRotation == Rotations.DOWN) {
+                    setGlobalRotationIntruder(Rotations.LEFT);
+                    returner = Moves.TURN_RIGHT;
+                }
+                else if(intruderGlobalRotation == Rotations.RIGHT) {
+                    setGlobalRotationIntruder(Rotations.LEFT);
+                    returner = Moves.TURN_AROUND;
+                }
+                else {
+                    setGlobalRotationIntruder(Rotations.LEFT);
+                    returner = Moves.WALK;
+                }
+            }
+            else {
+                if(intruderGlobalRotation == Rotations.UP) {
+                    setGlobalRotationIntruder(Rotations.RIGHT);
+                    returner = Moves.TURN_RIGHT;
+                }
+                else if(intruderGlobalRotation == Rotations.DOWN) {
+                    setGlobalRotationIntruder(Rotations.RIGHT);
+                    returner = Moves.TURN_LEFT;
+                }
+                else if(intruderGlobalRotation == Rotations.RIGHT) {
+                    setGlobalRotationIntruder(Rotations.RIGHT);
+                    returner = Moves.WALK;
+                }
+                else {
+                    setGlobalRotationIntruder(Rotations.RIGHT);
+                    returner = Moves.TURN_AROUND;
+                }
+            }
+        }
+        return returner;
     }
 }

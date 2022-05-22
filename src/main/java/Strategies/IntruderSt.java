@@ -55,10 +55,6 @@ public class IntruderSt extends Strategy{
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
 
         updateExploration(vision, xy, rot);
-        //boolean nextIsWall = checkNextMoveWall(vision, xy, rot);
-        //if(nextIsWall)
-        //System.out.println("The next is a wall");
-
         visitedPoints.add(new Point(xy,new ArrayList<>()));
 
         Moves move = Moves.STUCK;
@@ -66,6 +62,67 @@ public class IntruderSt extends Strategy{
             if(walked == false ){
                 walked = true;
                 move = Moves.WALK;
+                int[] nextPoint = new int[2];
+
+                if (move == Moves.WALK){
+                    if (rot == Rotations.FORWARD) {
+                        if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1]+vr.walkSpeed())) {
+                            nextPoint[0] = xy[0];
+                            nextPoint[1] = xy[1] + vr.walkSpeed();
+                            Point toCheck = new Point(nextPoint, new ArrayList<>());
+                            for (int i = 0; i < visitedPoints.size(); i++) {
+                                if (Arrays.equals(visitedPoints.get(i).xy(),toCheck.xy())) {
+                                    move = gm.getNextBestMove(intruder);
+                                    System.out.println("LOOKING AT VISITED");
+                                    break;
+
+                                }
+                            }
+                        }
+                    }else if (rot == Rotations.RIGHT) {
+                        if (explored.containsKey(xy[0]+vr.walkSpeed()) && explored.get(xy[0]+ vr.walkSpeed()).contains(xy[1])) {
+                            nextPoint[0] = xy[0] + vr.walkSpeed();
+                            nextPoint[1] = xy[1];
+                            Point toCheck = new Point(nextPoint, new ArrayList<>());
+                            for (int i = 0; i < visitedPoints.size(); i++) {
+                                if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                    move = gm.getNextBestMove(intruder);
+                                    System.out.println("LOOKING AT VISITED");
+                                    break;
+                                }
+                            }
+                        }
+                    }else if (rot == Rotations.LEFT) {
+                        if (explored.containsKey(xy[0] - vr.walkSpeed()) && explored.get(xy[0] - vr.walkSpeed()).contains(xy[1])) {
+                            nextPoint[0] = xy[0] - vr.walkSpeed();
+                            nextPoint[1] = xy[1];
+                            Point toCheck = new Point(nextPoint, new ArrayList<>());
+                            for (int i = 0; i < visitedPoints.size(); i++) {
+                                if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                    move = gm.getNextBestMove(intruder);
+                                    System.out.println("LOOKING AT VISITED");
+                                    break;
+                                }
+
+                            }
+                        }
+                    }else if (rot == Rotations.BACK) {
+                        if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1] - vr.walkSpeed())) {
+                            nextPoint[0] = xy[0];
+                            nextPoint[1] = xy[1] - vr.walkSpeed();
+                            Point toCheck = new Point(nextPoint, new ArrayList<>());
+                            for (int i = 0; i < visitedPoints.size(); i++) {
+                                if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                    move = gm.getNextBestMove(intruder);
+                                    System.out.println("LOOKING AT VISITED");
+                                    break;
+                                }
+
+                            }
+                        }
+                    }
+                }
+
             }
             else{
 
@@ -111,7 +168,69 @@ public class IntruderSt extends Strategy{
                             }
                         }
                     } else{
-                        move = gm.getDirection(intruder);
+                        move = gm.getDirection(intruder); //This needs to move
+                        //check if it is looking at a point that it has already visited, and then if move Walk
+                        //check if looking at an explored point, and then if the first point of the looking at is a visited point
+                        /*int[] nextPoint = new int[2];
+
+                        if (move == Moves.WALK){
+                            if (rot == Rotations.FORWARD) {
+                                if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1]+vr.walkSpeed())) {
+                                    nextPoint[0] = xy[0];
+                                    nextPoint[1] = xy[1] + vr.walkSpeed();
+                                    Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                    for (int i = 0; i < visitedPoints.size(); i++) {
+                                        if (Arrays.equals(visitedPoints.get(i).xy(),toCheck.xy())) {
+                                            move = gm.getNextBestMove(intruder);
+                                            System.out.println("LOOKING AT VISITED");
+                                            break;
+
+                                        }
+                                    }
+                                }
+                            }else if (rot == Rotations.RIGHT) {
+                                if (explored.containsKey(xy[0]+vr.walkSpeed()) && explored.get(xy[0]+ vr.walkSpeed()).contains(xy[1])) {
+                                    nextPoint[0] = xy[0] + vr.walkSpeed();
+                                    nextPoint[1] = xy[1];
+                                    Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                    for (int i = 0; i < visitedPoints.size(); i++) {
+                                        if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                            move = gm.getNextBestMove(intruder);
+                                            System.out.println("LOOKING AT VISITED");
+                                            break;
+                                        }
+                                    }
+                                }
+                            }else if (rot == Rotations.LEFT) {
+                                if (explored.containsKey(xy[0] - vr.walkSpeed()) && explored.get(xy[0] - vr.walkSpeed()).contains(xy[1])) {
+                                    nextPoint[0] = xy[0] - vr.walkSpeed();
+                                    nextPoint[1] = xy[1];
+                                    Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                    for (int i = 0; i < visitedPoints.size(); i++) {
+                                        if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                            move = gm.getNextBestMove(intruder);
+                                            System.out.println("LOOKING AT VISITED");
+                                            break;
+                                        }
+
+                                    }
+                                }
+                            }else if (rot == Rotations.BACK) {
+                                if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1] - vr.walkSpeed())) {
+                                    nextPoint[0] = xy[0];
+                                    nextPoint[1] = xy[1] - vr.walkSpeed();
+                                    Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                    for (int i = 0; i < visitedPoints.size(); i++) {
+                                        if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                            move = gm.getNextBestMove(intruder);
+                                            System.out.println("LOOKING AT VISITED");
+                                            break;
+                                        }
+
+                                    }
+                                }
+                            }
+                        }*/
 
                         System.out.println("MOVE CHOSEN: " + move.toString());
                         if(move != Moves.WALK){
@@ -128,6 +247,7 @@ public class IntruderSt extends Strategy{
                 }
             }
         }
+
         count++;
         return move;
 

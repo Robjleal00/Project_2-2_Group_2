@@ -50,20 +50,7 @@ public class Intruder extends Entity{
         System.out.println("XY: " + xy[0] + ", " + xy[1]);
         System.out.println("Current Local Rotation before move: " + currentRotation.toString());
 
-        /*Moves move = Moves.STUCK;
 
-        if(walked == false ){
-            walked = true;
-            move = Moves.WALK;
-        }
-        else{
-             move = gm.getDirection(this);
-
-            System.out.println("MOVE CHOSEN: " + move.toString());
-            if(move != Moves.WALK){
-                walked = false;
-            }
-        }*/
 
         return  st.decideOnMoveIntruder(vision, xy, currentRotation, vr, gm, this);
     }
