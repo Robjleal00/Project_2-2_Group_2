@@ -1,5 +1,8 @@
 package Chasing;
 
+import Enums.Moves;
+import Enums.Rotations;
+
 import java.util.Comparator;
 import java.util.PriorityQueue;
 
@@ -25,6 +28,8 @@ public class AStarChase {
 
     // the end cell
     private int endI, endJ;
+
+    private Cell nextMoveCoordinate;
 
     public AStarChase(String[][] map, int[] xy, int[] intruderPosition)
     {
@@ -210,6 +215,62 @@ public class AStarChase {
         System.out.println();
     }
 
+    public Moves getMove(int[] agentPosition, Cell nextCell, Rotations rotation)
+    {
+        Moves nextMove = null;
+        // HorizontalDifference < 0 : left
+        //                      > 0 : right
+        // VDiff < 0 : Up
+        //       > 0 : Down
+        int horizontalDifference  = nextCell.i - agentPosition[0];
+        int verticalDifference = nextCell.j - agentPosition[1];
+        switch(rotation){
+            case LEFT -> {return Moves.TURN_AROUND;}
+            case RIGHT -> {return Moves.WALK;}
+            case FORWARD -> {return Moves.TURN_RIGHT;}
+            case BACK ->{return Moves.TURN_LEFT;}
+        }
+
+        //move to right
+        if(horizontalDifference > 0 ){
+                switch(rotation){
+                    case LEFT -> {return Moves.TURN_AROUND;}
+                    case RIGHT -> {return Moves.WALK;}
+                    case FORWARD -> {return Moves.TURN_RIGHT;}
+                    case BACK ->{return Moves.TURN_LEFT;}
+                }
+        }
+        //Move to left
+        else if(horizontalDifference < 0){
+                switch(rotation){
+                    case RIGHT-> {return Moves.TURN_AROUND;}
+                    case LEFT -> {return Moves.WALK;}
+                    case BACK -> {return Moves.TURN_RIGHT;}
+                    case FORWARD ->{return Moves.TURN_LEFT;}
+                }
+        }
+        else if(horizontalDifference == 0){
+            if(verticalDifference > 0){ //move down
+                switch(rotation){
+                    case FORWARD -> {return Moves.TURN_AROUND;}
+                    case BACK -> {return Moves.WALK;}
+                    case RIGHT -> {return Moves.TURN_RIGHT;}
+                    case LEFT ->{return Moves.TURN_LEFT;}
+                }
+            }
+            else if(verticalDifference < 0){ //move up
+                switch (rotation) {
+                    case FORWARD -> {return Moves.TURN_AROUND;}
+                    case BACK -> {return Moves.WALK;}
+                    case RIGHT -> {return Moves.TURN_RIGHT;}
+                    case LEFT -> {return Moves.TURN_LEFT;}
+                }
+            }
+        }
+        return null;
+    }
+
+
     public void displaySolution() {
         if (closedCells[endI][endJ]) {
             // Here we will track back the path
@@ -226,7 +287,7 @@ public class AStarChase {
 
             System.out.println("\n");
             System.out.println(current);
-            Cell nextMoveCoordinate;
+
             nextMoveCoordinate = current;
             System.out.println(nextMoveCoordinate);
             System.out.println("\n");
@@ -263,5 +324,8 @@ public class AStarChase {
             aStar.displaySolution(); // Display the solution path
 
        }
+
+
+
 
 }
