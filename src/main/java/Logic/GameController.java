@@ -826,6 +826,9 @@ public class GameController { // self explanatory
         else if(targetLoc[1] > intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
             degAngle = degAngle + 270;
         }
+        else if(targetLoc[1] == intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
+            degAngle = degAngle + 180;
+        }
 
         //Problem if it encounters a wall with the setGlobalRotation method
         System.out.println("Deg angle : " + degAngle);

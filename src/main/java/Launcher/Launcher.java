@@ -100,18 +100,20 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        Variables vr = new Variables(1,5);
+        Variables vr = new Variables(1,2);
         gm.addVars(vr);
         gm.printMap();
         Goal target = new Goal(1, 6,4);
-        //gm.addWall(0,5,5,5);
+        gm.addWall(0,5,5,5);
+        //gm.addWall(0,5,19,5);
         gm.addObject(target);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 4,8,Rotations.UP);
-        gm.init();
-
         //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         //gm.addObject(t1);
+        gm.init();
+
+
 
        // gm.print("D");
         //gm.print(12);

@@ -5,9 +5,13 @@ import Entities.Intruder;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
-import ObjectsOnMap.Goal;
+import OptimalSearch.TreeRoot;
+import PathMaking.Point;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.awt.*;
+import java.lang.reflect.Type;
 import java.util.*;
 
 import static java.util.Collections.max;
@@ -24,6 +28,7 @@ public class IntruderSt extends Strategy{
     private final ArrayList<Point> visitedPoints;
     private boolean atGoal;
     private boolean walked;
+    private int count = 0;
 
 
     public IntruderSt(){
@@ -47,6 +52,14 @@ public class IntruderSt extends Strategy{
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
 
         updateExploration(vision, xy, rot);
+        //boolean nextIsWall = checkNextMoveWall(vision, xy, rot);
+        //if(nextIsWall)
+            //System.out.println("The next is a wall");
+
+        visitedPoints.add(new Point(xy,new ArrayList<>()));
+
+
+
         Moves move = Moves.STUCK;
         if(searching){
             if(walked == false ){
@@ -54,15 +67,54 @@ public class IntruderSt extends Strategy{
                 move = Moves.WALK;
             }
             else{
-                move = gm.getDirection(intruder);
 
-                System.out.println("MOVE CHOSEN: " + move.toString());
-                if(move != Moves.WALK){
-                    walked = false;
+                if (count > 1) {
+                    if(stuck(xy)){
+                        System.out.println("STUCKKKKK");
+                        TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
+                        move = root.getMove();
+                        if(move==Moves.STUCK){
+                            move = root.tryPathfinding();
+                            if(move==Moves.STUCK){
+                                move = root.tryTeleporting();
+                            }
+                        }
+                    } else{
+                        move = gm.getDirection(intruder);
+
+                        System.out.println("MOVE CHOSEN: " + move.toString());
+                        if(move != Moves.WALK){
+                            walked = false;
+                        }
+                    }
+                }else{
+                    move = gm.getDirection(intruder);
+
+                    System.out.println("MOVE CHOSEN: " + move.toString());
+                    if(move != Moves.WALK){
+                        walked = false;
+                    }
                 }
             }
         }
+        count++;
         return move;
+    }
+
+    public boolean stuck(int[]xy){
+        Point p = visitedPoints.get(visitedPoints.size()-2);
+        if(Arrays.equals(p.xy(), xy)){
+            return true;
+        }
+        return false;
+    }
+
+    private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(maptoCopy);
+        Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>() {
+        }.getType();
+        return gson.fromJson(jsonString, type);
     }
 
 
