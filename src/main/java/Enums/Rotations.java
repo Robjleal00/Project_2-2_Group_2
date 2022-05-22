@@ -1,12 +1,12 @@
 package Enums;
 
 public enum Rotations {
-    FORWARD,
-    BACK,
+    FORWARD, //local
+    BACK, //local
     RIGHT,
     LEFT,
-    UP,
-    DOWN;
+    UP, //global
+    DOWN; //global
 
     public Rotations turnLeft(){
         switch (this) {

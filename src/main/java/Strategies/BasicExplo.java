@@ -94,6 +94,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         if(exploDone && !patrolling) {
             patrolling=true;
+            chasing = true;
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             String[][] secondMap=tr.giveMappings();
@@ -124,19 +125,24 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
         }
-        if(patrolling&&exploDone){
+        if(chasing && exploDone){
+
+        }
+        /*if(patrolling&&exploDone){
             int[] newxy = coordT.transform(xy);
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             Patroller patroller = new Patroller(newxy,rot,vr,map,teleporterAll,lastSeen);
-            /*
+            *//*
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             Patroller patroller = new Patroller(xy,rot,vr,map,teleporterAll,lastSeen);
-            */
+            *//*
 
             returner = patroller.dfs(1);
-        }
+            // NEVER CHANGES DIRECTION: ALWAYS FACING BACK
+
+        }*/
 
         if(returner==Moves.USE_TELEPORTER){
             for(Integer i:objects.keySet()){
