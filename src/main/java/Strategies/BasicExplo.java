@@ -70,6 +70,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TELEPORTED=false;
         }
         Moves returner = Moves.STUCK;
+        /*
         if(chasing)
         {
             int[] newxy = coordT.transform(xy);
@@ -82,13 +83,17 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             //TODO: want to avoid getting into the other statements, so I added a return here
             return returner;
         }
+        */
 
         if(!exploDone){
             //TODO: modified to account for chasing
+            /*
             int[] newxy = coordT.transform(xy);
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             checkVision(map, newxy, rot, vr);
+
+             */
 
 
             updateExploration(vision, xy, rot);
@@ -146,6 +151,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
         }
+        /*
         if(chasing && !exploDone)
         {
             int[] newxy = coordT.transform(xy);
@@ -158,6 +164,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
         }
+
+         */
         /*if(patrolling&&exploDone){
             int[] newxy = coordT.transform(xy);
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
