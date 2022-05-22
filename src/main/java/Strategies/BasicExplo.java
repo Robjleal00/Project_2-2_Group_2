@@ -91,7 +91,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             int[] newxy = coordT.transform(xy);
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
-            checkVision(map, newxy, rot, vr);
+            checkVision(map, xy, rot, vr);
 
              */
 
@@ -151,14 +151,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
         }
-        /*
         if(chasing && !exploDone)
         {
             int[] newxy = coordT.transform(xy);
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
 
-        }
+        } /*
         if(chasing && exploDone){
             int[] newxy = coordT.transform(xy);
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
