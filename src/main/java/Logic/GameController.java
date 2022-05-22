@@ -771,8 +771,19 @@ public class GameController { // self explanatory
     private boolean canBePutThere(int []target, Entity e) {
         if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength){
             if(e.getType() == EntityType.INTRUDER){
-                if (Objects.equals(map[target[1]][target[0]], "V1"))
+                if (Objects.equals(map[target[1]][target[0]], "V1")){
+                    System.out.println("This was executed");
                     return true;
+                }
+                else return Objects.equals(map[target[1]][target[0]], " ");
+            }
+            else if(e.getType() == EntityType.EXPLORER){
+                if (!Objects.equals(map[target[1]][target[0]], " ") && !Objects.equals(map[target[1]][target[0]], "W") && !Objects.equals(map[target[1]][target[0]], "V1")) {
+                    isRunning = false;
+                    //removeFromMap(target);
+                    System.out.println("intruder was captured");
+                    return true;
+                }
                 else return Objects.equals(map[target[1]][target[0]], " ");
             }
             else return Objects.equals(map[target[1]][target[0]], " ");

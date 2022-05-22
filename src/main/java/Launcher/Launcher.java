@@ -106,10 +106,10 @@ public class Launcher {
         Goal target = new Goal(1, 6,4);
         gm.addWall(0,5,6,5);
 
-        //gm.addWall(0,5,19,5);
+
         gm.addObject(target);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
-        //gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),6,13,Rotations.UP); //gets stuck when it encounters the target, also does not check if it is seeing the intruder
+        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),8,13,Rotations.UP); //gets stuck when it encounters the target, also does not check if it is seeing the intruder
         //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         //gm.addObject(t1);
         gm.init();
