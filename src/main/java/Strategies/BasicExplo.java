@@ -41,6 +41,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private CoordinateTransformer coordT = null;
     private int lastUsedTeleporter;
     private boolean TELEPORTED=false;
+    private ArrayList<Integer> intruderCoordinates;
 
     public BasicExplo() {
         this.explored = new HashMap<>();
@@ -221,6 +222,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             }
                         } else {
                             // Remember his location and execute Astar
+                            intruderCoordinates.add(currentX);
+                            intruderCoordinates.add(currentY);
                         }
 
                     }
@@ -264,6 +267,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             }
                         } else {
                             // Remember his location and execute AStar
+                            intruderCoordinates.add(currentX);
+                            intruderCoordinates.add(currentY);
                         }
 
                     }
@@ -308,6 +313,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                         } else {
                             // remember the last location of the agent
                             // execute AStar
+                            intruderCoordinates.add(currentX);
+                            intruderCoordinates.add(currentY);
                         }
 
                     }
@@ -347,6 +354,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                         } else {
                             // remember last location of the agent
                             // execute the AStar algo
+                            intruderCoordinates.add(currentX);
+                            intruderCoordinates.add(currentY);
                         }
 
                     }
