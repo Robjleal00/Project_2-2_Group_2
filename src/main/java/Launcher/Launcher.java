@@ -108,7 +108,7 @@ public class Launcher {
 
         gm.addObject(target);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
-        gm.addEntity(new Explorer(EntityType.GUARD,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Explorer(EntityType.GUARD,gm,new BasicExplo(),vr),2,13,Rotations.DOWN);
 
         //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         //gm.addObject(t1);
