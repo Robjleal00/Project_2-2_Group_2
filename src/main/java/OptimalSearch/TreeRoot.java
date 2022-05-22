@@ -26,7 +26,6 @@ public class TreeRoot { //more stuff for basic explo
     private final int depth;
     private final int[] xy;
     private final Moves[] avaliableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
-
     private final int eyeRange;
     boolean PATHMAKING=true;
     boolean DEBUG_DECISIONS;
@@ -48,6 +47,7 @@ public class TreeRoot { //more stuff for basic explo
         this.visitedPoints=visitedPoints;
         this.objects=objects;
     }
+
     public Moves getMove() {
         ArrayList<Double> values = new ArrayList<>();
         for (Moves avaliableMove : avaliableMoves) {
