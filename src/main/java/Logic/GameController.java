@@ -761,7 +761,7 @@ public class GameController { // self explanatory
         }
         return "ERROR";
     }
-    private boolean canBePutThere(int []target, Entity e) { // TODO: APPARENTLY THIS IS WRONG
+    private boolean canBePutThere(int []target, Entity e) {
         if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength){
             if(e.getType() == EntityType.INTRUDER){
                 if (Objects.equals(map[target[1]][target[0]], "V1"))
@@ -772,6 +772,7 @@ public class GameController { // self explanatory
         }
         else return false;
     }
+
     private boolean existsInBoard(int[] pos) {
         return (pos[0] > -1 && pos[0] < mapHeight && pos[1] > -1 && pos[1] < mapLength);
     }
@@ -825,8 +826,10 @@ public class GameController { // self explanatory
         else if(targetLoc[1] > intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
             degAngle = degAngle + 270;
         }
+
+        //Problem if it encounters a wall with the setGlobalRotation method
         System.out.println("Deg angle : " + degAngle);
-        //DOESN't WORK IF INTRUDER SPAWNS ABOVE THE TARGET
+
         if(degAngle > 45 && degAngle < 135) {
             if(globalRotation == Rotations.UP) {
                 setGlobalRotation(Rotations.DOWN);

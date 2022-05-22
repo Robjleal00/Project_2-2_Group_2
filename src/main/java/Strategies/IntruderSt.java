@@ -1,6 +1,7 @@
 package Strategies;
 
 import Config.Variables;
+import Entities.Intruder;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
@@ -22,33 +23,8 @@ public class IntruderSt extends Strategy{
     Rotations[] avaliableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
     private final ArrayList<Point> visitedPoints;
     private boolean atGoal;
-    private Goal target;
-    private int[] start;
-    private int[] direction;
-    int moveXtimes;
-    int moveYtimes;
+    private boolean walked;
 
-    //for A* Search
-    //private int fn; // gn + hn = total cost of path
-    //private int gn; //cost of path between the first node and the current node
-    //private int hn; // heuristic function
-
-
-// baysian pathfinding
-    //at every move it checks whether it can see the target and/or a guard and/or a wall
-
-    public IntruderSt(int[] start, Goal target) {
-        this.explored = new HashMap<>();
-        this.walls = new HashMap<>();
-        this.objects = new HashMap<>();
-        this.constraints=new Constraints();
-        this.visitedPoints=new ArrayList<>();
-        this.atGoal = false;
-        this.target = target;
-        //this.direction = direction(start);
-        //this.moveXtimes = Math.abs(direction[0]);
-        //this.moveYtimes = Math.abs(direction[1]);
-    }
 
     public IntruderSt(){
         this.explored = new HashMap<>();
@@ -57,6 +33,7 @@ public class IntruderSt extends Strategy{
         this.constraints=new Constraints();
         this.visitedPoints=new ArrayList<>();
         this.atGoal = false;
+        this.walked = true;
 
     }
 
@@ -67,155 +44,26 @@ public class IntruderSt extends Strategy{
     }
 
     @Override
-    public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr){
+    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
 
-
-        //Always check what the intruder sees
-        return Moves.STUCK;
-    }
-
-
-    //@Override
-    /*public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
-        Moves returner = Moves.STUCK;
+        updateExploration(vision, xy, rot);
+        Moves move = Moves.STUCK;
         if(searching){
-            //Rotate until facing the direction of the target
-            //Move steps x and y of direction
-            //check at each move if it encounters a wall
-            //Save each visited point in visited points and explored
-            //STOPPING CONDITIONS
-            //CURRENT PROBLEM: Why does it spawn in the same position always, and understanding where point 0, 0 is
-            //Do I have to get the absolute value? ** the target Y-coordinate is different from the intruder y -coor even if they are in the same height
-            //ONCE IT SEES THE TARGET IT JUST GOES FOR IT
-            updateExploration(vision, xy, rot);
-            System.out.println("Rotation in decide on move: " + rot.toString());
-            //System.out.println("moveXtimes: " + moveXtimes);
-            //System.out.println("moveYtimes: " + moveYtimes);
-            System.out.println("posX = " + xy[0] + ", posY = " + xy[1] + ", TX = " + target.getX() + ", TY = " + target.getY());
-            if(infront(rot, xy)){
-                returner = Moves.WALK;
-                System.out.println("Walked because in front");
+            if(walked == false ){
+                walked = true;
+                move = Moves.WALK;
             }
             else{
-                if(moveXtimes != 0){
-                    returner = updateRotX(rot,direction[0]);
-                    System.out.println("RETURNED: "+ returner.toString());
-                    if (returner.equals(Moves.WALK))
-                        moveXtimes--;
-                }
-                else if(moveXtimes == 0 && moveYtimes != 0){
-                    returner = updateRotY(rot,direction[1]);
-                    System.out.println("RETURNED: "+ returner.toString());
-                    if (returner.equals(Moves.WALK))
-                        moveYtimes--;
-                }
-                else {
-                    direction(xy);
-                    moveXtimes = Math.abs(direction[0]);
-                    moveYtimes = Math.abs(direction[1]);
-                    returner = decideOnMove(vision, xy, rot, vr);
+                move = gm.getDirection(intruder);
+
+                System.out.println("MOVE CHOSEN: " + move.toString());
+                if(move != Moves.WALK){
+                    walked = false;
                 }
             }
         }
-        return returner;
+        return move;
     }
-    public int[] direction(int[] start){ //TO CHECK
-        System.out.println("start: " + start[0] + ", " + start[1]);
-        int[] t = target.getXy();
-        System.out.println("target: " + t[0] + ", " + t[1]);
-        int x = t[0]-start[0];
-        int y = t[1]-start[1];
-        int gcd = gcdAlg(x, y);
-        System.out.println("GCD: " + gcd);
-        int[] direction = new int[2];
-        direction[0] = x/gcd;
-        direction[1] = y/gcd;
-        System.out.println("DIRECTION: X = " + direction[0] + " Y= " + direction[1]);
-        return direction;
-    }
-    public int gcdAlg(int n1, int n2){
-        if(n2 == 0)
-            return n1;
-        return gcdAlg(n2, n1%n2);
-    }
-    public boolean infront(Rotations rot, int[] pos){
-        switch (rot){
-            case FORWARD -> {
-                if(target.getX() == pos[0] && target.getY() == pos[1]+1) {
-                    moveYtimes--;
-                    return true;
-                }
-                else return false;
-            }
-            case BACK -> {
-                if(target.getX() == pos[0] && target.getY() == pos[1]-1) {
-                    moveYtimes--;
-                    return true;
-                }
-                else return false;
-            }
-            case RIGHT -> {
-                if(target.getX() == pos[0]+1 && target.getY() == pos[1]) {
-                    moveXtimes--;
-                    return true;
-                }
-                else return false;
-            }
-            case LEFT -> {
-                if(target.getX() == pos[0]-1 && target.getY() == pos[1]){
-                    moveXtimes--;
-                    return true;
-                }
-                else return false;
-            }
-        }
-        return false;
-    }
-    public Moves updateRotY(Rotations rot, int direct){
-        System.out.println("ENTERED ROT Y");
-        switch (rot){
-            case FORWARD -> {
-                if(direct > 0)
-                    return Moves.TURN_AROUND;
-            }
-            case BACK -> { //I THINK THIS IS THE OPPOSITE OF WHAT WE THINK BASED ON HOW THE MAP IS BEING PRINTED
-                if(direct < 0)
-                    return Moves.TURN_AROUND;
-            }
-            case RIGHT -> {
-                if(direct < 0)
-                    return Moves.TURN_LEFT;
-                else if(direct > 0)
-                    return Moves.TURN_RIGHT;
-            }
-            case LEFT -> {
-                if(direct > 0)
-                    return Moves.TURN_LEFT;
-                else if(direct < 0)
-                    return Moves.TURN_RIGHT;
-            }
-        }
-        return Moves.WALK;
-    }
-    public Moves updateRotX(Rotations rot, int direct){
-        System.out.println("ENTERED ROT X");
-        System.out.println("Rotation in method: " + rot.toString());
-        switch (rot){
-            case BACK -> {
-                if(direct > 0)
-                    return Moves.TURN_LEFT;
-                else if(direct < 0)
-                    return Moves.TURN_RIGHT;
-            }
-            case FORWARD -> {
-                if(direct > 0)
-                    return Moves.TURN_RIGHT;
-                else if(direct < 0)
-                    return Moves.TURN_LEFT;
-            }
-        }
-        return Moves.WALK;
-    }*/
 
 
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {

@@ -1,8 +1,10 @@
 package Strategies;
 
 import Config.Variables;
+import Entities.Intruder;
 import Enums.Moves;
 import Enums.Rotations;
+import Logic.GameController;
 
 public class Strategy { // Template for making strategies, basic explo is an implemented example
     // this actually decides on moves, as name of method suggests
@@ -10,6 +12,7 @@ public class Strategy { // Template for making strategies, basic explo is an imp
         return Moves.WALK;
     }
 
+    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){ return Moves.WALK;}
     public void printMappings() {
     }
     public void setBooleans(boolean b, boolean c){}

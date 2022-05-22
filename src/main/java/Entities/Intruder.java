@@ -10,6 +10,8 @@ import Config.Variables;
 public class Intruder extends Entity{
     private int x;
     private int y;
+    private int prevX;
+    private int prevY;
     private Rotations currentRotation;
     private final EntityType type;
     private final GameController gm;
@@ -23,6 +25,8 @@ public class Intruder extends Entity{
     public Intruder(EntityType type, GameController gm, Strategy st, Variables vr) {
         this.x = 0;
         this.y = 0;
+        this.prevX = 0;
+        this.prevY = 0;
         this.currentRotation = Rotations.FORWARD;
         this.type = type;
         this.gm = gm;
@@ -46,22 +50,22 @@ public class Intruder extends Entity{
         System.out.println("XY: " + xy[0] + ", " + xy[1]);
         System.out.println("Current Local Rotation before move: " + currentRotation.toString());
 
+        /*Moves move = Moves.STUCK;
 
         if(walked == false ){
             walked = true;
-            return Moves.WALK;
+            move = Moves.WALK;
         }
         else{
-            Moves move = gm.getDirection(this);
+             move = gm.getDirection(this);
 
             System.out.println("MOVE CHOSEN: " + move.toString());
             if(move != Moves.WALK){
                 walked = false;
             }
-            return move;
-        }
-       // return gm.getDirection(this);
+        }*/
 
+        return  st.decideOnMoveIntruder(vision, xy, currentRotation, vr, gm, this);
     }
 
     @Override
@@ -136,193 +140,5 @@ public class Intruder extends Entity{
 
     public void setCurrentRotation(Rotations currentRotation) {
         this.currentRotation = currentRotation;
-    }
-
-    public Rotations translate(Rotations direction, Rotations global) {
-
-        switch (currentRotation) {
-            case FORWARD -> {
-                if (global == Rotations.UP) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.BACK;
-                    }
-                } else if (global == Rotations.DOWN) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.FORWARD;
-                    }
-                } else if (global == Rotations.RIGHT) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.RIGHT;
-                    }
-                } else if (global == Rotations.LEFT) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.LEFT;
-                    }
-                }
-            }
-
-
-            case RIGHT -> {
-                if (global == Rotations.UP) {  //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.LEFT;
-                    }
-                } else if (global == Rotations.DOWN) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.RIGHT;
-                    }
-                } else if (global == Rotations.RIGHT) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.BACK;
-                    }
-                } else if (global == Rotations.LEFT) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.FORWARD;
-                    }
-                }
-
-            }
-
-
-            case LEFT -> {
-                if (global == Rotations.UP) {
-                    if (direction == Rotations.UP) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.RIGHT;
-                    }
-                } else if (global == Rotations.DOWN) {
-                    if (direction == Rotations.UP) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.LEFT;
-                    }
-                } else if (global == Rotations.RIGHT) {
-                    if (direction == Rotations.UP) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.FORWARD;
-                    }
-                } else if (global == Rotations.LEFT) {
-                    if (direction == Rotations.UP) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.BACK;
-                    }
-                }
-
-            }
-
-            case BACK -> {
-                if (global == Rotations.UP) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.FORWARD;
-                    }
-                } else if (global == Rotations.DOWN) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.BACK;
-                    }
-                } else if (global == Rotations.RIGHT) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.RIGHT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.LEFT;
-                    }
-                } else if (global == Rotations.LEFT) { //DONE
-                    if (direction == Rotations.UP) {
-                        return Rotations.LEFT;
-                    } else if (direction == Rotations.RIGHT) {
-                        return Rotations.FORWARD;
-                    } else if (direction == Rotations.LEFT) {
-                        return Rotations.BACK;
-                    } else if (direction == Rotations.DOWN) {
-                        return Rotations.RIGHT;
-                    }
-                }
-            }
-        }
-
-        System.out.println("DID NOT WORK Translate method");
-        return Rotations.FORWARD;
     }
 }
