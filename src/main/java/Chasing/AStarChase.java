@@ -218,12 +218,17 @@ public class AStarChase {
             System.out.println(current);
             grid[current.i][current.j].solution = true;
 
-            while (current.parent != null) {
+            while (current.parent != null && current.parent != grid[startI][startJ]) {
                 System.out.print(" -> " + current.parent);
                 grid[current.parent.i][current.parent.j].solution = true;
                 current = current.parent;
             }
 
+            System.out.println("\n");
+            System.out.println(current);
+            Cell nextMoveCoordinate;
+            nextMoveCoordinate = current;
+            System.out.println(nextMoveCoordinate);
             System.out.println("\n");
 
             for (int i = 0; i < grid.length; i++) {
