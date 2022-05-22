@@ -25,10 +25,12 @@ public class IntruderSt extends Strategy{
     private boolean searching;
     private final Constraints constraints;
     Rotations[] avaliableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
+    Moves[] availableMoves = {Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
     private final ArrayList<Point> visitedPoints;
     private boolean atGoal;
     private boolean walked;
     private int count = 0;
+    private boolean explorationRun;
 
 
     public IntruderSt(){
@@ -39,6 +41,7 @@ public class IntruderSt extends Strategy{
         this.visitedPoints=new ArrayList<>();
         this.atGoal = false;
         this.walked = true;
+        this.explorationRun = false;
 
     }
 
@@ -54,11 +57,9 @@ public class IntruderSt extends Strategy{
         updateExploration(vision, xy, rot);
         //boolean nextIsWall = checkNextMoveWall(vision, xy, rot);
         //if(nextIsWall)
-            //System.out.println("The next is a wall");
+        //System.out.println("The next is a wall");
 
         visitedPoints.add(new Point(xy,new ArrayList<>()));
-
-
 
         Moves move = Moves.STUCK;
         if(searching){
@@ -73,6 +74,36 @@ public class IntruderSt extends Strategy{
                         System.out.println("STUCKKKKK");
                         TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
                         move = root.getMove();
+                        if (move == Moves.TURN_AROUND) {
+                            if (gm.getIntRot() == Rotations.LEFT)
+                                gm.setGlobalRotationIntruder(Rotations.RIGHT);
+                            if (gm.getIntRot() == Rotations.DOWN)
+                                gm.setGlobalRotationIntruder(Rotations.UP);
+                            if (gm.getIntRot() == Rotations.RIGHT)
+                                gm.setGlobalRotationIntruder(Rotations.LEFT);
+                            if (gm.getIntRot() == Rotations.UP)
+                                gm.setGlobalRotationIntruder(Rotations.DOWN);
+                        }
+                        if (move == Moves.TURN_LEFT) {
+                            if (gm.getIntRot() == Rotations.LEFT)
+                                gm.setGlobalRotationIntruder(Rotations.DOWN);
+                            if (gm.getIntRot() == Rotations.DOWN)
+                                gm.setGlobalRotationIntruder(Rotations.RIGHT);
+                            if (gm.getIntRot() == Rotations.RIGHT)
+                                gm.setGlobalRotationIntruder(Rotations.UP);
+                            if (gm.getIntRot() == Rotations.UP)
+                                gm.setGlobalRotationIntruder(Rotations.LEFT);
+                        }
+                        if (move == Moves.TURN_RIGHT) {
+                            if (gm.getIntRot() == Rotations.LEFT)
+                                gm.setGlobalRotationIntruder(Rotations.UP);
+                            if (gm.getIntRot() == Rotations.DOWN)
+                                gm.setGlobalRotationIntruder(Rotations.LEFT);
+                            if (gm.getIntRot() == Rotations.RIGHT)
+                                gm.setGlobalRotationIntruder(Rotations.DOWN);
+                            if (gm.getIntRot() == Rotations.UP)
+                                gm.setGlobalRotationIntruder(Rotations.RIGHT);
+                        }
                         if(move==Moves.STUCK){
                             move = root.tryPathfinding();
                             if(move==Moves.STUCK){
@@ -99,6 +130,7 @@ public class IntruderSt extends Strategy{
         }
         count++;
         return move;
+
     }
 
     public boolean stuck(int[]xy){
@@ -108,6 +140,8 @@ public class IntruderSt extends Strategy{
         }
         return false;
     }
+
+
 
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
         Gson gson = new Gson();
@@ -292,7 +326,55 @@ public class IntruderSt extends Strategy{
     }
 
 
+    /** Random Movement
+     *
+     */
 
+    /*if(explorationRun = true) {
+                            if (move == Moves.WALK) {
+                                if (gm.getIntRot() == Rotations.UP) {
+                                    for (Point p : visitedPoints) {
+                                        nextXY[0] = xy[0];
+                                        nextXY[1] = xy[1] + vr.walkSpeed();
+                                        if (Arrays.equals(p.xy(), nextXY)) {
+                                            Random rand = new Random();
+                                            int randomNum = rand.nextInt(2) + 1;
+                                            move = availableMoves[randomNum];
+                                        }
+                                    }
+                                } else if (gm.getIntRot() == Rotations.DOWN) {
+                                    for (Point p : visitedPoints) {
+                                        nextXY[0] = xy[0];
+                                        nextXY[1] = xy[1] - vr.walkSpeed();
+                                        if (Arrays.equals(p.xy(), nextXY)) {
+                                            Random rand = new Random();
+                                            int randomNum = rand.nextInt(2) + 1;
+                                            move = availableMoves[randomNum];
+                                        }
+                                    }
+                                } else if (gm.getIntRot() == Rotations.RIGHT) {
+                                    for (Point p : visitedPoints) {
+                                        nextXY[0] = xy[0] + vr.walkSpeed();
+                                        nextXY[1] = xy[1];
+                                        if (Arrays.equals(p.xy(), nextXY)) {
+                                            Random rand = new Random();
+                                            int randomNum = rand.nextInt(2) + 1;
+                                            move = availableMoves[randomNum];
+                                        }
+                                    }
+                                } else if (gm.getIntRot() == Rotations.LEFT) {
+                                    for (Point p : visitedPoints) {
+                                        nextXY[0] = xy[0] - vr.walkSpeed();
+                                        nextXY[1] = xy[1];
+                                        if (Arrays.equals(p.xy(), nextXY)) {
+                                            Random rand = new Random();
+                                            int randomNum = rand.nextInt(2) + 1;
+                                            move = availableMoves[randomNum];
+                                        }
+                                    }
+                                }
+                            }
+                        }*/
     /**ASTAR
      */
     //The goal will be in the direction of the target, but not the target itself

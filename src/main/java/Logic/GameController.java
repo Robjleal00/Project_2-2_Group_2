@@ -43,6 +43,7 @@ public class GameController { // self explanatory
     private MainApp graphicsUpdater;
     private Rotations globalRotation;
     private final int MAX_TURNS=1000;
+    private Rotations intruderGlobalRotation;
     /*
     Use this to construct with graphics.
      */
@@ -647,7 +648,12 @@ public class GameController { // self explanatory
     }
     public void addEntity(Entity e, int h, int l, Rotations rot) {
         entities.add(e);
-        this.globalRotation = rot;
+        if(e instanceof Intruder){
+            this.intruderGlobalRotation = rot;
+        }
+        else {
+            this.globalRotation = rot;
+        }
         int[] yx = {h, l};
         entityLocations.put(e, yx);
         entityRotationsHashMap.put(e, rot);
@@ -656,7 +662,7 @@ public class GameController { // self explanatory
     }
 
 
-    public void setGlobalRotation(Rotations globalRotation){this.globalRotation = globalRotation;}
+    public void setGlobalRotationIntruder(Rotations rot){this.intruderGlobalRotation = rot;}
 
     public void addObject(ObjectOnMap o) {
         objects.add(o);
@@ -811,7 +817,7 @@ public class GameController { // self explanatory
         double angle = Math.atan(tanTheta);
         int degAngle = (int) Math.toDegrees(angle);
 
-        System.out.println("Global rotation: " + globalRotation.toString());
+        System.out.println("Global rotation: " + intruderGlobalRotation.toString());
         System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
         System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
         System.out.println("tanTheta: " + tanTheta);
@@ -834,76 +840,79 @@ public class GameController { // self explanatory
         System.out.println("Deg angle : " + degAngle);
 
         if(degAngle > 45 && degAngle < 135) {
-            if(globalRotation == Rotations.UP) {
-                setGlobalRotation(Rotations.DOWN);
+            if(intruderGlobalRotation == Rotations.UP) {
+                setGlobalRotationIntruder(Rotations.DOWN);
                 return Moves.TURN_AROUND;
             }
-            else if(globalRotation == Rotations.DOWN) {
-                setGlobalRotation(Rotations.DOWN);
+            else if(intruderGlobalRotation == Rotations.DOWN) {
+                setGlobalRotationIntruder(Rotations.DOWN);
                 return Moves.WALK;
             }
-            else if(globalRotation == Rotations.RIGHT){
-                setGlobalRotation(Rotations.DOWN);
+            else if(intruderGlobalRotation == Rotations.RIGHT){
+                setGlobalRotationIntruder(Rotations.DOWN);
                 return Moves.TURN_RIGHT;
             }
             else {
-                setGlobalRotation(Rotations.DOWN);
+                setGlobalRotationIntruder(Rotations.DOWN);
                 return Moves.TURN_LEFT;
             }
         }
         else if((degAngle <= 45 && degAngle >= 0) || (degAngle >= 315 && degAngle < 360)) {
-            if(globalRotation == Rotations.UP) {
-                setGlobalRotation(Rotations.RIGHT);
+            if(intruderGlobalRotation == Rotations.UP) {
+                setGlobalRotationIntruder(Rotations.RIGHT);
                 return Moves.TURN_RIGHT;
             }
-            else if(globalRotation == Rotations.DOWN) {
-                setGlobalRotation(Rotations.RIGHT);
+            else if(intruderGlobalRotation == Rotations.DOWN) {
+                setGlobalRotationIntruder(Rotations.RIGHT);
                 return Moves.TURN_LEFT;
             }
-            else if(globalRotation == Rotations.RIGHT) {
-                setGlobalRotation(Rotations.RIGHT);
+            else if(intruderGlobalRotation == Rotations.RIGHT) {
+                setGlobalRotationIntruder(Rotations.RIGHT);
                 return Moves.WALK;
             }
             else {
-                setGlobalRotation(Rotations.RIGHT);
+                setGlobalRotationIntruder(Rotations.RIGHT);
                 return Moves.TURN_AROUND;
             }
         }
         else if(degAngle >225 && degAngle < 315){
-            if(globalRotation == Rotations.UP)
+            if(intruderGlobalRotation == Rotations.UP)
                 return Moves.WALK;
-            else if(globalRotation == Rotations.DOWN) {
-                setGlobalRotation(Rotations.UP);
+            else if(intruderGlobalRotation == Rotations.DOWN) {
+                setGlobalRotationIntruder(Rotations.UP);
                 return Moves.TURN_AROUND;
             }
-            else if(globalRotation == Rotations.RIGHT) {
-                setGlobalRotation(Rotations.UP);
+            else if(intruderGlobalRotation == Rotations.RIGHT) {
+                setGlobalRotationIntruder(Rotations.UP);
                 return Moves.TURN_LEFT;
             }
             else {
-                setGlobalRotation(Rotations.UP);
+                setGlobalRotationIntruder(Rotations.UP);
                 return Moves.TURN_RIGHT;
 
             }
         }
         else{
-            if(globalRotation == Rotations.UP) {
-                setGlobalRotation(Rotations.LEFT);
+            if(intruderGlobalRotation == Rotations.UP) {
+                setGlobalRotationIntruder(Rotations.LEFT);
                 return Moves.TURN_LEFT;
             }
-            else if(globalRotation == Rotations.DOWN) {
-                setGlobalRotation(Rotations.LEFT);
+            else if(intruderGlobalRotation == Rotations.DOWN) {
+                setGlobalRotationIntruder(Rotations.LEFT);
                 return Moves.TURN_RIGHT;
             }
-            else if(globalRotation == Rotations.RIGHT) {
-                setGlobalRotation(Rotations.LEFT);
+            else if(intruderGlobalRotation == Rotations.RIGHT) {
+                setGlobalRotationIntruder(Rotations.LEFT);
                 return Moves.TURN_AROUND;
             }
             else {
-                setGlobalRotation(Rotations.LEFT);
+                setGlobalRotationIntruder(Rotations.LEFT);
                 return Moves.WALK;
             }
         }
 
+    }
+    public Rotations getIntRot() {
+        return intruderGlobalRotation;
     }
 }

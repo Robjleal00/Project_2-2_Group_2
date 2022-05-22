@@ -105,6 +105,7 @@ public class Launcher {
         gm.printMap();
         Goal target = new Goal(1, 6,4);
         gm.addWall(0,5,5,5);
+
         //gm.addWall(0,5,19,5);
         gm.addObject(target);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
