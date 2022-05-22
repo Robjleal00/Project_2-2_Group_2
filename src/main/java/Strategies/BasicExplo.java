@@ -1,5 +1,6 @@
 package Strategies;
 
+import Chasing.AStarChase;
 import Config.Variables;
 import Entities.Explorer;
 import Enums.Moves;
@@ -41,7 +42,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private int lastUsedTeleporter;
     private boolean TELEPORTED=false;
     private ArrayList<Integer> intruderCoordinates;
-
+    private int[] intruderPosition;
     public BasicExplo() {
         this.explored = new HashMap<>();
         this.walls = new HashMap<>();
@@ -69,17 +70,34 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TELEPORTED=false;
         }
         Moves returner = Moves.STUCK;
+        if(chasing)
+        {
+            int[] newxy = coordT.transform(xy);
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] map = makeMap(tr.giveMappings());
+            AStarChase astar = new AStarChase(map, newxy, intruderPosition);
+            //TODO: add movement to astar returns
+            checkVision(map, newxy, rot, vr);
+        }
         if(!exploDone){
-        updateExploration(vision, xy, rot);
-        if(!explored(xy))visitedPoints.add(new Point(xy,new ArrayList<>()));
+            //TODO: modified to account for chasing
+            int[] newxy = coordT.transform(xy);
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] map = makeMap(tr.giveMappings());
+            checkVision(map, newxy, rot, vr);
+
+
+            updateExploration(vision, xy, rot);
+            if(!explored(xy))visitedPoints.add(new Point(xy,new ArrayList<>()));
         int eyeRange=vision.length;
         int check = eyeRange-2;
         if(firstPhase) {
-            if (!Objects.equals(vision[check][1], " ")) {
-                System.out.println("FOUND A WALL");
-                firstPhase = false;
-            } else return Moves.WALK;
-        }
+                if (!Objects.equals(vision[check][1], " ")) {
+                    System.out.println("FOUND A WALL");
+                    firstPhase = false;
+                }
+                else return Moves.WALK;
+            }
         }
         if(!firstPhase&&!exploDone) {
             TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
@@ -94,7 +112,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         if(exploDone && !patrolling) {
             patrolling=true;
-            chasing = true;
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             String[][] secondMap=tr.giveMappings();
@@ -125,8 +142,17 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
             }
         }
-        if(chasing && exploDone){
+        if(chasing && !exploDone)
+        {
+            int[] newxy = coordT.transform(xy);
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] map = makeMap(tr.giveMappings());
 
+        }
+        if(chasing && exploDone){
+            int[] newxy = coordT.transform(xy);
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
+            String[][] map = makeMap(tr.giveMappings());
         }
         /*if(patrolling&&exploDone){
             int[] newxy = coordT.transform(xy);
@@ -190,6 +216,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 switch (rot) {
                     case FORWARD -> {
                         // THIS IS WHERE I  WOULD THINK THE CONDITIONS FOR CHECKING WHETHER WE SHOULD IMMEDIATELY CHASE OR NOT SHOULD GO
+
                         if (!Objects.equals(lookingAt, "I")) {
                             if(lookingAt.contains("E")){
                                 if(i!=0){
@@ -227,7 +254,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                                     }
                                 }
                             }
-                        } else {
+                        }
+                        // ELSE SAVES LOCATION OF INTRUDER
+                        else {
                             // Remember his location and execute Astar
                             intruderCoordinates.add(currentX);
                             intruderCoordinates.add(currentY);
@@ -381,6 +410,53 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>() {
         }.getType();
         return gson.fromJson(jsonString, type);
+    }
+
+    //Checks vision for if there is an intruder in sight
+    public void checkVision(String[][] map, int[] xy, Rotations rot, Variables vr)
+    {
+        int[] intruderPosition = new int[2];
+        int range = vr.eyeRange();
+        switch(rot){
+            case BACK -> {
+                for(int i = xy[1] - 1; i < xy[1] + 1; i++){
+                    for(int j = xy[0]; j < xy[0] + range; j++){
+                        if(map[i][j].contains("I"))
+                        {
+                            chasing = true;
+                            intruderPosition[0] = i;
+                            intruderPosition[1] = j;
+                        }
+                    }
+                }
+            }
+            case FORWARD -> {
+                for(int i = xy[1] - 1; i < xy[1] + 1; i++){
+                    for(int j = xy[0] - range; j < xy[0] ; j++){
+                        chasing = true;
+                        intruderPosition[0] = i;
+                        intruderPosition[1] = j;
+                    }
+                }
+            }
+            case LEFT -> {
+                for(int i = xy[1] - range; i < xy[1]; i++){
+                    for(int j = xy[0] - 1; j < xy[0] + 1; j++){
+                        chasing = true;
+                        intruderPosition[0] = i;
+                        intruderPosition[1] = j;                    }
+                }
+            }
+            case RIGHT ->{
+                for(int i = xy[1]; i < xy[1] + range; i++){
+                    for(int j = xy[0] - 1; j < xy[0] + 1; j++){
+                        chasing = true;
+                        intruderPosition[0] = i;
+                        intruderPosition[1] = j;
+                    }
+                }
+            }
+        }
     }
 
     @Override

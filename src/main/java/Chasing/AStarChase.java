@@ -26,6 +26,33 @@ public class AStarChase {
     // the end cell
     private int endI, endJ;
 
+    public AStarChase(String[][] map, int[] xy, int[] intruderPosition)
+    {
+        createScoreMap(map);
+        startCell(xy[0],xy[1]);
+        endCell(intruderPosition[0], intruderPosition[1]);
+    }
+
+    public void createScoreMap(String[][] map)
+    {
+        Cell[][] scoreMap = new Cell[map.length][map[0].length];
+        for(int i = 0; i < map.length; i++)
+        {
+            for(int j = 0; j < map.length; j++)
+            {
+                if(map[i][j].contains("W"))
+                {
+                    addBlockOnCell(i,j);
+                }
+                else
+                {
+                    scoreMap[i][j] = new Cell(i,j);
+                }
+            }
+        }
+        process();
+    }
+
     public AStarChase(int width, int height, int si, int sj, int ei, int ej, int[][] blocks) {
         grid = new Cell[width][height];
         closedCells = new boolean[width][height];
