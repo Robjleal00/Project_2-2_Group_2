@@ -106,10 +106,12 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             xy=ct.transform(xy);
 
             //Attempt at debugging #1, invert rotation if agent is facing forward or backwards
+
             if(rot.equals(Rotations.FORWARD) || rot.equals(Rotations.BACK))
             {
                 rot = rot.turnAround();
             }
+             
             this.agent.nowPatrol(xy);
             System.out.println("EXPLO DONE");
             //String[][] agentPrivateMap = makeMap(map);

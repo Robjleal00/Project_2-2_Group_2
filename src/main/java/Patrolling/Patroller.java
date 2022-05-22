@@ -73,6 +73,7 @@ public class Patroller {
         {
             int[][] deepclone=createNewLastSeen(lastSeen);
             ArrayList<Integer> childValues = new ArrayList<Integer>();
+            //TODO: availableMoves is for example TURN_LEFT, it should then accordingly change rotations
             for(Moves availableMove : availableMoves)
             {
                 childValues.add(dfsRecursive(depth-1,availableMove,xy.clone(),rot,deepclone));
@@ -201,7 +202,8 @@ public class Patroller {
                         return teleporters.get(xyT);
                     }
                 }
-                case DOWN -> {
+                //TODO: CHANGED DOWN TO BACK
+                case BACK -> {
                     if(xyT[0]==xy[0]+1&&xyT[1]==xy[1]){
                         return teleporters.get(xyT);
                     }
@@ -349,7 +351,8 @@ public class Patroller {
                 }
                 return true;
             }
-            case DOWN -> {
+            //TODO: CHANGED BACK/DOWN, FORWARD/UP
+            case BACK -> {
                 int length=target[0]-pos[0];
                 for(int i=1;i<=length;i++){
                     int[] nextTarget={pos[0]+i,pos[1]};
@@ -357,7 +360,7 @@ public class Patroller {
                 }
                 return true;
             }
-            case UP -> {
+            case FORWARD -> {
                 int length=pos[0]-target[0];
                 for(int i=1;i<=length;i++){
                     int[] nextTarget={pos[0]-i,pos[1]};
