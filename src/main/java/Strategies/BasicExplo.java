@@ -35,7 +35,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean patrolling;
     boolean chasing;
     boolean exploDone;
-    boolean seenIntruder;
     private Explorer agent;
     private ArrayList<TreeNode> returnedMoves;
     private CoordinateTransformer coordT = null;
@@ -224,6 +223,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             // Remember his location and execute Astar
                             intruderCoordinates.add(currentX);
                             intruderCoordinates.add(currentY);
+
                         }
 
                     }
@@ -269,6 +269,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             // Remember his location and execute AStar
                             intruderCoordinates.add(currentX);
                             intruderCoordinates.add(currentY);
+
                         }
 
                     }
