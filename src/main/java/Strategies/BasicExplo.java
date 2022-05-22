@@ -76,9 +76,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
             AStarChase astar = new AStarChase(map, newxy, intruderPosition);
-            //TODO: add movement to astar returns
+            returner = astar.getMove(newxy, astar.getNextMoveCoordinate(), rot);
             checkVision(map, newxy, rot, vr);
+
+            //TODO: want to avoid getting into the other statements, so I added a return here
+            return returner;
         }
+
         if(!exploDone){
             //TODO: modified to account for chasing
             int[] newxy = coordT.transform(xy);

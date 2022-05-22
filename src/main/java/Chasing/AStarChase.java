@@ -178,6 +178,10 @@ public class AStarChase {
     }
 
 
+    public Cell getNextMoveCoordinate()
+    {
+        return getNextMoveCoordinate();
+    }
 
     public void display() {
         System.out.println("Grid :");
