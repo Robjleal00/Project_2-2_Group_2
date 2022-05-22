@@ -38,7 +38,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean exploDone;
     private Explorer agent;
     private ArrayList<TreeNode> returnedMoves;
-    private CoordinateTransformer coordT = null;
+    private CoordinateTransformer coordT;
     private int lastUsedTeleporter;
     private boolean TELEPORTED=false;
     private ArrayList<Integer> intruderCoordinates;
@@ -53,6 +53,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         this.exploDone=false;
         this.teleporterGoal=new HashMap<>();
         this.teleporterAll=new HashMap<>();
+
     }
     @Override
     public void setBooleans(boolean p, boolean c){
@@ -72,9 +73,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         Moves returner = Moves.STUCK;
         if(chasing)
         {
-            int[] newxy = coordT.transform(xy);
-            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
+            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
             String[][] map = makeMap(tr.giveMappings());
+            String[][] secondMap=tr.giveMappings();
+            int fixY=Integer.parseInt(secondMap[0][1]);
+            int fixX=Integer.parseInt(secondMap[0][2]);
+            CoordinateTransformer ct=new CoordinateTransformer(fixX, fixY);
+            this.coordT=ct;
+            agent.setCT(ct);
+            int[] newxy = coordT.transform(xy);
             AStarChase astar = new AStarChase(map, newxy, intruderPosition);
             returner = astar.getMove(newxy, astar.getNextMoveCoordinate(), rot);
             checkVision(map, newxy, rot, vr);
