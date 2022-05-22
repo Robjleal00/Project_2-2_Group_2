@@ -212,16 +212,16 @@ public class MainApp extends Application {
     }
     public void startGame() throws InterruptedException {
         Launcher launcher = new Launcher();
-       // GameController gm = launcher.makeGame(filePath,this);
+        // GameController gm = launcher.makeGame(filePath,this);
         GameController gm = launcher.giveTest(this);
-            Task<Void> task = new Task<>(){
-                @Override
-                protected Void call() throws InterruptedException {
-                    gm.init();
-                    return null;
-                }
-            };
-         new Thread(task).start();
+        Task<Void> task = new Task<>(){
+            @Override
+            protected Void call() throws InterruptedException {
+                gm.init();
+                return null;
+            }
+        };
+        new Thread(task).start();
 
 
 
