@@ -101,7 +101,7 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        Variables vr = new Variables(1,2);
+        Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
 

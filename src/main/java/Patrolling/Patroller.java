@@ -1,8 +1,10 @@
 package Patrolling;
 
+import Config.Config;
 import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
+import Logic.GameController;
 import ObjectsOnMap.Teleporter;
 import PathMaking.Point;
 import Strategies.Constraints;
@@ -28,7 +30,10 @@ public class Patroller {
     private final int[][] lastSeen;
     private final int mapLength;
     private final int mapHeight;
-
+    boolean DEBUG_VISION;
+    boolean DEBUG_LASTSEEN_ALL;
+    boolean DEBUG_DECISION;
+    boolean PRINT_ALL_MAPS;
     public Patroller(int []xy,Rotations rot,Variables vr,String[][] map,HashMap<int[],int[]>teleporters,int[][]lastSeen){
         this.xy = xy;
         this.rot=rot;
@@ -39,15 +44,18 @@ public class Patroller {
         this.mapHeight=map.length;
         this.mapLength=map[0].length;
         this.walkSpeed=vr.walkSpeed();
+        Config c = new Config();
+        this.DEBUG_DECISION=c.PATROLLING_DECISION;
+        this.DEBUG_VISION = c.PATROLLING_VISION;
+        this.PRINT_ALL_MAPS = c.PATROLLING_PRINT_ALL;
+        this.DEBUG_LASTSEEN_ALL = c.PATROLLING_LASTSEEN;
+        System.out.println("HEIGHT + "+ mapHeight+"    LENGTH + "+mapLength);
     }
 
 
-
-    //TODO: Teleporter is stored in BasicExplo, but the HM coordinates need to be transformed into the Array vals --ASHA
     //Node method
-    private int dfsRecursive(int depth,Moves move,int[] xy,Rotations rot,int[][]lastSeen)
-    {
-        int ownValue;        //execute the move
+    private int dfsRecursive(int depth,Moves move,int[] xy,Rotations rot,int[][]lastSeen) {
+        int ownValue;
         switch(move){
             case TURN_AROUND -> {
                 rot=rot.turnAround();
@@ -67,6 +75,11 @@ public class Patroller {
             }
 
         }
+        String[][] vision = simulateVision(rot,xy,vr);
+        System.out.println("CURRENT MOVE +"+move);
+        GameController printer = new GameController();
+        printer.printArray(vision);
+        updateLastSeen(vision,rot,xy);
         ownValue=getValue(lastSeen,xy,rot);
         //System.out.println("MOVE: "+move.toString()+" HAS VALUE: "+ownValue);
         if(depth != 0)
@@ -89,8 +102,7 @@ public class Patroller {
     }
 
     //Root method
-    public Moves dfs(int maxDepth)
-    {
+    public Moves dfs(int maxDepth) {
         incrementLastSeen(lastSeen);
         ArrayList<Integer> childValues = new ArrayList<Integer>();
         int[][] deepclone=createNewLastSeen(lastSeen);
@@ -98,7 +110,19 @@ public class Patroller {
         {
             childValues.add(dfsRecursive(maxDepth,availableMove,xy.clone(),rot,deepclone));
         }
-
+        if(DEBUG_DECISION){
+            System.out.println("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-");
+            System.out.println("DEBUG OF DECISIONS IN PATROLLING");
+            System.out.println(childValues);
+            System.out.println("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-");
+        }
+        if(DEBUG_LASTSEEN_ALL){
+            GameController printer = new GameController();
+            System.out.println("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-");
+            System.out.println("DEBUG OF LASTSEEN ARRAY IN PATROLLING");
+            printer.printIntArray(lastSeen);
+            System.out.println("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-");
+        }
         int maxValue= max(childValues);
         int index = childValues.indexOf(maxValue);
         System.out.println(availableMoves[index].toString()+" with INDEX:"+index);
@@ -109,8 +133,9 @@ public class Patroller {
 
     //Returns the SUM of all seen squares, MUST be called before setSeen
     // Additionally now it also sets all seen square values to 0
-    public int getValue(int[][] lastSeen, int[] xy, Rotations rotation)
-    {
+    public int getValue(int[][] lastSeen, int[] xy, Rotations rotation) {
+        int x=xy[0];
+        int y = xy[1];
         int value = 0;
         int range = vr.eyeRange();
         switch(rotation){
@@ -210,15 +235,84 @@ public class Patroller {
                 }
             }
         }
-        int a =-1;
-        int []b={a,a};
-        return b;
+        return xy;
     }
+    private String[][] simulateVision(Rotations rot, int[] xy,Variables vr){
+        if(DEBUG_VISION){
+            System.out.println("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-");
+            System.out.println("DEBUG OF VISION");
+            System.out.println("MY CURRENT X is "+xy[0]);
+            System.out.println("MY CURRENT Y is "+xy[1]);
+            System.out.println("I AM LOOKING "+rot);
+            System.out.println("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-");
+        }
+        int x=xy[0];
+        int y=xy[1];
+        int range = vr.eyeRange();
+        System.out.println(range);
+        String[][] returner = new String[range][3];
+        for (int i=-1;i<2;i++){ // sideways
+            for (int j=0;j<range;j++){ // upfront
+                int sX = range-1-j;
+                int sY=i+1;
+                switch(rot){
+                    case DOWN -> {
+                        returner[sX][sY] = map[x+j][y+i];
+                    }
+                    case FORWARD -> {
+                        returner[sX][sY] = map[x-j][y+i];
+                    }
+                    case RIGHT -> {
+                        returner[sX][sY] = map[x+i][y+i];
+                    }
+                    case LEFT -> {
+                        returner[sX][sY] = map[x+i][y-i];
+                    }
+                }
+            }
+        }
+        return returner;
+    }
+    private void updateLastSeen(String[][] vision,Rotations rot,int[]xy){
+        int eyeRange = vision.length;
+        int x = xy[0];
+        int y = xy[1];
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+                switch (rot) {
+                    case FORWARD -> { //walls.get(currentX + j).add(currentY + i);
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                            lastSeen[x+i][y+j]=0;
+                        }
+
+                    }
+                    case BACK -> {
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                            lastSeen[x-i][y+j]=0;
+                        }
+
+                    }
+                    case LEFT -> {
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                            lastSeen[x+j][y-i]=0;
+                        }
+
+                    }
+                    case RIGHT -> {
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                            lastSeen[x+j][y+i]=0;
+                        }
+
+                    }
 
 
-    // Copied from TreeNode/TreeRoot
-
-    //TODO: Remake howMuchCanIWalk and noWallsInTheWay -- ASHA
+                }
+            }
+        }
+    }
     private int[] walk(int[] xy, Rotations rot) {
         switch (rot) {
             case FORWARD -> { //x decrease
@@ -372,7 +466,7 @@ public class Patroller {
         return false;
     }
     private boolean canBePutThere(int []target) {
-        if(target[0] > -1 &&target[0] < mapLength && target[1] > -1 && target[1] < mapHeight)return Objects.equals(map[target[1]][target[0]], " ");
+        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength)return Objects.equals(map[target[0]][target[1]], " ");
         else return false;
     }
     private void incrementLastSeen(int[][] lastSeen)
@@ -381,7 +475,7 @@ public class Patroller {
         {
             for(int j = 0; j < lastSeen[0]. length; j++)
             {
-                lastSeen[i][j]++;
+                if(lastSeen[i][j]!=-1) lastSeen[i][j]++;
             }
         }
     }

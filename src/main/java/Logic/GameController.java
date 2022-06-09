@@ -232,7 +232,13 @@ public class GameController { // self explanatory
     public void printMap() {
         printArray(map);
     }
-
+    public void printIntArray(int[][] thing){
+        Arrays.stream(thing).forEach(this::printIntRow);
+    }
+    public void printIntRow(int[]row){
+        String[] array = Arrays.stream(row).mapToObj(String::valueOf).toArray(String[]::new);
+        printRow(array);
+    }
     public void printArray(String[][] thing) {
         Arrays.stream(thing).forEach(this::printRow);
     }
@@ -699,10 +705,6 @@ public class GameController { // self explanatory
         String symbol = o.getSymbol();
         putOnMap(o.getSymbol(), o.getXy());
 
-    }
-
-    public int getEntitiesSize() {
-        return entities.size();
     }
 
     public void makeBorders(int length, int height) {

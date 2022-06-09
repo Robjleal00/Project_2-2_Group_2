@@ -172,8 +172,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
 
         if(setup){
-            Patroller patroller = new Patroller(xy,rot,vr,patrollingMap,teleporterAll,lastSeen);
 
+            Patroller patroller = new Patroller(xy,rot,vr,patrollingMap,teleporterAll,lastSeen);
+            updateLastSeen(vision, rot, xy);
             returner = patroller.dfs(1);
             // NEVER CHANGES DIRECTION: ALWAYS FACING BACK
 
@@ -190,7 +191,46 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         return returner;
     }
+    private void updateLastSeen(String[][] vision,Rotations rot,int[]xy){
+        int eyeRange = vision.length;
+        int x = xy[0];
+        int y = xy[1];
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+                switch (rot) {
+                    case FORWARD -> { //walls.get(currentX + j).add(currentY + i);
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                        lastSeen[x+i][y+j]=0;
+                        }
 
+                    }
+                    case BACK -> {
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                            lastSeen[x-i][y+j]=0;
+                        }
+
+                    }
+                    case LEFT -> {
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                            lastSeen[x+j][y-i]=0;
+                        }
+
+                    }
+                    case RIGHT -> {
+                        if(!lookingAt.contains("W") && !lookingAt.contains("X")){
+                            lastSeen[x+j][y+i]=0;
+                        }
+
+                    }
+
+
+                }
+            }
+        }
+    }
     @Override
     public void teleported() {
         TELEPORTED = true;
@@ -220,7 +260,6 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         int eyeRange = vision.length;
         int currentX = xy[0];
         int currentY = xy[1];
-        System.out.println(objects);
         for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
                 int h = eyeRange - (i + 1);
@@ -607,8 +646,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         for (int i = 0; i < individualMap.length; i++) {
             for (int j = 0; j < individualMap[0].length; j++) {
                 // Since a wall isn't really worth visiting, I just assigned an arbitrary negative number
-                if (individualMap[i][j].contains("W")) {
-                    lastSeen[i][j] = 10;
+                if (individualMap[i][j].contains("W")||individualMap[i][j].contains("X")) {
+                    lastSeen[i][j] = -1;
 
                 } else {
                     // Make the security guard wish to check out everything
@@ -620,247 +659,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         return lastSeen;
     }
 
-    /**
-     * Question: Will this method be called once or reiteratively?
-     *
-     * @return
-     */
-    public Moves getPatrolPath(int[] targetPosition, Rotations rotation, int[] agentPosition) {
-        Moves nextMove = null;
-        // HorizontalDifference < 0 : left
-        //                      > 0 : right
-        // VDiff < 0 : Up
-        //       > 0 : Down
-        int horizontalDifference = targetPosition[0] - agentPosition[0];
-        int verticalDifference = targetPosition[1] - agentPosition[1];
-        switch (rotation) {
-            case LEFT -> {
-                return Moves.TURN_AROUND;
-            }
-            case RIGHT -> {
-                return Moves.WALK;
-            }
-            case FORWARD -> {
-                return Moves.TURN_RIGHT;
-            }
-            case BACK -> {
-                return Moves.TURN_LEFT;
-            }
-        }
-
-        //move to right
-        if (horizontalDifference > 0) {
-            if (verticalDifference > 0) {//move up
-                switch (rotation) {
-                    case BACK -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case FORWARD -> {
-                        return Moves.WALK;
-                    }
-                    case LEFT -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case RIGHT -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            } else if (verticalDifference < 0) { //move down
-                switch (rotation) {
-                    case FORWARD -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case BACK -> {
-                        return Moves.WALK;
-                    }
-                    case RIGHT -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case LEFT -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            } else if (verticalDifference == 0) { //go right
-                switch (rotation) {
-                    case LEFT -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case RIGHT -> {
-                        return Moves.WALK;
-                    }
-                    case FORWARD -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case BACK -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            }
-        }
-        //Move to left
-        else if (horizontalDifference < 0) {
-            if (verticalDifference > 0) { //move up
-                switch (rotation) {
-                    case BACK -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case FORWARD -> {
-                        return Moves.WALK;
-                    }
-                    case LEFT -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case RIGHT -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            } else if (verticalDifference < 0) { //move down
-                switch (rotation) {
-                    case FORWARD -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case BACK -> {
-                        return Moves.WALK;
-                    }
-                    case RIGHT -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case LEFT -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            } else if (verticalDifference == 0) { //go left
-                switch (rotation) {
-                    case RIGHT -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case LEFT -> {
-                        return Moves.WALK;
-                    }
-                    case BACK -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case FORWARD -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            }
-        } else if (horizontalDifference == 0) {
-            if (verticalDifference > 0) { //move down
-                switch (rotation) {
-                    case FORWARD -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case BACK -> {
-                        return Moves.WALK;
-                    }
-                    case RIGHT -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case LEFT -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            } else if (verticalDifference < 0) { //move up
-                switch (rotation) {
-                    case FORWARD -> {
-                        return Moves.TURN_AROUND;
-                    }
-                    case BACK -> {
-                        return Moves.WALK;
-                    }
-                    case RIGHT -> {
-                        return Moves.TURN_RIGHT;
-                    }
-                    case LEFT -> {
-                        return Moves.TURN_LEFT;
-                    }
-                }
-            }
-        }
-        return nextMove; //change this return
-    }
-
-    /**
-     * @param lastSeen
-     * @param vr       represents how far the agent can see
-     * @param xy       The agent's position on the int[][] map decomposed
-     *                 <p>
-     *                 <p>
-     *                 Question: since lastSeen is respective to each guard, does that mean this method type should be void
-     *                 or return the lastSeen 2D Array with the modified values?
-     */
-    public void setSeen(int[][] lastSeen, Variables vr, int[] xy, Rotations rotation) {
-        int range = vr.eyeRange();
-        //Agent sees a block to its left and its right with a range of 5 units
-        switch (rotation) {
-            case BACK -> {
-                for (int i = xy[0] - 1; i < xy[0] + 1; i++) {
-                    for (int j = xy[1]; j < xy[1] + range; j++) {
-                        lastSeen[i][j] = 0;
-                    }
-                }
-            }
-            case FORWARD -> {
-                for (int i = xy[0] - 1; i < xy[0] + 1; i++) {
-                    for (int j = xy[1] - range; j < xy[1]; j++) {
-                        lastSeen[i][j] = 0;
-                    }
-
-                }
-            }
-            case LEFT -> {
-                for (int i = xy[0] - range; i < xy[0]; i++) {
-                    for (int j = xy[1] - 1; j < xy[1] + 1; j++) {
-                        lastSeen[i][j] = 0;
-                    }
-                }
-            }
-            case RIGHT -> {
-                for (int i = xy[0]; i < xy[0] + range; i++) {
-                    for (int j = xy[1] - 1; j < xy[1] + 1; j++) {
-                        lastSeen[i][j] = 0;
-                    }
-                }
-            }
-        }
 
 
-    }
 
 
-    public int[] getMaxSquare(int[][] lastSeen, int[] xy) {
-        int maxValue = 0;
-        int x = 0;
-        int y = 0;
-        for (int i = 0; i < lastSeen.length; i++) {
-            for (int j = 0; j < lastSeen[0].length; j++) {
-                if (lastSeen[i][j] > maxValue) {
-                    maxValue = lastSeen[i][j];
-                    x = i;
-                    xy[0] = x;
-                    y = j;
-                    xy[1] = y;
-                }
-            }
-        }
-        return xy;
-    }
 
 
-    //--------------- Start of DFS ------------------
 
-    public int depthFirstSearch(int depth) {
-        int maxValue = 0;
-        if (depth == 0) {
-            return maxValue;
-        }
-        //If depth is not 0 we create more children and explore them
-        else {
-            depthFirstSearch(depth - 1);
-        }
-        return maxValue;
-    }
 
 
 }
