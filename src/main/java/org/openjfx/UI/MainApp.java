@@ -50,7 +50,14 @@ public class MainApp extends Application {
     Label game;
     VBox launchPane;
 
-    protected Image surveillanceIMG1, triangleUP, triangleDOWN, triangleLEFT, triangleRIGHT, teleport_icon, champagne_toast;
+    // AGENT : RED TRIANGLE
+    protected Image surveillanceIMG1, agentUP, agentDOWN, agentLEFT, agentRIGHT;
+    // INTRUDER : ORANGE TRIANGLE
+    protected Image intruderUP, intruderDOWN, intruderLEFT, intruderRIGHT;
+    // GUARD: BLUE TRIANGLE
+    protected Image guardUP, guardDOWN, guardRIGHT, guardLEFT;
+    protected Image teleport_icon;
+
 
     File fileMap;
     String filePath;
@@ -93,30 +100,38 @@ public class MainApp extends Application {
         ImageView imageView1 = new ImageView();
         imageView1.setImage(surveillanceIMG1);
 
-        FileInputStream input_stream2 = new FileInputStream("src/main/java/Images/TriangleDOWN.png");
-        triangleDOWN = new Image(input_stream2);
-        //ImageView agentDOWN = new ImageView();
-        //agentDOWN.setImage(triangleDOWN);
+        // LOAD IMAGES FOR AGENT: RED TRIANGLE (BASIC EXPLO)
+        FileInputStream input_stream2 = new FileInputStream("src/main/java/Images/agentDOWN.png");
+        agentDOWN = new Image(input_stream2);
+        FileInputStream input_stream3 = new FileInputStream("src/main/java/Images/agentUP.png");
+        agentUP = new Image(input_stream3);
+        FileInputStream input_stream4 = new FileInputStream("src/main/java/Images/agentLEFT.png");
+        agentLEFT = new Image(input_stream4);
+        FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/agentRIGHT.png");
+        agentRIGHT = new Image(input_stream5);
 
-        FileInputStream input_stream3 = new FileInputStream("src/main/java/Images/TriangleUP.png");
-        triangleUP = new Image(input_stream3);
-        //ImageView agentUP = new ImageView();
-        //agentUP.setImage(triangleUP);
+        // LOAD IMAGES FOR INTRUDER: ORANGE TRIANGLE
+        FileInputStream input_stream6 = new FileInputStream("src/main/java/Images/intruderDOWN.png");
+        intruderDOWN = new Image(input_stream6);
+        FileInputStream input_stream7 = new FileInputStream("src/main/java/Images/intruderUP.png");
+        intruderUP = new Image(input_stream7);
+        FileInputStream input_stream8 = new FileInputStream("src/main/java/Images/intruderLEFT.png");
+        intruderLEFT = new Image(input_stream8);
+        FileInputStream input_stream9 = new FileInputStream("src/main/java/Images/intruderRIGHT.png");
+        intruderRIGHT = new Image(input_stream9);
 
-        FileInputStream input_stream4 = new FileInputStream("src/main/java/Images/TriangleLEFT.png");
-        triangleLEFT = new Image(input_stream4);
-        //ImageView agentLEFT = new ImageView();
-        //agentLEFT.setImage(triangleLEFT);
+        // LOAD IMAGES FOR GUARD: BLUE TRIANGLE
+        FileInputStream input_stream10 = new FileInputStream("src/main/java/Images/guardDOWN.png");
+        guardDOWN = new Image(input_stream10);
+        FileInputStream input_stream11 = new FileInputStream("src/main/java/Images/guardUP.png");
+        guardUP = new Image(input_stream11);
+        FileInputStream input_stream12 = new FileInputStream("src/main/java/Images/guardLEFT.png");
+        guardLEFT = new Image(input_stream12);
+        FileInputStream input_stream13 = new FileInputStream("src/main/java/Images/guardRIGHT.png");
+        guardRIGHT = new Image(input_stream13);
 
-        FileInputStream input_stream5 = new FileInputStream("src/main/java/Images/TriangleRIGHT.png");
-        triangleRIGHT = new Image(input_stream5);
-        FileInputStream input_stream6 = new FileInputStream("src/main/java/Images/teleport_icon.png");
-        teleport_icon = new Image(input_stream6);
-        //ImageView agentRIGHT = new ImageView();
-        //agentRIGHT.setImage(triangleRIGHT);
-        FileInputStream input_stream7 = new FileInputStream("src/main/java/Images/champagne-toast.png");
-        champagne_toast = new Image(input_stream7);
-
+        FileInputStream input_stream14 = new FileInputStream("src/main/java/Images/teleport_icon.png");
+        teleport_icon = new Image(input_stream14);
 
 
         chooseMap = new Button("Select a map");
@@ -198,16 +213,16 @@ public class MainApp extends Application {
     }
     public void startGame() throws InterruptedException {
         Launcher launcher = new Launcher();
-       // GameController gm = launcher.makeGame(filePath,this);
+        // GameController gm = launcher.makeGame(filePath,this);
         GameController gm = launcher.giveTest(this);
-            Task<Void> task = new Task<>(){
-                @Override
-                protected Void call() throws InterruptedException {
-                    gm.init();
-                    return null;
-                }
-            };
-         new Thread(task).start();
+        Task<Void> task = new Task<>(){
+            @Override
+            protected Void call() throws InterruptedException {
+                gm.init();
+                return null;
+            }
+        };
+        new Thread(task).start();
 
 
 
@@ -280,20 +295,48 @@ public class MainApp extends Application {
                 if (map[j][i].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
-
+                //ADD THE ICONS FOR AGENT INTO GUI
                 if (map[j][i].contains("E^")) {
-                    rectArray[i][j].setFill(new ImagePattern(triangleUP));
+                    rectArray[i][j].setFill(new ImagePattern(agentUP));
                 }
                 if (map[j][i].contains("E>")) {
-                    rectArray[i][j].setFill(new ImagePattern(triangleRIGHT));
+                    rectArray[i][j].setFill(new ImagePattern(agentRIGHT));
                 }
                 if (map[j][i].contains("E<")) {
-                    rectArray[i][j].setFill(new ImagePattern(triangleLEFT));
+                    rectArray[i][j].setFill(new ImagePattern(agentLEFT));
                 }
                 if (map[j][i].contains("Ed")) {
-                    rectArray[i][j].setFill(new ImagePattern(triangleDOWN));
-
+                    rectArray[i][j].setFill(new ImagePattern(agentDOWN));
                 }
+
+                //ADD THE ICONS FOR GUARD INTO GUI
+                if (map[j][i].contains("G^")) {
+                    rectArray[i][j].setFill(new ImagePattern(guardUP));
+                }
+                if (map[j][i].contains("G>")) {
+                    rectArray[i][j].setFill(new ImagePattern(guardRIGHT));
+                }
+                if (map[j][i].contains("G<")) {
+                    rectArray[i][j].setFill(new ImagePattern(guardLEFT));
+                }
+                if (map[j][i].contains("Gd")) {
+                    rectArray[i][j].setFill(new ImagePattern(guardDOWN));
+                }
+
+                //ADD THE ICONS FOR INTRUDER INTO GUI
+                if (map[j][i].contains("I^")) {
+                    rectArray[i][j].setFill(new ImagePattern(intruderUP));
+                }
+                if (map[j][i].contains("I>")) {
+                    rectArray[i][j].setFill(new ImagePattern(intruderRIGHT));
+                }
+                if (map[j][i].contains("I<")) {
+                    rectArray[i][j].setFill(new ImagePattern(intruderLEFT));
+                }
+                if (map[j][i].contains("Id")) {
+                    rectArray[i][j].setFill(new ImagePattern(intruderDOWN));
+                }
+
                 if (map[j][i].contains("T")) {
                     rectArray[i][j].setFill(new ImagePattern(teleport_icon));
                 }
