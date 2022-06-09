@@ -5,6 +5,7 @@ import Enums.EntityType;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
+import Patrolling.CoordinateTransformer;
 import Strategies.Strategy;
 
 public class Explorer extends Entity { // example of an implemented entity
@@ -15,6 +16,8 @@ public class Explorer extends Entity { // example of an implemented entity
     private final GameController gm;
     private final Strategy st;
     private final Variables vr;
+    boolean patrolling=false;
+    private CoordinateTransformer ct=null;
 
     public Explorer(EntityType type, GameController gm, Strategy st, Variables vr) {
         this.currentRotation = Rotations.FORWARD;
@@ -24,8 +27,11 @@ public class Explorer extends Entity { // example of an implemented entity
         this.gm = gm;
         this.st = st;
         this.vr=vr;
+        st.setAgent(this);
     }
-
+    public void setCT(CoordinateTransformer ct){
+        this.ct=ct;
+    }
     @Override
     public EntityType getType() {
         return type;
@@ -47,14 +53,30 @@ public class Explorer extends Entity { // example of an implemented entity
             case RIGHT -> setCurrentRotation(Rotations.FORWARD);
         }
     }
+    public void nowPatrol(int []xy){
+        this.x=xy[0];
+        this.y=xy[1];
 
+        patrolling=true;
+        if(currentRotation==Rotations.BACK || currentRotation==Rotations.FORWARD) currentRotation=currentRotation.turnAround();
+    }
     @Override
     public void walk(int d) {
-        switch (currentRotation) {
-            case FORWARD -> y+=d;
-            case BACK -> y-=d;
-            case RIGHT -> x+=d;
-            case LEFT -> x-=d;
+        if (!patrolling) {
+            switch (currentRotation) {
+                case FORWARD -> y += d;
+                case BACK -> y -= d;
+                case RIGHT -> x += d;
+                case LEFT -> x -= d;
+            }
+        }
+        else{
+            switch (currentRotation) {
+                case FORWARD -> x -= d;
+                case BACK -> x += d;
+                case RIGHT -> y += d;
+                case LEFT -> y -= d;
+            }
         }
     }
 
@@ -100,8 +122,17 @@ public class Explorer extends Entity { // example of an implemented entity
 
     @Override
     public void setPosition(int[] xy) {
-        this.x=xy[0];
-        this.y=xy[1];
+        if(ct==null) {
+            this.x = xy[0];
+            this.y = xy[1];
+            st.teleported();
+        }
+        else{
+            int [] xyFix = ct.transform(xy);
+            this.x=xyFix[0];
+            this.y=xyFix[1];
+            st.teleported();
+        }
     }
 
     public Rotations getCurrentRotation() {
