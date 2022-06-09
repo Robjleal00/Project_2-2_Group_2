@@ -2,21 +2,27 @@ package Launcher;
 
 import Config.Variables;
 import Entities.Explorer;
+import Entities.Guard;
+import Entities.Intruder;
 import Enums.EntityType;
 import Enums.Rotations;
 import Logic.GameController;
+import ObjectsOnMap.Goal;
 import ObjectsOnMap.Teleporter;
 import PathMaking.Point;
 import Strategies.BasicExplo;
+import Strategies.IntruderSt;
 import org.openjfx.UI.Area;
 import org.openjfx.UI.FileReader;
 import org.openjfx.UI.MainApp;
 
 import java.io.File;
+import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Launcher {
     // creates a game controller from a file path, use for MainApp
@@ -94,21 +100,42 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        Variables vr = new Variables(1,5);
+        Variables vr = new Variables(1,2);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
-        Teleporter t1 = new Teleporter(1,3 ,3,8,8);
-        gm.addObject(t1);
-        gm.addWall(0,5,19,5);
-        //gm.init();
-        gm.print("D");
-        gm.print(12);
+        Goal target = new Goal(1, 6,4);
+        gm.addWall(0,5,6,5);
 
+
+        gm.addObject(target);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
+        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,13,Rotations.UP); //gets stuck when it encounters the target, also does not check if it is seeing the intruder
+        gm.addEntity(new Explorer(EntityType.GUARD, gm, new BasicExplo(), vr), 3, 10, Rotations.DOWN);
+        //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
+        //gm.addObject(t1);
+        gm.init();
+
+
+
+        // gm.print("D");
+        //gm.print(12);
+        System.out.println("STARTED");
+        int[][] idleness = new int[200][200];
+        for(int i=0;i<200;i++){
+            for(int j=0;j<200;j++){
+                idleness[i][j]=5;
+            }
+        }
+        for(int i=0;i<200;i++){
+            for(int j=0;j<200;j++){
+                idleness[i][j]--;
+            }
+        }
+        System.out.println("ENDED");
     }
- /*
- gives testing map, do what u want here
-  */
+    /*
+    gives testing map, do what u want here
+     */
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         FileReader fileReader = new FileReader();

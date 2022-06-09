@@ -133,6 +133,7 @@ public class MainApp extends Application {
         FileInputStream input_stream14 = new FileInputStream("src/main/java/Images/teleport_icon.png");
         teleport_icon = new Image(input_stream14);
 
+
         chooseMap = new Button("Select a map");
         chooseMap.setOnAction(e -> {
             fileMap = fileChooser.showOpenDialog(primaryStage);
@@ -338,6 +339,9 @@ public class MainApp extends Application {
 
                 if (map[j][i].contains("T")) {
                     rectArray[i][j].setFill(new ImagePattern(teleport_icon));
+                }
+                if (map[j][i].contains("P")) {
+                    rectArray[i][j].setFill(new ImagePattern(champagne_toast));
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
