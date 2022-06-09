@@ -2,6 +2,7 @@ package Entities;
 
 import Enums.EntityType;
 import Enums.Moves;
+import Patrolling.CoordinateTransformer;
 
 public class Entity { // extend this to create entities for it all to work
     public EntityType getType() {
@@ -29,6 +30,7 @@ public class Entity { // extend this to create entities for it all to work
     public void setPosition(int[]xy){
 
     }
-
+    public void setCT(CoordinateTransformer ct) {}
+    public void nowPatrol(int[] xy){}
 
 }

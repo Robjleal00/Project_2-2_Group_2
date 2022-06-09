@@ -372,7 +372,7 @@ public class Patroller {
         return false;
     }
     private boolean canBePutThere(int []target) {
-        if(target[0] > -1 &&target[0] < mapHeight && target[1] > -1 && target[1] < mapLength)return Objects.equals(map[target[1]][target[0]], " ");
+        if(target[0] > -1 &&target[0] < mapLength && target[1] > -1 && target[1] < mapHeight)return Objects.equals(map[target[1]][target[0]], " ");
         else return false;
     }
     private void incrementLastSeen(int[][] lastSeen)

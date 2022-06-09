@@ -1,6 +1,7 @@
 package Strategies;
 
 import Config.Variables;
+import Entities.Entity;
 import Entities.Explorer;
 import Entities.Intruder;
 import Enums.Moves;
@@ -18,6 +19,6 @@ public class Strategy { // Template for making strategies, basic explo is an imp
     }
     public void setBooleans(boolean b, boolean c){}
 
-    public void setAgent(Explorer e){}
+    public void setAgent(Entity e){}
     public void teleported(){}
 }
