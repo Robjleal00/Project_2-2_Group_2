@@ -174,6 +174,18 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         if(setup){
 
             Patroller patroller = new Patroller(xy,rot,vr,patrollingMap,teleporterAll,lastSeen);
+            boolean debug_here = false;
+            if(debug_here) {
+                GameController printer = new GameController();
+                System.out.println("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_");
+                System.out.println("LASTSEEN BEFORE");
+                System.out.println(" MY ROT IS " + rot);
+                printer.printIntArray(lastSeen);
+                System.out.println("LASTSEEN AFTER");
+                //updateLastSeen(vision, rot, xy);
+                printer.printIntArray(lastSeen);
+                System.out.println("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_");
+            }
             updateLastSeen(vision, rot, xy);
             returner = patroller.dfs(1);
             // NEVER CHANGES DIRECTION: ALWAYS FACING BACK
@@ -191,6 +203,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         return returner;
     }
+    private boolean inBounds(int[][] array, int x, int y){
+        return (x>-1&&x<array.length&&y>-1&&y<array[0].length);
+    }
     private void updateLastSeen(String[][] vision,Rotations rot,int[]xy){
         int eyeRange = vision.length;
         int x = xy[0];
@@ -203,25 +218,25 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 switch (rot) {
                     case FORWARD -> { //walls.get(currentX + j).add(currentY + i);
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                        lastSeen[x+i][y+j]=0;
+                            if(inBounds(lastSeen,x-i,y+j))  lastSeen[x-i][y+j]=0;
                         }
 
                     }
                     case BACK -> {
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                            lastSeen[x-i][y+j]=0;
+                            if(inBounds(lastSeen,x+i,y-j)) lastSeen[x+i][y-j]=0;
                         }
 
                     }
                     case LEFT -> {
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                            lastSeen[x+j][y-i]=0;
+                            if(inBounds(lastSeen,x-j,y-i))  lastSeen[x-j][y-i]=0;
                         }
 
                     }
                     case RIGHT -> {
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                            lastSeen[x+j][y+i]=0;
+                            if(inBounds(lastSeen,x+j,y+i)) lastSeen[x+j][y+i]=0;
                         }
 
                     }
