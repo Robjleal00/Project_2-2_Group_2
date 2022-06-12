@@ -29,6 +29,7 @@ public class GameController { // self explanatory
     private int mapHeight;
     private boolean isRunning;
     private int eyeRange;
+    private int pheromonesDuration;
     private ArrayList<Entity> entities;
     private ArrayList<ObjectOnMap> objects;
     private HashMap<Entity, int[]> entityLocations;
@@ -123,6 +124,7 @@ public class GameController { // self explanatory
     public void addVars(Variables vr) {
         this.walkSpeed = vr.walkSpeed();
         this.eyeRange = vr.eyeRange();
+        this.pheromonesDuration=vr.pDur();
     }
 
     public void init() throws InterruptedException {
@@ -463,22 +465,28 @@ public class GameController { // self explanatory
     // returns int value for walking for how much the entity can actually walk
     // for handling collisions and such
     private void pheromoneSide(int[] pos, Rotations rot){
-        switch (rot){ // the fucking coordinates are inverted
-            case LEFT -> {
 
-            }
-            case RIGHT -> {
+        int x = pos[1];
+        int y = pos[0];
+        for ( int i = -1; i < 2; i++) {
+            switch (rot) { // the fucking coordinates are inverted
+                case LEFT:
+                case RIGHT:
+                    int x2=x+i;
+                    pheromonesMap[x2][y]=pheromonesDuration;
 
+                    continue;
+                case DOWN:
+                case UP :
+                    int y2 = y+i;
+                    pheromonesMap[x][y2]=pheromonesDuration;
+                    continue;
+                }
             }
-            case DOWN -> {
-
-            }
-            case UP -> {
-
-            }
-        }
 
     }
+
+
     private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
         int[] pos = entityLocations.get(e);
@@ -986,8 +994,16 @@ public class GameController { // self explanatory
     public void shiftPheromones(){
         for ( int i=0;i<pheromonesMap.length;i++){
             for(int j = 0; j < pheromonesMap[0].length; j++){
-                if(pheromonesMap[i][j] > -10) pheromonesMap[i][j]--;//map[i][j]=String.valueOf(pheromonesMap[i][j]);
-                if(!blockedByObstacles(map[i][j])) map[i][j]=String.valueOf(pheromonesMap[i][j]);
+                int val = pheromonesMap[i][j];
+                if(val >0) {pheromonesMap[i][j]--;val--;}//map[i][j]=String.valueOf(pheromonesMap[i][j]);
+                if(!blockedByObstacles(map[i][j])) {
+                    if(val==0){
+                        map[i][j]=" ";
+                    }
+                    else if(val>0) {
+                        map[i][j] = String.valueOf(pheromonesMap[i][j]);
+                    }
+                }
             }
         }
     }

@@ -191,7 +191,14 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             else {
                 updateLastSeen(vision, rot, xy,vr);
             }
-            returner = patroller.dfs(3);
+            returner = patroller.dfs(1);
+            switch(returner){
+                case WALK -> returner = Moves.P_WALK;
+                case USE_TELEPORTER -> returner = Moves.P_USE_TELEPORTER;
+                case TURN_LEFT -> returner = Moves.P_TURN_LEFT;
+                case TURN_AROUND -> returner = Moves.P_TURN_AROUND;
+                case TURN_RIGHT -> returner = Moves.P_TURN_RIGHT;
+            }
             // NEVER CHANGES DIRECTION: ALWAYS FACING BACK
 
         }
