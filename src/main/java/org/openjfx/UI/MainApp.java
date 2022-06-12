@@ -341,7 +341,7 @@ public class MainApp extends Application {
                     rectArray[i][j].setFill(new ImagePattern(teleport_icon));
                 }
                 if (map[j][i].contains("P")) {
-                    rectArray[i][j].setFill(new ImagePattern(champagne_toast));
+                  //  rectArray[i][j].setFill(new ImagePattern(champagne_toast));
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);

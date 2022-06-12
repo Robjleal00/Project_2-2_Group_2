@@ -44,7 +44,7 @@ public class PathMakingTreeRoot {
         for (Moves avaliableMove : avaliableMoves) {
             values.add(new PathMakingTreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,vr,target).getValue(1,depth));
         }
-        System.out.println(values);
+        //System.out.println(values);
         int result = max(values);
         if(result>0)return true;
         else return false;
