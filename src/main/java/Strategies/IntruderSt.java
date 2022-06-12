@@ -130,7 +130,7 @@ public class IntruderSt extends Strategy{
                     if(stuck(xy)){
                         System.out.println("STUCKKKKK");
                         TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
-                        move = root.getMove();
+                        move = root.getMove(false);
                         if (move == Moves.TURN_AROUND) {
                             if (gm.getIntRot() == Rotations.LEFT)
                                 gm.setGlobalRotationIntruder(Rotations.RIGHT);

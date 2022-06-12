@@ -117,7 +117,13 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         if (!firstPhase && !exploDone) {
             TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints, vr, visitedPoints, objects);
-            returner = root.getMove();
+            int eyeRange = vision.length;
+            int check = eyeRange - 2;
+            boolean blocked=false;
+            if (blockedByObstacles(vision[check][1])) {
+                blocked=true;
+            }
+            returner = root.getMove(blocked);
             if (returner == Moves.STUCK) {
                 returner = root.tryPathfinding();
                 if (returner == Moves.STUCK) {
@@ -183,6 +189,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 System.out.println("LASTSEEN BEFORE");
                 System.out.println(" MY ROT IS " + rot);
                 printer.printIntArray(lastSeen);
+                System.out.println("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_");
+                printer.printArray(vision);
+                System.out.println("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_");
                 System.out.println("LASTSEEN AFTER");
                 updateLastSeen(vision, rot, xy,vr);
                 printer.printIntArray(lastSeen);
@@ -191,7 +200,14 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             else {
                 updateLastSeen(vision, rot, xy,vr);
             }
-            returner = patroller.dfs(1);
+            int eyeRange = vision.length;
+            int check = eyeRange - 2;
+            boolean blockWalk=false;
+                if (blockedByObstacles(vision[check][1])) {
+                    blockWalk=true;
+                }
+
+            returner = patroller.dfs(4,blockWalk);
             switch(returner){
                 case WALK -> returner = Moves.P_WALK;
                 case USE_TELEPORTER -> returner = Moves.P_USE_TELEPORTER;
@@ -214,10 +230,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         return returner;
     }
+    private boolean blockedByObstacles(String s){
+        // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
+        return s.contains("I")||s.contains("G")||s.contains("E")||s.contains("W");
+    }
     private boolean inBounds(int[][] array, int x, int y){
         return (x>-1&&x<array.length&&y>-1&&y<array[0].length);
     }
-    private void updateLastSeen(String[][] vision,Rotations rot,int[]xy,Variables vr){
+    private void updateLastSeen(String[][] vision,Rotations rot,int[]xy,Variables vr)
+    {
         int eyeRange = vision.length;
         int pentalty = vr.penalty();
         int x = xy[0];

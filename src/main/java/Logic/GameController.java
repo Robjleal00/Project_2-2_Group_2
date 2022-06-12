@@ -461,9 +461,7 @@ public class GameController { // self explanatory
         return null;
     }
 
-    // executes rotations and teleporting(if possible teleporting)
-    // returns int value for walking for how much the entity can actually walk
-    // for handling collisions and such
+
     private void pheromoneSide(int[] pos, Rotations rot){
 
         int x = pos[1];
@@ -493,23 +491,23 @@ public class GameController { // self explanatory
         switch (m) {
             case P_TURN_AROUND -> {
                 pheromoneSide(pos,rotation);
-                executeMove(e,Moves.TURN_AROUND);
+                return executeMove(e,Moves.TURN_AROUND);
             }
             case P_TURN_LEFT -> {
                 pheromoneSide(pos,rotation);
-                executeMove(e,Moves.TURN_LEFT);
+                return executeMove(e,Moves.TURN_LEFT);
             }
             case P_TURN_RIGHT -> {
                 pheromoneSide(pos,rotation);
-                executeMove(e,Moves.TURN_RIGHT);
+                return executeMove(e,Moves.TURN_RIGHT);
             }
             case P_WALK -> {
                 pheromoneSide(pos,rotation);
-                executeMove(e,Moves.WALK);
+                return executeMove(e,Moves.WALK);
             }
             case P_USE_TELEPORTER -> {
                 pheromoneSide(pos,rotation);
-                executeMove(e,Moves.USE_TELEPORTER);
+                return executeMove(e,Moves.USE_TELEPORTER);
             }
             case USE_TELEPORTER -> {
                 //System.out.println("HE WANTS TO USE IT");

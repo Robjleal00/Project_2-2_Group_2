@@ -5,7 +5,6 @@ import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
-import Strategies.Constraints;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import java.util.Objects;
 
 import static java.util.Collections.max;
 
-//import static com.sun.jndi.ldap.LdapSchemaCtx.deepClone;
 
 
 public class Patroller {
@@ -30,9 +28,8 @@ public class Patroller {
     boolean DEBUG_LASTSEEN_ALL;
     boolean DEBUG_DECISION;
     boolean PRINT_ALL_MAPS;
-    private Constraints constraints;
-    private Variables vr;
-    private String[][] map;
+    private final Variables vr;
+    private final String[][] map;
 
     public Patroller(int[] xy, Rotations rot, Variables vr, String[][] map, HashMap<int[], int[]> teleporters, int[][] lastSeen) {
         this.xy = xy;
@@ -54,29 +51,37 @@ public class Patroller {
 
 
     //Node method
-    private int dfsRecursive(int depth, Moves move, int[] xy, Rotations rot, int[][] lastSeen) {
+    private int dfsRecursive(int depth,int maxDepth, Moves move, int[] xy, Rotations rot, int[][] lastSeen) {
+        int[][] myLastSeen=createNewLastSeen(lastSeen);
+        incrementLastSeen(myLastSeen);
         int ownValue;
         switch (move) {
             case TURN_AROUND -> rot = rot.turnAround();
             case TURN_LEFT -> rot = rot.turnLeft();
             case TURN_RIGHT -> rot = rot.turnRight();
             case WALK -> xy = walk(xy.clone(), rot);
-            case USE_TELEPORTER -> xy = canTeleport(xy, rot);
+            case USE_TELEPORTER -> {
+                xy = canTeleport(xy, rot);
+                if(xy[0]==-1){
+                    return -99999;
+                }
+            }
 
         }
+        int weight = maxDepth-depth;
         String[][] vision = simulateVision(rot, xy, vr);
         // System.out.println("CURRENT MOVE +"+move);
         //GameController printer = new GameController();
         //printer.printArray(vision);
 
-        ownValue = getValue(lastSeen, xy, rot, vision);
+        ownValue = getValue(myLastSeen, xy, rot, vision);
+        ownValue = ownValue /weight;
         //System.out.println("MOVE: "+move.toString()+" HAS VALUE: "+ownValue);
         if (depth != 0) {
-            int[][] deepclone = createNewLastSeen(lastSeen);
             ArrayList<Integer> childValues = new ArrayList<>();
-            //TODO: availableMoves is for example TURN_LEFT, it should then accordingly change rotations
+
             for (Moves availableMove : availableMoves) {
-                childValues.add(dfsRecursive(depth - 1, availableMove, xy.clone(), rot, deepclone));
+                childValues.add(dfsRecursive(depth - 1,maxDepth, availableMove, xy.clone(), rot, myLastSeen));
             }
             return ownValue + max(childValues);
         } else {
@@ -88,12 +93,15 @@ public class Patroller {
     }
 
     //Root method
-    public Moves dfs(int maxDepth) {
+    public Moves dfs(int maxDepth,boolean blockWalk) {
         incrementLastSeen(lastSeen);
         ArrayList<Integer> childValues = new ArrayList<>();
         int[][] deepclone = createNewLastSeen(lastSeen);
         for (Moves availableMove : availableMoves) {
-            childValues.add(dfsRecursive(maxDepth, availableMove, xy.clone(), rot, deepclone));
+            childValues.add(dfsRecursive(maxDepth-1,maxDepth, availableMove, xy.clone(), rot, deepclone));
+        }
+        if (blockWalk) {
+                childValues.set(0,-99999);
         }
         if (DEBUG_DECISION) {
             System.out.println("_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-");
@@ -130,13 +138,13 @@ public class Patroller {
                 switch (rotation) {
                     case BACK -> {
                         int xM = x + j;
-                        int yM = y + i;
+                        int yM = y - i;
                         if (inBounds(xM, yM)) {
-                            int number = lastSeen[x + j][y + i];
+                            int number = lastSeen[xM][yM];
                             String symbol = vision[sX][sY];
                             if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
-                                lastSeen[x + j][y + i] = 0;
+                                if(lastSeen[xM][yM]>0)lastSeen[xM][yM] = 0;
                             }
                         }
                     }
@@ -144,11 +152,11 @@ public class Patroller {
                         int xM = x - j;
                         int yM = y + i;
                         if (inBounds(xM, yM)) {
-                            int number = lastSeen[x - j][y + i];
+                            int number = lastSeen[xM][yM];
                             String symbol = vision[sX][sY];
                             if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
-                                lastSeen[x - j][y + i] = 0;
+                                if(lastSeen[xM][yM]>0)lastSeen[xM][yM] = 0;
                             }
                         }
                     }
@@ -156,23 +164,23 @@ public class Patroller {
                         int xM = x + i;
                         int yM = y + j;
                         if (inBounds(xM, yM)) {
-                            int number = lastSeen[x + i][y + j];
+                            int number = lastSeen[xM][yM];
                             String symbol = vision[sX][sY];
                             if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
-                                lastSeen[x + i][y + j] = 0;
+                                if(lastSeen[xM][yM]>0)lastSeen[xM][yM] = 0;
                             }
                         }
                     }
                     case LEFT -> {
-                        int xM = x + i;
+                        int xM = x - i;
                         int yM = y - j;
                         if (inBounds(xM, yM)) {
-                            int number = lastSeen[x + i][y - j];
+                            int number = lastSeen[xM][yM];
                             String symbol = vision[sX][sY];
                             if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
-                                lastSeen[x + i][y - j] = 0;
+                                if(lastSeen[xM][yM]>0)lastSeen[xM][yM] = 0;
                             }
                         }
                     }
@@ -226,7 +234,8 @@ public class Patroller {
                 }
             }
         }
-        return xy;
+        int b=-1;
+        return new int[]{b,b};
     }
 
     private String[][] simulateVision(Rotations rot, int[] xy, Variables vr) {

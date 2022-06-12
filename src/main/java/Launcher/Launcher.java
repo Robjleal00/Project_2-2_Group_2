@@ -101,13 +101,14 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        Variables vr = new Variables(1,5,5,10);
+        Variables vr = new Variables(1,5,1,20);
         gm.addVars(vr);
         gm.printMap();
 
         gm.addWall(0,5,6,5);
         gm.setGameMode(GameMode.PATROL_CHASE);
-        gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.DOWN);
+        gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.RIGHT);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),2,1,Rotations.LEFT);
        // Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         //gm.addObject(t1);
         gm.init();

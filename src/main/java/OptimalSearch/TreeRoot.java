@@ -48,10 +48,13 @@ public class TreeRoot { //more stuff for basic explo
         this.visitedPoints=visitedPoints;
         this.objects=objects;
     }
-    public Moves getMove() {
+    public Moves getMove(boolean blocked) {
         ArrayList<Double> values = new ArrayList<>();
         for (Moves avaliableMove : avaliableMoves) {
             values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(1,depth));
+        }
+        if (blocked){
+            values.set(0,(double)-9999);
         }
         double result = max(values);
         if(DEBUG_DECISIONS) System.out.println(values);
@@ -61,6 +64,9 @@ public class TreeRoot { //more stuff for basic explo
             for (Moves avaliableMove : avaliableMoves) {
                 values.add(new TreeNode(avaliableMove, deepClone(explored), deepClone(walls), xy.clone(), rot,constraints,vr).getValue(1,depth));
             }
+        }
+        if (blocked){
+            values.set(0,(double)-9999);
         }
          result = max(values);
 
