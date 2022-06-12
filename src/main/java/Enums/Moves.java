@@ -7,4 +7,10 @@ public enum Moves {
     TURN_AROUND,
     STUCK,
     USE_TELEPORTER,
+    P_WALK,
+    P_TURN_LEFT,
+    P_TURN_RIGHT,
+    P_TURN_AROUND,
+    P_USE_TELEPORTER,
+
 }

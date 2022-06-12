@@ -134,7 +134,7 @@ public class Patroller {
                         if (inBounds(xM, yM)) {
                             int number = lastSeen[x + j][y + i];
                             String symbol = vision[sX][sY];
-                            if (!symbol.contains("W")) {
+                            if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
                                 lastSeen[x + j][y + i] = 0;
                             }
@@ -146,7 +146,7 @@ public class Patroller {
                         if (inBounds(xM, yM)) {
                             int number = lastSeen[x - j][y + i];
                             String symbol = vision[sX][sY];
-                            if (!symbol.contains("W")) {
+                            if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
                                 lastSeen[x - j][y + i] = 0;
                             }
@@ -158,7 +158,7 @@ public class Patroller {
                         if (inBounds(xM, yM)) {
                             int number = lastSeen[x + i][y + j];
                             String symbol = vision[sX][sY];
-                            if (!symbol.contains("W")) {
+                            if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
                                 lastSeen[x + i][y + j] = 0;
                             }
@@ -170,7 +170,7 @@ public class Patroller {
                         if (inBounds(xM, yM)) {
                             int number = lastSeen[x + i][y - j];
                             String symbol = vision[sX][sY];
-                            if (!symbol.contains("W")) {
+                            if (!symbol.contains("W")&&!symbol.contains("X")) {
                                 value += number;
                                 lastSeen[x + i][y - j] = 0;
                             }
@@ -668,7 +668,7 @@ public class Patroller {
     private void incrementLastSeen(int[][] lastSeen) {
         for (int i = 0; i < lastSeen.length; i++) {
             for (int j = 0; j < lastSeen[0].length; j++) {
-                if (lastSeen[i][j] != -1) lastSeen[i][j]++;
+                if (lastSeen[i][j] != -999) lastSeen[i][j]++;
             }
         }
     }

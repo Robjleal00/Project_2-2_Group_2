@@ -34,7 +34,7 @@ public class Launcher {
         fileReader.readFile(filePath);
         GameController gm = new GameController(fileReader.getHeight(),fileReader.getWidth(),app);
 
-        Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing());
+        Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing(),5);
         gm.addVars(vr);
         addGuards(fileReader,gm,vr);
         ArrayList<Area> walls = fileReader.getWalls();
@@ -101,7 +101,7 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        Variables vr = new Variables(1,5);
+        Variables vr = new Variables(1,5,5);
         gm.addVars(vr);
         gm.printMap();
 
@@ -121,7 +121,7 @@ public class Launcher {
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         FileReader fileReader = new FileReader();
-        Variables vr = new Variables(1,5);
+        Variables vr = new Variables(1,5,5);
         gm.addVars(vr);
         gm.printMap();
         gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);

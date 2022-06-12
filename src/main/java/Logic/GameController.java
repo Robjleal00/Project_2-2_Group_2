@@ -24,6 +24,7 @@ public class GameController { // self explanatory
     public boolean PRINTVISION;
     public boolean GUI;
     private String[][] map;
+    private int[][] pheromonesMap;
     private int mapLength;
     private int mapHeight;
     private boolean isRunning;
@@ -55,6 +56,7 @@ public class GameController { // self explanatory
         this.mapLength = length;
         this.mapHeight = height;
         this.map = makeMap(height, length);
+        this.pheromonesMap = new int[length][height];
         makeBorders(length, height);
         isRunning = true;
         entities = new ArrayList<>();
@@ -81,6 +83,7 @@ public class GameController { // self explanatory
         this.mapLength = length;
         this.mapHeight = height;
         this.map = makeMap(height, length);
+        this.pheromonesMap = new int[length][height];
         makeBorders(length, height);
         isRunning = true;
         entities = new ArrayList<>();
@@ -135,6 +138,7 @@ public class GameController { // self explanatory
         }
         while (isRunning) {//gameloop
             boolean allBroken = false;
+            shiftPheromones();
             // This cute little line get all the moves from the agents, effectively executing everything except turning
             entities.stream().collect(Collectors.toMap(Function.identity(), Entity::getMove, (o1, o2) -> o1, ConcurrentHashMap::new)).forEach((k, v) -> moveMap.put(k, executeMove(k, v)));
             // this checks if all of them are stuck
@@ -458,12 +462,49 @@ public class GameController { // self explanatory
     // executes rotations and teleporting(if possible teleporting)
     // returns int value for walking for how much the entity can actually walk
     // for handling collisions and such
+    private void pheromoneSide(int[] pos, Rotations rot){
+        switch (rot){ // the fucking coordinates are inverted
+            case LEFT -> {
+
+            }
+            case RIGHT -> {
+
+            }
+            case DOWN -> {
+
+            }
+            case UP -> {
+
+            }
+        }
+
+    }
     private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
+        int[] pos = entityLocations.get(e);
         switch (m) {
+            case P_TURN_AROUND -> {
+                pheromoneSide(pos,rotation);
+                executeMove(e,Moves.TURN_AROUND);
+            }
+            case P_TURN_LEFT -> {
+                pheromoneSide(pos,rotation);
+                executeMove(e,Moves.TURN_LEFT);
+            }
+            case P_TURN_RIGHT -> {
+                pheromoneSide(pos,rotation);
+                executeMove(e,Moves.TURN_RIGHT);
+            }
+            case P_WALK -> {
+                pheromoneSide(pos,rotation);
+                executeMove(e,Moves.WALK);
+            }
+            case P_USE_TELEPORTER -> {
+                pheromoneSide(pos,rotation);
+                executeMove(e,Moves.USE_TELEPORTER);
+            }
             case USE_TELEPORTER -> {
                 //System.out.println("HE WANTS TO USE IT");
-                int[] pos = entityLocations.get(e);
                 Teleporter tp = findTeleporter(pos);
 
                 if (tp == null) return -1;
@@ -568,7 +609,6 @@ public class GameController { // self explanatory
                 }
             }
             case WALK -> {
-                int[] pos = entityLocations.get(e);
                 switch (rotation) {
                     case UP -> {
                         int[] targetlocation = {pos[0], pos[1] - walkSpeed};
@@ -797,14 +837,17 @@ public class GameController { // self explanatory
         }
         return "ERROR";
     }
-
+    private boolean blockedByObstacles(String s){
+        // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
+        return s.contains("I")||s.contains("G")||s.contains("E")||s.contains("W");
+    }
     private boolean canBePutThere(int[] target, Entity e) {
         if (target[0] > -1 && target[0] < mapHeight && target[1] > -1 && target[1] < mapLength) {
             if (e.getType() == EntityType.INTRUDER) {
                 if (Objects.equals(map[target[1]][target[0]], "V1"))
                     return true;
-                else return Objects.equals(map[target[1]][target[0]], " ");
-            } else return Objects.equals(map[target[1]][target[0]], " ");
+                else return !blockedByObstacles(map[target[1]][target[0]]);
+            } else return !blockedByObstacles(map[target[1]][target[0]]);
         } else return false;
     }
 
@@ -835,7 +878,7 @@ public class GameController { // self explanatory
     }
 
     //returns a rotation based on the angle calculated (taking into consideration also the agents rotation)
-    public Moves getDirection(Entity intEntity) { //Rotation or move?
+    public Moves getDirection(Entity intEntity) {
         //get position
         int[] targetLoc = new int[2];
         for (ObjectOnMap ob : objects) {
@@ -940,7 +983,14 @@ public class GameController { // self explanatory
     public Rotations getIntRot() {
         return intruderGlobalRotation;
     }
-
+    public void shiftPheromones(){
+        for ( int i=0;i<pheromonesMap.length;i++){
+            for(int j = 0; j < pheromonesMap[0].length; j++){
+                if(pheromonesMap[i][j] > -10) pheromonesMap[i][j]--;//map[i][j]=String.valueOf(pheromonesMap[i][j]);
+                if(!blockedByObstacles(map[i][j])) map[i][j]=String.valueOf(pheromonesMap[i][j]);
+            }
+        }
+    }
     public Moves getNextBestMove(Entity intEntity) {
         Moves returner = Moves.STUCK;
         int[] targetLoc = new int[2];

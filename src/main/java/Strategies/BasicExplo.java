@@ -33,6 +33,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     boolean patrolling;
     boolean chasing;
     boolean exploDone;
+    boolean DEBUG_LASTSEEN;
     boolean setup;
     private int[][] lastSeen;
     private Entity agent;
@@ -58,6 +59,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
         Config c = new Config();
         PATROLLING_SETUP_DEBUG=c.PATROLLING_SETUP_DEBUG;
+        this.DEBUG_LASTSEEN = c.BASIC_EXPLO_LASTSEEN;
     }
 
     @Override
@@ -174,20 +176,22 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         if(setup){
 
             Patroller patroller = new Patroller(xy,rot,vr,patrollingMap,teleporterAll,lastSeen);
-            boolean debug_here = false;
-            if(debug_here) {
+
+            if(DEBUG_LASTSEEN) {
                 GameController printer = new GameController();
                 System.out.println("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_");
                 System.out.println("LASTSEEN BEFORE");
                 System.out.println(" MY ROT IS " + rot);
                 printer.printIntArray(lastSeen);
                 System.out.println("LASTSEEN AFTER");
-                //updateLastSeen(vision, rot, xy);
+                updateLastSeen(vision, rot, xy,vr);
                 printer.printIntArray(lastSeen);
                 System.out.println("-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_-_");
             }
-            updateLastSeen(vision, rot, xy);
-            returner = patroller.dfs(1);
+            else {
+                updateLastSeen(vision, rot, xy,vr);
+            }
+            returner = patroller.dfs(3);
             // NEVER CHANGES DIRECTION: ALWAYS FACING BACK
 
         }
@@ -206,8 +210,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private boolean inBounds(int[][] array, int x, int y){
         return (x>-1&&x<array.length&&y>-1&&y<array[0].length);
     }
-    private void updateLastSeen(String[][] vision,Rotations rot,int[]xy){
+    private void updateLastSeen(String[][] vision,Rotations rot,int[]xy,Variables vr){
         int eyeRange = vision.length;
+        int pentalty = vr.penalty();
         int x = xy[0];
         int y = xy[1];
         for (int i = 0; i < eyeRange; i++) { //i= upfront
@@ -218,25 +223,47 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 switch (rot) {
                     case FORWARD -> { //walls.get(currentX + j).add(currentY + i);
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                            if(inBounds(lastSeen,x-i,y+j))  lastSeen[x-i][y+j]=0;
+                            try{
+                                int val = Integer.valueOf(lookingAt) * pentalty*-1;
+                                if(inBounds(lastSeen,x-i,y+j))  lastSeen[x-i][y+j]=val;
+                            } catch (Exception e) {
+                                if(inBounds(lastSeen,x-i,y+j))  lastSeen[x-i][y+j]=0;
+                            }
+
                         }
 
                     }
                     case BACK -> {
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                            if(inBounds(lastSeen,x+i,y-j)) lastSeen[x+i][y-j]=0;
+                            try {
+                                int val = Integer.valueOf(lookingAt) * pentalty*-1;
+                                if (inBounds(lastSeen, x + i, y - j)) lastSeen[x + i][y - j] = val;
+                            }catch (Exception e) {
+                                if (inBounds(lastSeen, x + i, y - j)) lastSeen[x + i][y - j] = 0;
+                            }
                         }
 
                     }
                     case LEFT -> {
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                            if(inBounds(lastSeen,x-j,y-i))  lastSeen[x-j][y-i]=0;
+                            try {
+                                int val = Integer.valueOf(lookingAt) * pentalty*-1;
+                                if (inBounds(lastSeen, x - j, y - i)) lastSeen[x - j][y - i] = val;
+                            }catch (Exception e) {
+                                if (inBounds(lastSeen, x - j, y - i)) lastSeen[x - j][y - i] = 0;
+                            }
                         }
 
                     }
                     case RIGHT -> {
                         if(!lookingAt.contains("W") && !lookingAt.contains("X")){
-                            if(inBounds(lastSeen,x+j,y+i)) lastSeen[x+j][y+i]=0;
+                            try{
+                                int val = Integer.valueOf(lookingAt) * pentalty*-1;
+                                if (inBounds(lastSeen, x + j, y + i)) lastSeen[x + j][y + i] = val;
+                            }
+                            catch (Exception e) {
+                                if (inBounds(lastSeen, x + j, y + i)) lastSeen[x + j][y + i] = 0;
+                            }
                         }
 
                     }
@@ -291,7 +318,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                                 }
                             }
                             if (!Objects.equals(lookingAt, "X")) {
-                                if (!Objects.equals(lookingAt, "W") && !lookingAt.contains("T")) {
+                                if (!Objects.equals(lookingAt, "W") && !lookingAt.contains("T")) { // if its an empty tile
                                     if (explored.containsKey(currentX + j)) {
                                         if (!explored.get(currentX + j).contains(currentY + i)) {
                                             explored.get(currentX + j).add(currentY + i);
@@ -662,7 +689,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             for (int j = 0; j < individualMap[0].length; j++) {
                 // Since a wall isn't really worth visiting, I just assigned an arbitrary negative number
                 if (individualMap[i][j].contains("W")||individualMap[i][j].contains("X")) {
-                    lastSeen[i][j] = -1;
+                    lastSeen[i][j] = -999;
 
                 } else {
                     // Make the security guard wish to check out everything
