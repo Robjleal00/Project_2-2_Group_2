@@ -3,7 +3,7 @@ package BrickAndMortar;
 import Enums.Rotations;
 
 public class BrickMortar {
-    private int [][]map;
+    private String [][]map;
     private int []xy;
 
     private boolean exploDone;
@@ -12,8 +12,10 @@ public class BrickMortar {
 
 
 
-    public BrickMortar(int [][]map){
+    public BrickMortar(String [][]map){
       this.map = map;
       this.exploDone = false;
     }
+
+
 }
