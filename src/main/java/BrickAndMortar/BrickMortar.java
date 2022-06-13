@@ -53,17 +53,42 @@ public class BrickMortar {
 
         //Navigation Step:
         //NOTE: IF AT LEAST ONE OF THE 4 SURROUNDING CELLS IS UNEXPLORED
-        if(checkUnexploredSurroundings(xy))
-        {
-            //for each of the unexplored cells see how many walls
-            //or visited cells are around it, then go to the cell with
-            //most of them, which is most likely to be marked as
-            //visited in the marking step
-            for(int i = 0; i < unexploredNeighbours.size(); i++)
-            {
 
-            }
+        // Check LEFT
+        if(map[xy[0] - 1][xy[1]] == unexplored){
+
         }
+        // Check RIGHT
+        else if(map[xy[0] + 1][xy[1]] == unexplored){
+
+        }
+        // Check UP
+        else if(map[xy[0]][xy[1] + 1] == unexplored){
+
+        }
+        // Check DOWN
+        else if(map[xy[0]][xy[1] - 1] == unexplored){
+
+        }
+
+        // NOTE ELSE IF: else if at least one of the four cells around is explored
+        // Check LEFT
+        if(map[xy[0] - 1][xy[1]] == explored){
+
+        }
+        // Check RIGHT
+        else if(map[xy[0] + 1][xy[1]] == explored){
+
+        }
+        // Check UP
+        else if(map[xy[0]][xy[1] + 1] == explored){
+
+        }
+        // Check DOWN
+        else if(map[xy[0]][xy[1] - 1] == explored){
+
+        }
+
     }
 
     /**
