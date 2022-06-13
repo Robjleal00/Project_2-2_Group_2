@@ -52,7 +52,6 @@ public class BrickMortar {
         //Navigation Step:
         //NOTE: IF AT LEAST ONE OF THE 4 SURROUNDING CELLS IS UNEXPLORED
 
-
         // Check LEFT
         if(map[xy[0] - 1][xy[1]] == unexplored){
 
@@ -69,6 +68,25 @@ public class BrickMortar {
         else if(map[xy[0]][xy[1] - 1] == unexplored){
 
         }
+
+        // NOTE ELSE IF: else if at least one of the four cells around is explored
+        // Check LEFT
+        if(map[xy[0] - 1][xy[1]] == explored){
+
+        }
+        // Check RIGHT
+        else if(map[xy[0] + 1][xy[1]] == explored){
+
+        }
+        // Check UP
+        else if(map[xy[0]][xy[1] + 1] == explored){
+
+        }
+        // Check DOWN
+        else if(map[xy[0]][xy[1] - 1] == explored){
+
+        }
+
     }
 
     /**
