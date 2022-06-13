@@ -3,19 +3,24 @@ package BrickAndMortar;
 import Enums.Rotations;
 
 public class BrickMortar {
-    private String [][]map;
-    private int []xy;
+
+    // O = Unexplored
+    // 1 = Explored
+    // 2 = Visited
+    // 3 = Wall
+    private int[][] map;
+    private int[] xy;
 
     private boolean exploDone;
     private final double randomness = 0.2;
-    //private final Rotations rot;
+    private final Rotations rot;
 
 
 
-    public BrickMortar(String [][]map){
+
+    public BrickMortar(int [][]map, Rotations rot){
       this.map = map;
       this.exploDone = false;
+      this.rot = rot;
     }
-
-
 }
