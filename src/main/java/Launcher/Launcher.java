@@ -2,28 +2,21 @@ package Launcher;
 
 import Config.Variables;
 import Entities.Explorer;
-import Entities.Guard;
-import Entities.Intruder;
 import Enums.EntityType;
-import Enums.GameMode;
 import Enums.Rotations;
 import Logic.GameController;
-import ObjectsOnMap.Goal;
 import ObjectsOnMap.Teleporter;
 import PathMaking.Point;
 import Strategies.BasicExplo;
-import Strategies.IntruderSt;
 import org.openjfx.UI.Area;
 import org.openjfx.UI.FileReader;
 import org.openjfx.UI.MainApp;
 
 import java.io.File;
-import java.lang.annotation.Target;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 
 public class Launcher {
     // creates a game controller from a file path, use for MainApp
@@ -34,7 +27,7 @@ public class Launcher {
         fileReader.readFile(filePath);
         GameController gm = new GameController(fileReader.getHeight(),fileReader.getWidth(),app);
 
-        Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing(),5,10);
+        Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing());
         gm.addVars(vr);
         addGuards(fileReader,gm,vr);
         ArrayList<Area> walls = fileReader.getWalls();
@@ -101,28 +94,25 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        Variables vr = new Variables(1,5,1,20);
+        Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
-
-        gm.addWall(0,5,6,5);
-        gm.setGameMode(GameMode.PATROL_CHASE);
-        gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.RIGHT);
-        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),2,1,Rotations.LEFT);
-       // Teleporter t1 = new Teleporter(1,3 ,3,8,8);
-        //gm.addObject(t1);
-        gm.init();
-
-
+        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        Teleporter t1 = new Teleporter(1,3 ,3,8,8);
+        gm.addObject(t1);
+        gm.addWall(0,5,19,5);
+        //gm.init();
+        gm.print("D");
+        gm.print(12);
 
     }
-    /*
-    gives testing map, do what u want here
-     */
+ /*
+ gives testing map, do what u want here
+  */
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         FileReader fileReader = new FileReader();
-        Variables vr = new Variables(1,5,5,10);
+        Variables vr = new Variables(1,5);
         gm.addVars(vr);
         gm.printMap();
         gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
