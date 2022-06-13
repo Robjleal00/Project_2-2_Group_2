@@ -10,6 +10,8 @@ public class BrickMortar {
     private final double randomness = 0.2;
     //private final Rotations rot;
 
+
+
     public BrickMortar(int [][]map){
       this.map = map;
       this.exploDone = false;
