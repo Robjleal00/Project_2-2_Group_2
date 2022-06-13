@@ -9,10 +9,11 @@ import java.util.Arrays;
 
 public class BrickMortar {
 
-    // O = Unexplored
-    // 1 = Explored
-    // 2 = Visited
-    // 3 = Wall
+    int unexplored = 0;
+    int explored = 1;
+    int visited = 2;
+    int walls = 3;
+
 
     private final int mapLength;
     private final int mapHeight;
@@ -41,11 +42,11 @@ public class BrickMortar {
         //
         if(isBlockingPath(xy) == false)
         {
-            map[xy[0]][xy[1]] = 2;
+            map[xy[0]][xy[1]] = visited;
         }
         else
         {
-            map[xy[0]][xy[1]] = 1;
+            map[xy[0]][xy[1]] = explored;
         }
 
         //Navigation Step:
@@ -72,12 +73,22 @@ public class BrickMortar {
     }
     public void simulateVision(Rotations rot, int[] xy, Variables vr)
     {
+        int explored = 1;
+        int walls = 3;
+        // O = Unexplored
+        // 1 = Explored
+        // 2 = Visited
+        // 3 = Wall
+
+
         int x = xy[0];
         int y = xy[1];
         int range = vr.eyeRange();
         boolean[] blocked = new boolean[3];
         // System.out.println(range);
+
         String[][] returner = new String[range][3];
+
         for (int j = 0; j < range; j++) { // upfront
             for (int i = -1; i < 2; i++) { // sideways
                 int sX = range - 1 - j;
@@ -90,7 +101,7 @@ public class BrickMortar {
                             if (!blocked[1]) {
                                 if(i==-1&&blocked[0]){
                                     if(inBounds(xM,y)){
-                                        if (map[xM][y].contains("W")){
+                                        if (map[xM][y] == walls){
                                             returner[sX][sY]="X";
                                             continue;
                                         }
