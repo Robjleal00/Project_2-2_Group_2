@@ -5,6 +5,7 @@ import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BrickMortar {
@@ -20,6 +21,7 @@ public class BrickMortar {
 
     private int [][]map;
     private int []xy;
+    public ArrayList<int[]> unexploredNeighbours = new ArrayList<>();;
 
     private boolean exploDone;
     private final double randomness = 0.2;
@@ -51,7 +53,17 @@ public class BrickMortar {
 
         //Navigation Step:
         //NOTE: IF AT LEAST ONE OF THE 4 SURROUNDING CELLS IS UNEXPLORED
-        if()
+        if(checkUnexploredSurroundings(xy))
+        {
+            //for each of the unexplored cells see how many walls
+            //or visited cells are around it, then go to the cell with
+            //most of them, which is most likely to be marked as
+            //visited in the marking step
+            for(int i = 0; i < unexploredNeighbours.size(); i++)
+            {
+
+            }
+        }
     }
 
     /**
@@ -69,6 +81,30 @@ public class BrickMortar {
     //Interesting research question how this performs when we cut down its vision to only straight
     public boolean checkUnexploredSurroundings(int[] xy)
     {
+        getUnexploredNeighbours(xy);
+        if(!unexploredNeighbours.isEmpty())
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public int countWallsAndVisited(int[] xy)
+    {
+        int count = 0;
+        // for every wall and visited cell add to count
+        return count;
+    }
+
+    public void getUnexploredNeighbours(int[] xy)
+    {
+
+        unexploredNeighbours.clear();
+        //if up down left right is unexplored blah blah blah
+        //unexploredNeighbours = new ArrayList<>();
 
     }
     public void simulateVision(Rotations rot, int[] xy, Variables vr)
