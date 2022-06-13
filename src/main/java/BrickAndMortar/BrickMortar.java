@@ -18,9 +18,15 @@ public class BrickMortar {
 
 
 
-    public BrickMortar(int [][]map, Rotations rot){
+    public BrickMortar(int[][] map, Rotations rot){
       this.map = map;
       this.exploDone = false;
       this.rot = rot;
+    }
+
+
+    public Moves brickAndMortar()
+    {
+
     }
 }

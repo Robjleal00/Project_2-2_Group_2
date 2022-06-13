@@ -729,6 +729,24 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         return lastSeen;
     }
 
+    public int[][] makeBrickAndMortarMap(String[][] individualMap) {
+        int[][] bamMap = new int[individualMap.length][individualMap[0].length];
+
+        for (int i = 0; i < individualMap.length; i++) {
+            for (int j = 0; j < individualMap[0].length; j++) {
+                // Walls are represented as number 3
+                if (individualMap[i][j].contains("W")||individualMap[i][j].contains("X")) {
+                    bamMap[i][j] = 3;
+
+                } else {
+                    // BAM, set all to unexplored
+                    bamMap[i][j] = 0;
+                }
+            }
+        }
+        return bamMap;
+    }
+
 
 
 
