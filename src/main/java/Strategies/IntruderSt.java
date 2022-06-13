@@ -131,7 +131,7 @@ public class IntruderSt extends Strategy{
                     if(stuck(xy)){
                         System.out.println("STUCKKKKK");
                         TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
-                        move = root.getMove();
+                        move = root.getMove(false);
 
                         if(move==Moves.STUCK){
                             move = root.tryPathfinding();
