@@ -47,6 +47,10 @@ public class BrickMortar {
         {
             map[xy[0]][xy[1]] = 1;
         }
+
+        //Navigation Step:
+        //NOTE: IF AT LEAST ONE OF THE 4 SURROUNDING CELLS IS UNEXPLORED
+        if()
     }
 
     /**
@@ -59,6 +63,13 @@ public class BrickMortar {
         return null;
     }
 
+    //This would probably only be called when the intruder first spawns and when it uses a
+    //teleporter, since it usually knows the way it came from, and can see to its left and right
+    //Interesting research question how this performs when we cut down its vision to only straight
+    public boolean checkUnexploredSurroundings(int[] xy)
+    {
+
+    }
     public void simulateVision(Rotations rot, int[] xy, Variables vr)
     {
         int x = xy[0];
