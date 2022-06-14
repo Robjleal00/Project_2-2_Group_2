@@ -4,6 +4,7 @@ import Config.Variables;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
+import Patrolling.Position;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,7 +29,6 @@ public class BrickMortar {
     private final Rotations rot;
 
 
-
     public BrickMortar(int[][] map, Rotations rot){
         this.map = map;
         this.exploDone = false;
@@ -36,6 +36,9 @@ public class BrickMortar {
         this.mapHeight = map.length;
         this.mapLength = map[0].length;
     }
+
+
+
 
 
     public Moves brickAndMortar(int[] xy)
@@ -53,43 +56,104 @@ public class BrickMortar {
 
         //Navigation Step:
         //NOTE: IF AT LEAST ONE OF THE 4 SURROUNDING CELLS IS UNEXPLORED
+        ArrayList<Position> unexploredNeighbours = returnUnexploredNeighbours(xy);
+        int [] bestUnexploredPos = bestUnexplored(unexploredNeighbours);
 
-        // Check LEFT
+
+        // NOTE ELSE IF: else if at least one of the four cells around is explored
+        ArrayList<Position> exploredNeighbours = returnExploredNeighbours(xy);
+
+        return null;
+    }
+
+
+    public ArrayList<Position> returnUnexploredNeighbours(int[]xy){
+
+            ArrayList<Position> unexploredNeighbours = new ArrayList<Position>();
+
+            // check LEFT
+            if(map[xy[0] - 1][xy[1]] == unexplored){
+                unexploredNeighbours.add(new Position(xy[0] - 1, xy[1]));
+
+            }
+            // Check RIGHT
+            else if(map[xy[0] + 1][xy[1]] == unexplored){
+                unexploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
+            }
+            // Check UP
+            else if(map[xy[0]][xy[1] + 1] == unexplored){
+                unexploredNeighbours.add(new Position(xy[0], xy[1] + 1));
+            }
+            // Check DOWN
+            else if(map[xy[0]][xy[1] - 1] == unexplored){
+                unexploredNeighbours.add(new Position(xy[0], xy[1] - 1));
+
+            }
+            return unexploredNeighbours;
+        }
+
+    public ArrayList<Position> returnExploredNeighbours(int[]xy){
+
+        ArrayList<Position> exploredNeighbours = new ArrayList<Position>();
+
+        // check LEFT
         if(map[xy[0] - 1][xy[1]] == unexplored){
-
+            exploredNeighbours.add(new Position(xy[0] - 1, xy[1]));
         }
         // Check RIGHT
         else if(map[xy[0] + 1][xy[1]] == unexplored){
-
+            exploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
         }
         // Check UP
         else if(map[xy[0]][xy[1] + 1] == unexplored){
-
+            exploredNeighbours.add(new Position(xy[0], xy[1] + 1));
         }
         // Check DOWN
         else if(map[xy[0]][xy[1] - 1] == unexplored){
-
+            exploredNeighbours.add(new Position(xy[0], xy[1] - 1));
         }
-
-        // NOTE ELSE IF: else if at least one of the four cells around is explored
-        // Check LEFT
-        if(map[xy[0] - 1][xy[1]] == explored){
-
-        }
-        // Check RIGHT
-        else if(map[xy[0] + 1][xy[1]] == explored){
-
-        }
-        // Check UP
-        else if(map[xy[0]][xy[1] + 1] == explored){
-
-        }
-        // Check DOWN
-        else if(map[xy[0]][xy[1] - 1] == explored){
-
-        }
-
+        return exploredNeighbours;
     }
+
+
+    public int[] bestUnexplored(ArrayList<Position> exploredNeighbours){
+        int numExploredNeighbours = exploredNeighbours.size();
+        int count = 0;
+        // This will store the pos of the best unexplored neighbour
+        int[]bestXY = new int[1];
+
+        //check walls and visited
+        for(Position explored: exploredNeighbours){
+            int currentCount = 0;
+            int [] currentXY = {explored.getX(), explored.getY()};
+
+            // check LEFT
+            if(map[xy[0] - 1][xy[1]] == walls || map[xy[0] - 1][xy[1]] == visited){
+                currentCount++;
+            }
+            // Check RIGHT
+            else if(map[xy[0] + 1][xy[1]] == unexplored || map[xy[0] + 1][xy[1]] == ){
+                currentCount++;
+            }
+            // Check UP
+            else if(map[xy[0]][xy[1] + 1] == unexplored || map[xy[0]][xy[1] + 1] == visited){
+                currentCount++;
+            }
+            // Check DOWN
+            else if(map[xy[0]][xy[1] - 1] == unexplored || (map[xy[0]][xy[1] - 1] == visited)){
+                currentCount++;
+            }
+            if(currentCount > count){
+                count = currentCount;
+                bestXY[0] = currentXY[0];
+                bestXY[1] = currentXY[1];
+            }
+        }
+        return bestXY;
+    }
+
+
+
 
     /**
      *
@@ -134,8 +198,6 @@ public class BrickMortar {
     }
     public void simulateVision(Rotations rot, int[] xy, Variables vr)
     {
-        int explored = 1;
-        int walls = 3;
         // O = Unexplored
         // 1 = Explored
         // 2 = Visited
