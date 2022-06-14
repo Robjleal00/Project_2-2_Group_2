@@ -14,10 +14,7 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static java.util.Collections.max;
-import static java.util.Collections.min;
-
-public class IntruderSt extends Strategy{
+public class IntruderTwo extends Strategy{
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final HashMap<Integer,int[]> objects;
@@ -31,9 +28,12 @@ public class IntruderSt extends Strategy{
     private boolean walked;
     private int count = 0;
     private boolean explorationRun;
+    private boolean completeRotation;
+    private int rotationCount;
+    //At every move it turns 360 and checks whether the target is there
+    // maybe puts a # second marker when it sees a guard or a wall or the target
 
-
-    public IntruderSt(){
+    public IntruderTwo(){
         this.explored = new HashMap<>();
         this.walls = new HashMap<>();
         this.objects = new HashMap<>();
@@ -42,24 +42,35 @@ public class IntruderSt extends Strategy{
         this.atGoal = false;
         this.walked = true;
         this.explorationRun = false;
+        this.completeRotation = false;
+        this.rotationCount = 0;
 
     }
 
     @Override
     public void setBooleans(boolean s, boolean c) {
         this.searching = true;
-        this.chased = false;
+        this.chased = false; //goes after target
+        //escaping
     }
 
     @Override
-    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
-
-        updateExploration(vision, xy, rot);
-        visitedPoints.add(new Point(xy,new ArrayList<>()));
-
+    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder) {
         Moves move = Moves.STUCK;
-        if(searching){
-            //TODO: Check when it sees guard and chasing is set to true
+        updateExploration(vision, xy, rot);
+        if(rotationCount != 4){
+            rotationCount++;
+
+            //if it sees something -- Chasing starts
+            //or escaping starts
+            return Moves.TURN_RIGHT;
+        }
+        else {
+            //Complete rotation has been done
+            rotationCount = 0;
+            completeRotation = true;
+            visitedPoints.add(new Point(xy,new ArrayList<>()));
+
             if(walked == false ){
                 walked = true;
                 move = Moves.WALK;
@@ -157,12 +168,13 @@ public class IntruderSt extends Strategy{
                     }
                 }
             }
+
         }
 
         count++;
         return move;
-
     }
+
 
     public boolean stuck(int[]xy){
         Point p = visitedPoints.get(visitedPoints.size()-2);
@@ -172,8 +184,6 @@ public class IntruderSt extends Strategy{
         return false;
     }
 
-
-
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
         Gson gson = new Gson();
         String jsonString = gson.toJson(maptoCopy);
@@ -182,7 +192,7 @@ public class IntruderSt extends Strategy{
         return gson.fromJson(jsonString, type);
     }
 
-
+    //Same method as in the other strategies
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
         int eyeRange = vision.length;
         int currentX = xy[0];
@@ -355,4 +365,5 @@ public class IntruderSt extends Strategy{
         }
 
     }
+
 }

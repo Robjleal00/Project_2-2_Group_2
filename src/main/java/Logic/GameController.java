@@ -124,7 +124,7 @@ public class GameController { // self explanatory
     public void addVars(Variables vr) {
         this.walkSpeed = vr.walkSpeed();
         this.eyeRange = vr.eyeRange();
-        this.pheromonesDuration=vr.pDur();
+        this.pheromonesDuration = vr.pDur();
     }
 
     public void init() throws InterruptedException {
@@ -238,13 +238,16 @@ public class GameController { // self explanatory
     public void printMap() {
         printArray(map);
     }
-    public void printIntArray(int[][] thing){
+
+    public void printIntArray(int[][] thing) {
         Arrays.stream(thing).forEach(this::printIntRow);
     }
-    public void printIntRow(int[]row){
+
+    public void printIntRow(int[] row) {
         String[] array = Arrays.stream(row).mapToObj(String::valueOf).toArray(String[]::new);
         printRow(array);
     }
+
     public void printArray(String[][] thing) {
         Arrays.stream(thing).forEach(this::printRow);
     }
@@ -462,25 +465,25 @@ public class GameController { // self explanatory
     }
 
 
-    private void pheromoneSide(int[] pos, Rotations rot){
+    private void pheromoneSide(int[] pos, Rotations rot) {
 
         int x = pos[1];
         int y = pos[0];
-        for ( int i = -1; i < 2; i++) {
+        for (int i = -1; i < 2; i++) {
             switch (rot) { // the fucking coordinates are inverted
                 case LEFT:
                 case RIGHT:
-                    int x2=x+i;
-                    pheromonesMap[x2][y]=pheromonesDuration;
+                    int x2 = x + i;
+                    pheromonesMap[x2][y] = pheromonesDuration;
 
                     continue;
                 case DOWN:
-                case UP :
-                    int y2 = y+i;
-                    pheromonesMap[x][y2]=pheromonesDuration;
+                case UP:
+                    int y2 = y + i;
+                    pheromonesMap[x][y2] = pheromonesDuration;
                     continue;
-                }
             }
+        }
 
     }
 
@@ -490,24 +493,24 @@ public class GameController { // self explanatory
         int[] pos = entityLocations.get(e);
         switch (m) {
             case P_TURN_AROUND -> {
-                pheromoneSide(pos,rotation);
-                return executeMove(e,Moves.TURN_AROUND);
+                pheromoneSide(pos, rotation);
+                return executeMove(e, Moves.TURN_AROUND);
             }
             case P_TURN_LEFT -> {
-                pheromoneSide(pos,rotation);
-                return executeMove(e,Moves.TURN_LEFT);
+                pheromoneSide(pos, rotation);
+                return executeMove(e, Moves.TURN_LEFT);
             }
             case P_TURN_RIGHT -> {
-                pheromoneSide(pos,rotation);
-                return executeMove(e,Moves.TURN_RIGHT);
+                pheromoneSide(pos, rotation);
+                return executeMove(e, Moves.TURN_RIGHT);
             }
             case P_WALK -> {
-                pheromoneSide(pos,rotation);
-                return executeMove(e,Moves.WALK);
+                pheromoneSide(pos, rotation);
+                return executeMove(e, Moves.WALK);
             }
             case P_USE_TELEPORTER -> {
-                pheromoneSide(pos,rotation);
-                return executeMove(e,Moves.USE_TELEPORTER);
+                pheromoneSide(pos, rotation);
+                return executeMove(e, Moves.USE_TELEPORTER);
             }
             case USE_TELEPORTER -> {
                 //System.out.println("HE WANTS TO USE IT");
@@ -737,7 +740,9 @@ public class GameController { // self explanatory
     }
 
 
-    public void setGlobalRotationIntruder(Rotations rot){this.intruderGlobalRotation = rot;}
+    public void setGlobalRotationIntruder(Rotations rot) {
+        this.intruderGlobalRotation = rot;
+    }
 
     public void addObject(ObjectOnMap o) {
         objects.add(o);
@@ -842,10 +847,12 @@ public class GameController { // self explanatory
         }
         return "ERROR";
     }
-    private boolean blockedByObstacles(String s){
+
+    private boolean blockedByObstacles(String s) {
         // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
-        return s.contains("I")||s.contains("G")||s.contains("E")||s.contains("W");
+        return s.contains("I") || s.contains("G") || s.contains("E") || s.contains("W");
     }
+
     private boolean canBePutThere(int[] target, Entity e) {
         if (target[0] > -1 && target[0] < mapHeight && target[1] > -1 && target[1] < mapLength) {
             if (e.getType() == EntityType.INTRUDER) {
@@ -869,9 +876,9 @@ public class GameController { // self explanatory
         return ((yx[0]) + yx[1] * mapHeight);
     }
 
-    private void checkWin(int turns) {{
-        switch (gameMode){
-            case EXPLORATION ->{
+    private void checkWin(int turns) {
+        switch (gameMode) {
+            case EXPLORATION -> {
                 if (allUnseenTiles.isEmpty()) isRunning = false;
                 if (turns > MAX_TURNS) isRunning = false;
             }
@@ -879,128 +886,144 @@ public class GameController { // self explanatory
                 //TODO intruder win/lose
             }
         }
-
     }
 
-    public Moves getDirection(Entity intEntity){ //Rotation or move?
-        //get position
-        int[] targetLoc = new int[2];
-        for(ObjectOnMap ob : objects){
-            if(ob instanceof Goal)
-                targetLoc = ob.getXy(); break;
+    public void shiftPheromones(){
+        for ( int i=0;i<pheromonesMap.length;i++){
+            for(int j = 0; j < pheromonesMap[0].length; j++){
+                int val = pheromonesMap[i][j];
+                if(val >0) {pheromonesMap[i][j]--;val--;}//map[i][j]=String.valueOf(pheromonesMap[i][j]);
+                if(!blockedByObstacles(map[i][j])) {
+                    if(val==0){
+                        map[i][j]=" ";
+                    }
+                    else if(val>0) {
+                        map[i][j] = String.valueOf(pheromonesMap[i][j]);
+                    }
+                }
+            }
         }
-
-        //get the current rotation of the intruder
-        //From the rotation hashmap
-        Rotations globRot = entityRotationsHashMap.get(intEntity);
-
-        int[] intruderLoc = entityLocations.get(intEntity);
-
-        //Stopping condition
-        if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
-            isRunning = false;
-
-
-        double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
-        double angle = Math.atan(tanTheta);
-        int degAngle = (int) Math.toDegrees(angle);
-
-        System.out.println("Global rotation: " + globRot.toString());
-        System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
-        System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
-        System.out.println("tanTheta: " + tanTheta);
-        //System.out.println("Deg angle : " + degAngle);
-
-        if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]) {
-            degAngle = 90 + degAngle;
-        }
-        else if(degAngle < 0 && targetLoc[1] < intruderLoc[1]) {
-            degAngle = degAngle + 360;
-        }
-        else if(targetLoc[1] > intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
-            degAngle = degAngle + 270;
-        }
-        else if(targetLoc[1] == intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
-            degAngle = degAngle + 180;
-        }
-
-        //Problem if it encounters a wall with the setGlobalRotation method
-        System.out.println("Deg angle : " + degAngle);
-
-        if(degAngle > 45 && degAngle < 135) {
-            if(globRot == Rotations.UP) {return Moves.TURN_AROUND;}
-            else if(globRot == Rotations.DOWN) {return Moves.WALK;}
-            else if(globRot == Rotations.RIGHT){return Moves.TURN_RIGHT;}
-            else {return Moves.TURN_LEFT;}
-        }
-        else if((degAngle <= 45 && degAngle >= 0) || (degAngle >= 315 && degAngle < 360)) {
-            if(globRot == Rotations.UP) {return Moves.TURN_RIGHT;}
-            else if(globRot == Rotations.DOWN) {return Moves.TURN_LEFT;}
-            else if(globRot == Rotations.RIGHT) {return Moves.WALK;}
-            else {return Moves.TURN_AROUND;}
-        }
-        else if(degAngle >225 && degAngle < 315){
-            if(globRot == Rotations.UP)
-                return Moves.WALK;
-            else if(globRot == Rotations.DOWN) {return Moves.TURN_AROUND;}
-            else if(globRot == Rotations.RIGHT) {return Moves.TURN_LEFT;}
-            else {return Moves.TURN_RIGHT;}
-        }
-        else{
-            if(globRot == Rotations.UP) {return Moves.TURN_LEFT;}
-            else if(globRot == Rotations.DOWN) {return Moves.TURN_RIGHT;}
-            else if(globRot == Rotations.RIGHT) {return Moves.TURN_AROUND;}
-            else {return Moves.WALK;}
-        }
-
-    }
-    public Rotations getIntRot() {
-        return intruderGlobalRotation;
     }
 
-    public Moves getNextBestMove(Entity intEntity){
-        Moves returner = Moves.STUCK;
-        int[] targetLoc = new int[2];
-        for(ObjectOnMap ob : objects){
-            if(ob instanceof Goal)
-                targetLoc = ob.getXy(); break;
+        public Moves getDirection(Entity intEntity){ //Rotation or move?
+            //get position
+            int[] targetLoc = new int[2];
+            for(ObjectOnMap ob : objects){
+                if(ob instanceof Goal)
+                    targetLoc = ob.getXy(); break;
+            }
+
+            //get the current rotation of the intruder
+            //From the rotation hashmap
+            Rotations globRot = entityRotationsHashMap.get(intEntity);
+
+            int[] intruderLoc = entityLocations.get(intEntity);
+
+            //Stopping condition
+            if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
+                isRunning = false;
+
+
+            double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);
+            double angle = Math.atan(tanTheta);
+            int degAngle = (int) Math.toDegrees(angle);
+
+            System.out.println("Global rotation: " + globRot.toString());
+            System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+            System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
+            System.out.println("tanTheta: " + tanTheta);
+            //System.out.println("Deg angle : " + degAngle);
+
+            if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]) {
+                degAngle = 90 + degAngle;
+            }
+            else if(degAngle < 0 && targetLoc[1] < intruderLoc[1]) {
+                degAngle = degAngle + 360;
+            }
+            else if(targetLoc[1] > intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
+                degAngle = degAngle + 270;
+            }
+            else if(targetLoc[1] == intruderLoc[1] && targetLoc[0] < intruderLoc[0]){
+                degAngle = degAngle + 180;
+            }
+
+            //Problem if it encounters a wall with the setGlobalRotation method
+            System.out.println("Deg angle : " + degAngle);
+
+            if(degAngle > 45 && degAngle < 135) {
+                if(globRot == Rotations.UP) {return Moves.TURN_AROUND;}
+                else if(globRot == Rotations.DOWN) {return Moves.WALK;}
+                else if(globRot == Rotations.RIGHT){return Moves.TURN_RIGHT;}
+                else {return Moves.TURN_LEFT;}
+            }
+            else if((degAngle <= 45 && degAngle >= 0) || (degAngle >= 315 && degAngle < 360)) {
+                if(globRot == Rotations.UP) {return Moves.TURN_RIGHT;}
+                else if(globRot == Rotations.DOWN) {return Moves.TURN_LEFT;}
+                else if(globRot == Rotations.RIGHT) {return Moves.WALK;}
+                else {return Moves.TURN_AROUND;}
+            }
+            else if(degAngle >225 && degAngle < 315){
+                if(globRot == Rotations.UP)
+                    return Moves.WALK;
+                else if(globRot == Rotations.DOWN) {return Moves.TURN_AROUND;}
+                else if(globRot == Rotations.RIGHT) {return Moves.TURN_LEFT;}
+                else {return Moves.TURN_RIGHT;}
+            }
+            else{
+                if(globRot == Rotations.UP) {return Moves.TURN_LEFT;}
+                else if(globRot == Rotations.DOWN) {return Moves.TURN_RIGHT;}
+                else if(globRot == Rotations.RIGHT) {return Moves.TURN_AROUND;}
+                else {return Moves.WALK;}
+            }
+
+        }
+        public Rotations getIntRot() {
+            return intruderGlobalRotation;
         }
 
-        Rotations globalRot = entityRotationsHashMap.get(intEntity);
-
-        int[] intruderLoc = entityLocations.get(intEntity);
-
-        int ydif = targetLoc[1]-intruderLoc[1];
-        int xdif = targetLoc[0] - intruderLoc[0];
-
-        if (Math.abs(ydif) < Math.abs(xdif)) {
-            if (ydif < 0) {
-                if(globalRot == Rotations.UP) {returner = Moves.WALK;}
-                else if(globalRot == Rotations.DOWN) {returner = Moves.TURN_AROUND;}
-                else if(globalRot == Rotations.RIGHT) {returner = Moves.TURN_LEFT;}
-                else {returner = Moves.TURN_RIGHT;}
+        public Moves getNextBestMove(Entity intEntity){
+            Moves returner = Moves.STUCK;
+            int[] targetLoc = new int[2];
+            for(ObjectOnMap ob : objects){
+                if(ob instanceof Goal)
+                    targetLoc = ob.getXy(); break;
             }
-            else {
-                if(globalRot == Rotations.UP) {returner = Moves.TURN_AROUND;}
-                else if(globalRot == Rotations.DOWN) {returner = Moves.WALK;}
-                else if(globalRot == Rotations.RIGHT){returner = Moves.TURN_RIGHT;}
-                else {returner = Moves.TURN_LEFT;}
+
+            Rotations globalRot = entityRotationsHashMap.get(intEntity);
+
+            int[] intruderLoc = entityLocations.get(intEntity);
+
+            int ydif = targetLoc[1]-intruderLoc[1];
+            int xdif = targetLoc[0] - intruderLoc[0];
+
+            if (Math.abs(ydif) < Math.abs(xdif)) {
+                if (ydif < 0) {
+                    if(globalRot == Rotations.UP) {returner = Moves.WALK;}
+                    else if(globalRot == Rotations.DOWN) {returner = Moves.TURN_AROUND;}
+                    else if(globalRot == Rotations.RIGHT) {returner = Moves.TURN_LEFT;}
+                    else {returner = Moves.TURN_RIGHT;}
+                }
+                else {
+                    if(globalRot == Rotations.UP) {returner = Moves.TURN_AROUND;}
+                    else if(globalRot == Rotations.DOWN) {returner = Moves.WALK;}
+                    else if(globalRot == Rotations.RIGHT){returner = Moves.TURN_RIGHT;}
+                    else {returner = Moves.TURN_LEFT;}
+                }
             }
+            else  {
+                if (xdif<0) {
+                    if(globalRot == Rotations.UP) {returner = Moves.TURN_LEFT;}
+                    else if(globalRot == Rotations.DOWN) {returner = Moves.TURN_RIGHT;}
+                    else if(globalRot == Rotations.RIGHT) {returner = Moves.TURN_AROUND;}
+                    else {returner = Moves.WALK;}
+                }
+                else {
+                    if(globalRot == Rotations.UP) {returner = Moves.TURN_RIGHT;}
+                    else if(globalRot == Rotations.DOWN) {returner = Moves.TURN_LEFT;}
+                    else if(globalRot == Rotations.RIGHT) {returner = Moves.WALK;}
+                    else {returner = Moves.TURN_AROUND;}
+                }
+            }
+            return returner;
         }
-        else  {
-            if (xdif<0) {
-                if(globalRot == Rotations.UP) {returner = Moves.TURN_LEFT;}
-                else if(globalRot == Rotations.DOWN) {returner = Moves.TURN_RIGHT;}
-                else if(globalRot == Rotations.RIGHT) {returner = Moves.TURN_AROUND;}
-                else {returner = Moves.WALK;}
-            }
-            else {
-                if(globalRot == Rotations.UP) {returner = Moves.TURN_RIGHT;}
-                else if(globalRot == Rotations.DOWN) {returner = Moves.TURN_LEFT;}
-                else if(globalRot == Rotations.RIGHT) {returner = Moves.WALK;}
-                else {returner = Moves.TURN_AROUND;}
-            }
-        }
-        return returner;
     }
-}
