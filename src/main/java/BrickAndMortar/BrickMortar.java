@@ -1,6 +1,7 @@
 package BrickAndMortar;
 
 import Config.Variables;
+import Entities.Intruder;
 import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
@@ -10,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 
 public class BrickMortar {
+
+    private final Moves[] availableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND, Moves.USE_TELEPORTER};
 
     int unexplored = 0;
     int explored = 1;
@@ -22,7 +25,6 @@ public class BrickMortar {
 
     private int [][]map;
     private int []xy;
-    public ArrayList<int[]> unexploredNeighbours = new ArrayList<>();;
 
     private boolean exploDone;
     private final double randomness = 0.2;
@@ -41,8 +43,9 @@ public class BrickMortar {
 
 
 
-    public Moves brickAndMortar(int[] xy)
+    public Moves brickAndMortar(int[] xy, Rotations rot, GameController gm, Variables vr)
     {
+        updateVision(rot, xy,vr);
         //Marking Step:
         //
         if(isBlockingPath(xy) == false)
@@ -57,11 +60,164 @@ public class BrickMortar {
         //Navigation Step:
         //NOTE: IF AT LEAST ONE OF THE 4 SURROUNDING CELLS IS UNEXPLORED
         ArrayList<Position> unexploredNeighbours = returnUnexploredNeighbours(xy);
-        int [] bestUnexploredPos = bestUnexplored(unexploredNeighbours);
+        if(unexploredNeighbours.size() != 0)
+        {
+            int[] bestUnexploredPos = bestUnexplored(unexploredNeighbours);
+            int xDiff = bestUnexploredPos[0] - xy[0];
+            int yDiff = bestUnexploredPos[1] - xy[1];
 
-
+            //TODO: compare with Bianca and Husam's intruder to see if global rotation also applies here
+            // I added this in here for now
+            Rotations intruderRotation = gm.getIntRot();
+            if(yDiff == 0)
+            {
+                //Move to the right
+                if(xDiff > 0)
+                {
+                    //check if it has to rotate first before moving
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.TURN_AROUND;}
+                        case RIGHT -> {return Moves.WALK;}
+                        //TODO: Am I mixing up i and j? Is it xy or yx?
+                        //Looking at Piotr's code from patroller, forward would mean it's facing down???
+                        //compare starting line 266 in patroller
+                        case FORWARD -> {return Moves.TURN_LEFT;}
+                        case BACK -> {return Moves.TURN_RIGHT;}
+                    }
+                }
+                else
+                {
+                    //Move left
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.WALK;}
+                        case RIGHT -> {return Moves.TURN_AROUND;}
+                        case FORWARD -> {return Moves.TURN_RIGHT;}
+                        case BACK -> {return Moves.TURN_LEFT;}
+                    }
+                }
+            }
+            else if(xDiff == 0)
+            {
+                if(yDiff < 0)
+                {
+                    //GO UP (????)
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.TURN_RIGHT;}
+                        case RIGHT -> {return Moves.TURN_LEFT;}
+                        case FORWARD -> {return Moves.TURN_AROUND;}
+                        case BACK -> {return Moves.WALK;}
+                    }
+                }
+                else
+                {
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.TURN_LEFT;}
+                        case RIGHT -> {return Moves.TURN_RIGHT;}
+                        case FORWARD -> {return Moves.WALK;}
+                        case BACK -> {return Moves.TURN_AROUND;}
+                    }
+                }
+            }
+        }
         // NOTE ELSE IF: else if at least one of the four cells around is explored
         ArrayList<Position> exploredNeighbours = returnExploredNeighbours(xy);
+        if(exploredNeighbours.size() != 0)
+        {
+            //Make it always head into the target direction
+            //randomness makes it choose another cell to go to than the one in the direction of the target
+            double chance = Math.random();
+            if(chance > randomness)
+            {
+                //This is "cheating" since it just gets the targetPosition, but it doesn't plot an immediate path to it
+                //so this is "fine"
+                int[] targetPosition = gm.brickAndMortarDirection();
+                int xDiff = targetPosition[0] - xy[0];
+                int yDiff = targetPosition[1] - xy[1];
+
+                Rotations intruderRotation = gm.getIntRot();
+                if(yDiff == 0)
+                {
+                    //Move to the right
+                    if(xDiff > 0)
+                    {
+                        //check if it has to rotate first before moving
+                        switch(rot)
+                        {
+                            case LEFT -> {return Moves.TURN_AROUND;}
+                            case RIGHT -> {return Moves.WALK;}
+                            //TODO: Am I mixing up i and j? Is it xy or yx?
+                            //Looking at Piotr's code from patroller, forward would mean it's facing down???
+                            //compare starting line 266 in patroller
+                            case FORWARD -> {return Moves.TURN_LEFT;}
+                            case BACK -> {return Moves.TURN_RIGHT;}
+                        }
+                    }
+                    else
+                    {
+                        //Move left
+                        switch(rot)
+                        {
+                            case LEFT -> {return Moves.WALK;}
+                            case RIGHT -> {return Moves.TURN_AROUND;}
+                            case FORWARD -> {return Moves.TURN_RIGHT;}
+                            case BACK -> {return Moves.TURN_LEFT;}
+                        }
+                    }
+                }
+                else if(xDiff == 0)
+                {
+                    if(yDiff < 0)
+                    {
+                        //GO UP (????)
+                        switch(rot)
+                        {
+                            case LEFT -> {return Moves.TURN_RIGHT;}
+                            case RIGHT -> {return Moves.TURN_LEFT;}
+                            case FORWARD -> {return Moves.TURN_AROUND;}
+                            case BACK -> {return Moves.WALK;}
+                        }
+                    }
+                    else
+                    {
+                        switch(rot)
+                        {
+                            case LEFT -> {return Moves.TURN_LEFT;}
+                            case RIGHT -> {return Moves.TURN_RIGHT;}
+                            case FORWARD -> {return Moves.WALK;}
+                            case BACK -> {return Moves.TURN_AROUND;}
+                        }
+                    }
+                }
+            }
+            else
+            {
+                //else do an arbitrary move
+                //Placeholder for now
+                double randomMove = Math.random();
+                if(randomMove < 0.25)
+                {
+                    return Moves.TURN_RIGHT;
+                }
+                if(randomMove < 0.5)
+                {
+                    return Moves.TURN_LEFT;
+                }
+                if(randomMove < 1)
+                {
+                    return Moves.WALK;
+                }
+            }
+
+
+        }
+        else
+        {
+            return Moves.STUCK;
+        }
 
         return null;
     }
@@ -117,22 +273,21 @@ public class BrickMortar {
 
 
     public int[] bestUnexplored(ArrayList<Position> exploredNeighbours){
-        int numExploredNeighbours = exploredNeighbours.size();
         int count = 0;
         // This will store the pos of the best unexplored neighbour
-        int[]bestXY = new int[1];
+        int[] bestXY = new int[1];
 
         //check walls and visited
         for(Position explored: exploredNeighbours){
             int currentCount = 0;
-            int [] currentXY = {explored.getX(), explored.getY()};
+            int[] currentXY = {explored.getX(), explored.getY()};
 
             // check LEFT
             if(map[xy[0] - 1][xy[1]] == walls || map[xy[0] - 1][xy[1]] == visited){
                 currentCount++;
             }
             // Check RIGHT
-            else if(map[xy[0] + 1][xy[1]] == unexplored || map[xy[0] + 1][xy[1]] == ){
+            else if(map[xy[0] + 1][xy[1]] == unexplored || map[xy[0] + 1][xy[1]] == visited ){
                 currentCount++;
             }
             // Check UP
@@ -162,12 +317,13 @@ public class BrickMortar {
      */
     public boolean isBlockingPath(int[] xy)
     {
-        return null;
+        return false;
     }
 
     //This would probably only be called when the intruder first spawns and when it uses a
     //teleporter, since it usually knows the way it came from, and can see to its left and right
     //Interesting research question how this performs when we cut down its vision to only straight
+    /*
     public boolean checkUnexploredSurroundings(int[] xy)
     {
         getUnexploredNeighbours(xy);
@@ -180,6 +336,7 @@ public class BrickMortar {
             return false;
         }
     }
+    */
 
     public int countWallsAndVisited(int[] xy)
     {
@@ -188,240 +345,64 @@ public class BrickMortar {
         return count;
     }
 
-    public void getUnexploredNeighbours(int[] xy)
-    {
-
-        unexploredNeighbours.clear();
-        //if up down left right is unexplored blah blah blah
-        //unexploredNeighbours = new ArrayList<>();
-
-    }
-    public void simulateVision(Rotations rot, int[] xy, Variables vr)
+    public void updateVision(Rotations rotation, int[] xy, Variables vr)
     {
         // O = Unexplored
         // 1 = Explored
         // 2 = Visited
         // 3 = Wall
 
-
         int x = xy[0];
         int y = xy[1];
         int range = vr.eyeRange();
-        boolean[] blocked = new boolean[3];
-        // System.out.println(range);
-
-        String[][] returner = new String[range][3];
-
-        for (int j = 0; j < range; j++) { // upfront
-            for (int i = -1; i < 2; i++) { // sideways
+        for (int i = -1; i < 2; i++) { // sideways
+            for (int j = 0; j < range; j++) { // upfront
                 int sX = range - 1 - j;
                 int sY = i + 1;
-                switch (rot) {
+                switch (rotation) {
                     case BACK -> {
                         int xM = x + j;
                         int yM = y - i;
                         if (inBounds(xM, yM)) {
-                            if (!blocked[1]) {
-                                if(i==-1&&blocked[0]){
-                                    if(inBounds(xM,y)){
-                                        if (map[xM][y] == walls){
-                                            returner[sX][sY]="X";
-                                            continue;
-                                        }
-                                    }
-                                }
-                                String symbol = map[xM][yM];
-                                returner[sX][sY] = symbol;
-                                if (symbol.contains("W")) {
-                                    blocked[i + 1] = true;
-                                }
-                            } else {
-                                switch (i) {
-                                    case -1 -> {
-                                        if (blocked[0]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                    case 0 -> returner[sX][sY] = "X";
-                                    case 1 -> {
-                                        if (blocked[2]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                }
+                            //TODO: look into this:
+                            //Copied over from Patroller which used sX/sY instead of xM, yM
+
+                            //Don't set walls, explored and visited cells as explored
+                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
+                                map[xM][yM] = explored;
                             }
-                        } else {
-                            returner[sX][sY] = "X";
                         }
                     }
                     case FORWARD -> {
                         int xM = x - j;
                         int yM = y + i;
                         if (inBounds(xM, yM)) {
-                            if (!blocked[1]) {
-                                if(i==-1&&blocked[0]){
-                                    if(inBounds(xM,y)){
-                                        if (map[xM][y].contains("W")){
-                                            returner[sX][sY]="X";
-                                            continue;
-                                        }
-                                    }
-                                }
-                                String symbol = map[xM][yM];
-                                returner[sX][sY] = symbol;
-                                if (symbol.contains("W")) {
-                                    blocked[i + 1] = true;
-                                }
-                            } else {
-                                switch (i) {
-                                    case -1 -> {
-                                        if (blocked[0]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                    case 0 -> returner[sX][sY] = "X";
-                                    case 1 -> {
-                                        if (blocked[2]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                }
+                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
+                                map[xM][yM] = explored;
                             }
-                        } else {
-                            returner[sX][sY] = "X";
                         }
                     }
                     case RIGHT -> {
                         int xM = x + i;
                         int yM = y + j;
                         if (inBounds(xM, yM)) {
-                            if (!blocked[1]) {
-                                if(i==-1&&blocked[0]){
-                                    if(inBounds(x,yM)){
-                                        if (map[x][yM].contains("W")){
-                                            returner[sX][sY]="X";
-                                            continue;
-                                        }
-                                    }
-                                }
-                                String symbol = map[xM][yM];
-                                returner[sX][sY] = symbol;
-                                if (symbol.contains("W")) {
-                                    blocked[i + 1] = true;
-                                }
-                            } else {
-                                switch (i) {
-                                    case -1 -> {
-                                        if (blocked[0]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                    case 0 -> returner[sX][sY] = "X";
-                                    case 1 -> {
-                                        if (blocked[2]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                }
+                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
+                                map[xM][yM] = explored;
                             }
-                        } else {
-                            returner[sX][sY] = "X";
                         }
                     }
                     case LEFT -> {
                         int xM = x - i;
                         int yM = y - j;
                         if (inBounds(xM, yM)) {
-                            if (!blocked[1]) {
-                                if(i==-1&&blocked[0]){
-                                    if(inBounds(x,yM)){
-                                        if (map[x][yM].contains("W")){
-                                            returner[sX][sY]="X";
-                                            continue;
-                                        }
-                                    }
-                                }
-                                String symbol = map[xM][yM];
-                                returner[sX][sY] = symbol;
-                                if (symbol.contains("W")) {
-                                    blocked[i + 1] = true;
-                                }
-                            } else {
-                                switch (i) {
-                                    case -1 -> {
-                                        if (blocked[0]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                    case 0 -> returner[sX][sY] = "X";
-                                    case 1 -> {
-                                        if (blocked[2]) {
-                                            returner[sX][sY] = "X";
-                                        } else {
-                                            String symbol = map[xM][yM];
-                                            returner[sX][sY] = symbol;
-                                            if (symbol.contains("W")) {
-                                                blocked[i + 1] = true;
-                                            }
-                                        }
-                                    }
-                                }
+                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
+                                map[xM][yM] = explored;
                             }
-                        } else {
-                            returner[sX][sY] = "X";
                         }
                     }
                 }
             }
         }
-        if (DEBUG_VISION) {
-            GameController printer = new GameController();
-            printer.printArray(returner);
-            System.out.println(Arrays.toString(blocked));
-        }
-        return returner;
     }
 
 

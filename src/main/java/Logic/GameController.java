@@ -883,6 +883,19 @@ public class GameController { // self explanatory
 
     }
 
+    //Added for brick and mortar algorithm
+    public int[] brickAndMortarDirection()
+    {
+        int[] targetLoc = new int[1];
+        for (ObjectOnMap ob : objects) {
+            if (ob instanceof Goal) {
+                targetLoc = ob.getXy();
+                return targetLoc;
+            }
+        }
+        return null;
+    }
+
     //returns a rotation based on the angle calculated (taking into consideration also the agents rotation)
     public Moves getDirection(Entity intEntity) {
         //get position
