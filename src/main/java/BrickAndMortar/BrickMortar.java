@@ -6,13 +6,31 @@ import Enums.Moves;
 import Enums.Rotations;
 import Logic.GameController;
 import Patrolling.Position;
+import Strategies.Constraints;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+
+//BEGIN V2:
+import Config.Variables;
+import Entities.Intruder;
+import Enums.Moves;
+import Enums.Rotations;
+import Logic.GameController;
+import OptimalSearch.TreeRoot;
+import PathMaking.Point;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import java.awt.*;
+import java.lang.reflect.Type;
+import java.util.*;
+
 
 public class BrickMortar {
 
-    private final Moves[] availableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND, Moves.USE_TELEPORTER};
+
 
     int unexplored = 0;
     int explored = 1;
@@ -411,4 +429,43 @@ public class BrickMortar {
         return (x > -1 && x < mapHeight && y > -1 && y < mapLength);
     }
 
+
+    /**
+     *
+     * BEGINNING OF NEW VERSION
+     */
+
+    private final HashMap<Integer, ArrayList<Integer>> explored;
+    private final HashMap<Integer, ArrayList<Integer>> unexplored;
+    private final HashMap<Integer, ArrayList<Integer>> visited;
+    private final HashMap<Integer, ArrayList<Integer>> walls;
+    private final HashMap<Integer,int[]> objects;
+    private boolean chased;
+    private boolean searching;
+    private final Constraints constraints;
+    private final Rotations[] availableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
+    private final Moves[] availableMoves = {Moves.WALK, Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND, Moves.USE_TELEPORTER};
+    private boolean atGoal;
+    private boolean walked;
+    private int count = 0;
+    private boolean explorationRun;
+    private boolean completeRotation;
+    private int rotationCount;
+
+    public BrickMortar()
+    {
+        this.explored = new HashMap<>();
+        this.unexplored = new HashMap<>();
+        this.visited = new HashMap<>();
+        this.walls = new HashMap<>();
+        this.objects = new HashMap<>();
+        this.constraints=new Constraints();
+        this.visitedPoints =new ArrayList<>();
+        this.atGoal = false;
+        this.walked = true;
+        this.explorationRun = false;
+        this.completeRotation = false;
+        this.rotationCount = 0;
+    }
 }
+
