@@ -1,11 +1,13 @@
 package Launcher;
 
+import BrickAndMortar.BrickMortar;
 import Config.Variables;
 import Entities.Explorer;
 import Enums.EntityType;
 import Enums.Rotations;
 import Logic.GameController;
 import ObjectsOnMap.Teleporter;
+import OptimalSearch.TreeRoot;
 import PathMaking.Point;
 import Strategies.BasicExplo;
 import org.openjfx.UI.Area;
@@ -94,10 +96,11 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         GameController gm = new GameController(11, 20);
-        Variables vr = new Variables(1,5);
+        Variables vr = new Variables(1,5,5,10);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        //TODO: NEW STUFF: TO FIX
+        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BrickMortar(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         gm.addObject(t1);
         gm.addWall(0,5,19,5);
@@ -112,7 +115,7 @@ public class Launcher {
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         FileReader fileReader = new FileReader();
-        Variables vr = new Variables(1,5);
+        Variables vr = new Variables(1,5,5,10);
         gm.addVars(vr);
         gm.printMap();
         gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);

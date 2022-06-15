@@ -45,6 +45,7 @@ public class BrickMortar {
 
     public Moves brickAndMortar(int[] xy, Rotations rot, GameController gm, Variables vr)
     {
+        //Sets all cells that are in the intruder's vision to "explored"
         updateVision(rot, xy,vr);
         //Marking Step:
         //
