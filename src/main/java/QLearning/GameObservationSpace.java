@@ -9,7 +9,7 @@ import org.nd4j.linalg.factory.Nd4j;
  * Game observation space. Shape is [1, 4] as we observe 4 inputs. Starting from the snake head we "look" at position
  * that is UP, RIGHT, DOWN and LEFT of the head.
  *
- * @author mirza
+ *
  */
 public class GameObservationSpace implements ObservationSpace<GameState> {
     private static final double[] LOWS = GameObservationSpace.createValueArray(NetworkUtil.LOW_VALUE);

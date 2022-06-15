@@ -8,7 +8,7 @@ import org.deeplearning4j.rl4j.space.ObservationSpace;
 /**
  * Game environment that is used to train the network.
  *
- * @author mirza
+ *
  */
 public class Environment implements MDP<GameState, Integer, DiscreteSpace> {
     // Size is 4 as we have 4 actions

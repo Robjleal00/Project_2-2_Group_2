@@ -5,7 +5,7 @@ import java.util.Objects;
 /**
  * Class used to wrap coordinates of a game object (e.g. player or food)
  *
- * @author mirza
+ *
  */
 public class Position {
     private final int x;

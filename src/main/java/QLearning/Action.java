@@ -3,11 +3,7 @@ package QLearning;
 import java.util.List;
 import java.util.Random;
 
-/**
- * Class representing actions which player can take.
- *
- * @author mirza
- */
+
 public enum Action {
     /**
      * Player will move up.

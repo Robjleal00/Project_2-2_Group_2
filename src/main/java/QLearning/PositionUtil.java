@@ -3,7 +3,7 @@ package QLearning;
 /**
  * Util class containing helper methods for position calculations.
  *
- * @author mirza
+ *
  */
 public final class PositionUtil {
 

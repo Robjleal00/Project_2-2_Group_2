@@ -6,7 +6,7 @@ import java.awt.*;
 /**
  * Util class containing methods used to ease our handling of the game.
  *
- * @author mirza
+ *
  */
 public final class GameUtil {
     // region Member

@@ -12,9 +12,9 @@ import java.util.Objects;
 
 /**
  * Implementation of a simple snake game with some extra methods needed for the network.
- * Original implementation can be found here https://github.com/janbodnar/Java-Snake-Game
  *
- * @author mirza
+ *
+ *
  */
 public class Game extends JPanel implements ActionListener {
     // region Member

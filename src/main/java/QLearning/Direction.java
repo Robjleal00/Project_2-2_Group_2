@@ -1,10 +1,6 @@
 package QLearning;
 
-/**
- * Enum containing possible directions player can take.
- *
- * @author mirza
- */
+
 public enum Direction {
     /**
      * Player will move up.

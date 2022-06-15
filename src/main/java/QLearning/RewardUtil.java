@@ -6,7 +6,7 @@ import java.util.Arrays;
 /**
  * Util class containing helper methods for reward calculation.
  *
- * @author mirza
+ *
  */
 public final class RewardUtil {
 
