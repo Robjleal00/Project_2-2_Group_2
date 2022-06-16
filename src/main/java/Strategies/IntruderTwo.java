@@ -18,8 +18,9 @@ public class IntruderTwo extends Strategy{
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final HashMap<Integer,int[]> objects;
-    private boolean chased;
+    private boolean chasing;
     private boolean searching;
+    private boolean escaping;
     private final Constraints constraints;
     Rotations[] avaliableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
     Moves[] availableMoves = {Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
@@ -48,10 +49,10 @@ public class IntruderTwo extends Strategy{
     }
 
     @Override
-    public void setBooleans(boolean s, boolean c) {
-        this.searching = true;
-        this.chased = false; //goes after target
-        //escaping
+    public void setBooleansIntruder(boolean s, boolean c, boolean e) {
+        this.searching = s;
+        this.chasing = c; //goes after target
+        this.escaping = e;
     }
 
     @Override
@@ -59,10 +60,39 @@ public class IntruderTwo extends Strategy{
         Moves move = Moves.STUCK;
         updateExploration(vision, xy, rot);
         if(rotationCount != 4){
-            rotationCount++;
+            //before rotating -> check what the intruder is seeing
+            int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
+            int currentX = xy[0];
+            int currentY = xy[1];
+
+            for (int i = 0; i < eyeRange; i++) { //i= upfront
+                for (int j = -1; j < 2; j++) { //j==sideways
+                    int h = eyeRange - (i + 1);
+                    int l = j + 1;
+                    final String lookingAt = vision[h][l];
+
+                    if(lookingAt.contains("G")){ //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
+                        System.out.println("GUARD SPOTTED");
+                        setBooleansIntruder(false, false, true); //escaping from guard
+                    }
+                    else if(lookingAt.contains("V1")){
+                        System.out.println("TARGET SPOTTED");
+                        setBooleansIntruder(false, true, false); //chasing the target
+                    }
+                }
+            }
+
+            // TODO: what happens with the rotations? should they continue?
+            if(chasing){
+                return chasingTarget();
+            }
+            if(escaping){
+                return escapingGuard();
+            }
 
             //if it sees something -- Chasing starts
             //or escaping starts
+            rotationCount++;
             return Moves.TURN_RIGHT;
         }
         else {
@@ -182,6 +212,17 @@ public class IntruderTwo extends Strategy{
             return true;
         }
         return false;
+    }
+
+    public Moves chasingTarget(){
+        return Moves.WALK;
+    }
+
+    public Moves escapingGuard(){
+        //first check if the guard saw the intruder or is moving closer
+
+
+        return Moves.WALK;
     }
 
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {

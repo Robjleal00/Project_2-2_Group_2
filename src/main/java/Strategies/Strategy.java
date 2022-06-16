@@ -18,6 +18,7 @@ public class Strategy { // Template for making strategies, basic explo is an imp
     public void printMappings() {
     }
     public void setBooleans(boolean b, boolean c){}
+    public void setBooleansIntruder(boolean s, boolean c, boolean e){}
 
     public void setAgent(Entity e){}
     public void teleported(){}
