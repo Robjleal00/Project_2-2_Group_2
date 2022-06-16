@@ -31,31 +31,13 @@ import java.util.*;
 public class BrickMortar {
 
 
-
-    int unexplored = 0;
-    int explored = 1;
-    int visited = 2;
-    int walls = 3;
-
-
-    private final int mapLength;
-    private final int mapHeight;
-
     private int [][]map;
     private int []xy;
 
     private boolean exploDone;
     private final double randomness = 0.2;
-    private final Rotations rot;
 
 
-    public BrickMortar(int[][] map, Rotations rot){
-        this.map = map;
-        this.exploDone = false;
-        this.rot = rot;
-        this.mapHeight = map.length;
-        this.mapLength = map[0].length;
-    }
 
 
 
@@ -466,6 +448,187 @@ public class BrickMortar {
         this.explorationRun = false;
         this.completeRotation = false;
         this.rotationCount = 0;
+    }
+
+    public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
+        int eyeRange = vision.length;
+        int currentX = xy[0];
+        int currentY = xy[1];
+
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+                switch (rot) {
+                    case FORWARD -> {
+                        if(lookingAt.contains("E")){
+                            if(i!=0){
+                                constraints.setMAX_Y(currentY+1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX + j)) {
+                                    if (!explored.get(currentX + j).contains(currentY + i)) {
+                                        explored.get(currentX + j).add(currentY + i);
+                                    }
+
+                                } else {
+                                    explored.put(currentX + j, new ArrayList<>());
+                                    explored.get(currentX + j).add(currentY + i);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX+j,currentY+i};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX + j)) {
+                                    if (!walls.get(currentX + j).contains(currentY + i)) {
+                                        walls.get(currentX + j).add(currentY + i);
+                                    }
+
+                                } else {
+                                    walls.put(currentX + j, new ArrayList<>());
+                                    walls.get(currentX + j).add(currentY + i);
+                                }
+                            }
+                        }
+                    }
+                    case BACK -> {
+                        if(lookingAt.contains("V")){
+                            System.out.println("LOOKING AT GOAL");
+                        }
+                        if(lookingAt.contains("E")) {
+                            if (i != 0) {
+                                constraints.setMIN_Y(currentY - 1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX - j)) {
+                                    if (!explored.get(currentX - j).contains(currentY - i)) {
+                                        explored.get(currentX - j).add(currentY - i);
+                                    }
+
+                                } else {
+                                    explored.put(currentX - j, new ArrayList<>());
+                                    explored.get(currentX - j).add(currentY - i);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX-j,currentY-i};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX - j)) {
+                                    if (!walls.get(currentX - j).contains(currentY - i)) {
+                                        walls.get(currentX - j).add(currentY - i);
+                                    }
+
+                                } else {
+                                    walls.put(currentX - j, new ArrayList<>());
+                                    walls.get(currentX - j).add(currentY - i);
+                                }
+                            }
+                        }
+                    }
+                    case LEFT -> {
+                        if(lookingAt.contains("E")) {
+                            if (i != 0) {
+                                constraints.setMIN_X(currentX - 1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX - i)) {
+                                    if (!explored.get(currentX - i).contains(currentY + j)) {
+                                        explored.get(currentX - i).add(currentY + j);
+                                    }
+
+                                } else {
+                                    explored.put(currentX - i, new ArrayList<>());
+                                    explored.get(currentX - i).add(currentY + j);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX-i,currentY+j};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX - i)) {
+                                    if (!walls.get(currentX - i).contains(currentY + j)) {
+                                        walls.get(currentX - i).add(currentY + j);
+                                    }
+
+                                } else {
+                                    walls.put(currentX - i, new ArrayList<>());
+                                    walls.get(currentX - i).add(currentY + j);
+                                }
+                            }
+                        }
+                    }
+                    case RIGHT -> {
+                        if(lookingAt.contains("E")) {
+                            if (i != 0) {
+                                constraints.setMAX_X(currentX + 1);
+                            }
+                        }
+                        if (!Objects.equals(lookingAt, "X")) {
+                            if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
+                                if (explored.containsKey(currentX + i)) {
+                                    if (!explored.get(currentX + i).contains(currentY - j)) {
+                                        explored.get(currentX + i).add(currentY - j);
+                                    }
+
+                                } else {
+                                    explored.put(currentX + i, new ArrayList<>());
+                                    explored.get(currentX + i).add(currentY - j);
+                                }
+                            } else {
+                                if(lookingAt.contains("T")){
+                                    String id = lookingAt.replace("T","");
+                                    int ide = Integer.valueOf(id);
+                                    if(!objects.containsKey(ide)){
+                                        int [] pos_of_It = {currentX+i,currentY-j};
+                                        objects.put(ide,pos_of_It);
+                                    }
+                                }
+                                if (walls.containsKey(currentX + i)) {
+                                    if (!walls.get(currentX + i).contains(currentY - j)) {
+                                        walls.get(currentX + i).add(currentY - j);
+                                    }
+
+                                } else {
+                                    walls.put(currentX + i, new ArrayList<>());
+                                    walls.get(currentX + i).add(currentY - j);
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+        }
+
+    }
+
+    private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
+        Gson gson = new Gson();
+        String jsonString = gson.toJson(maptoCopy);
+        Type type = new TypeToken<HashMap<Integer, ArrayList<Integer>>>() {
+        }.getType();
+        return gson.fromJson(jsonString, type);
     }
 }
 

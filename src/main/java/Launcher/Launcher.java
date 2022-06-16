@@ -100,6 +100,7 @@ public class Launcher {
         gm.addVars(vr);
         gm.printMap();
         //TODO: NEW STUFF: TO FIX
+        BasicExplo
         gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BrickMortar(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         gm.addObject(t1);
