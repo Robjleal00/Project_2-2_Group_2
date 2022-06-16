@@ -390,6 +390,7 @@ public class BrickMortar extends Strategy {
             //Since we aren't "using" the unexplored HashMap, will this cause an overwrite error?
             explored.put(xy[0], new ArrayList<>());
             explored.get(xy[0]).add(xy[1]);
+            System.out.println("MARKING STEP: EXPLORED SOMETHING");
         }
         else
         {
@@ -398,6 +399,7 @@ public class BrickMortar extends Strategy {
             visited.get(xy[0]).add(xy[1]);
 
             visitedCells.add(new Position(xy[0],xy[1]));
+            System.out.println("MARKING STEP: VISITED SOMETHING");
         }
 
         //Navigation Step:
@@ -406,6 +408,7 @@ public class BrickMortar extends Strategy {
         // the LACK of explored neighbours
         if(hasUnexploredNeighbours(xy))
         {
+            System.out.println("NAVIGATION STEP: CHECKING UNEXPLORED NEIGHBOURS");
             ArrayList<Position> unexploredNeighbours = getUnexploredNeighbours(xy);
             int[] bestUnexploredPos = getBestUnexplored(unexploredNeighbours);
             int xDiff = bestUnexploredPos[0] - xy[0];

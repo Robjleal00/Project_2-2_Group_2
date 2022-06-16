@@ -99,11 +99,11 @@ public class Launcher {
         Variables vr = new Variables(1,5,5,10);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BrickMortar(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Explorer(EntityType.INTRUDER,gm,new BrickMortar(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         gm.addObject(t1);
         gm.addWall(0,5,19,5);
-        //gm.init();
+        gm.init();
         gm.print("D");
         gm.print(12);
 
@@ -117,7 +117,7 @@ public class Launcher {
         Variables vr = new Variables(1,5,5,10);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BrickMortar(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Explorer(EntityType.INTRUDER,gm,new BrickMortar(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         // Teleporter t2 = new Teleporter(2,5,5,9,9);
         // t1.addLink(t2);
