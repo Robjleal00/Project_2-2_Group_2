@@ -380,8 +380,9 @@ public class BrickMortar extends Strategy {
         this.rotationCount = 0;
     }
 
-    public Moves brickAndMortarStep(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
+    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
     {
+        System.out.println("YO");
         updateExploration(vision,xy,rot);
 
         //MARKING STEP:
