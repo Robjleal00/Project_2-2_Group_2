@@ -353,6 +353,7 @@ public class BrickMortar {
     private boolean atGoal;
     private boolean walked;
     private int count = 0;
+    private ArrayList<Position> visitedCells;
     private boolean explorationRun;
     private boolean completeRotation;
     private int rotationCount;
@@ -397,12 +398,85 @@ public class BrickMortar {
         if(hasUnexploredNeighbours(xy))
         {
             ArrayList<Position> unexploredNeighbours = getUnexploredNeighbours(xy);
-            int[] bestUnexploredPos = bestUnexplored(unexploredNeighbours);
+            int[] bestUnexploredPos = getBestUnexplored(unexploredNeighbours);
             int xDiff = bestUnexploredPos[0] - xy[0];
             int yDiff = bestUnexploredPos[1] - xy[1];
-
+            if(yDiff == 0)
+            {
+                //Move to the right
+                if(xDiff > 0)
+                {
+                    //check if it has to rotate first before moving
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.TURN_AROUND;}
+                        case RIGHT -> {return Moves.WALK;}
+                        //TODO: Am I mixing up i and j? Is it xy or yx?
+                        //Looking at Piotr's code from patroller, forward would mean it's facing down???
+                        //compare starting line 266 in patroller
+                        case FORWARD -> {return Moves.TURN_LEFT;}
+                        case BACK -> {return Moves.TURN_RIGHT;}
+                    }
+                }
+                else
+                {
+                    //Move left
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.WALK;}
+                        case RIGHT -> {return Moves.TURN_AROUND;}
+                        case FORWARD -> {return Moves.TURN_RIGHT;}
+                        case BACK -> {return Moves.TURN_LEFT;}
+                    }
+                }
+            }
+            else if(xDiff == 0)
+            {
+                if(yDiff < 0)
+                {
+                    //GO UP (????)
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.TURN_RIGHT;}
+                        case RIGHT -> {return Moves.TURN_LEFT;}
+                        case FORWARD -> {return Moves.TURN_AROUND;}
+                        case BACK -> {return Moves.WALK;}
+                    }
+                }
+                else
+                {
+                    switch(rot)
+                    {
+                        case LEFT -> {return Moves.TURN_LEFT;}
+                        case RIGHT -> {return Moves.TURN_RIGHT;}
+                        case FORWARD -> {return Moves.WALK;}
+                        case BACK -> {return Moves.TURN_AROUND;}
+                    }
+                }
+            }
         }
+        ArrayList<Position> exploredNeighbours =
 
+    }
+
+    public ArrayList<Position> getExploredNeighbours(int[] xy)
+    {
+        ArrayList<Position> exploredNeighbours = new ArrayList<Position>();
+        if(explored.containsKey(xy[0] - 1)){
+            exploredNeighbours.add(new Position(xy[0] - 1, xy[1]));
+        }
+        if(explored.containsKey(xy[0] + 1))
+        {
+            exploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
+        }
+        if(explored.containsValue(xy[1] + 1))
+        {
+            exploredNeighbours.add(new Position(xy[0], xy[1]+1));
+        }
+        if(explored.containsValue(xy[1] - 1))
+        {
+            exploredNeighbours.add(new Position(xy[0], xy[1]-1));
+        }
     }
 
     public boolean hasUnexploredNeighbours(int[] xy)
