@@ -3,8 +3,11 @@ package Chasing;
 import Enums.Moves;
 import Enums.Rotations;
 
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.PriorityQueue;
+import static Chasing.AStarCoordinateTransform.transformIntoTwoD;
 
 public class AStarChase {
 
@@ -33,6 +36,7 @@ public class AStarChase {
 
     public AStarChase(String[][] map, int[] xy, int[] intruderPosition)
     {
+        //transformIntoTwoD(map);
         createScoreMap(map);
         startCell(xy[0],xy[1]);
         endCell(intruderPosition[0], intruderPosition[1]);
@@ -322,6 +326,7 @@ public class AStarChase {
                     {0, 4}, {2, 2}, {3, 1}, {3, 3}, {2, 1}, {2, 3}
                     }
             );
+
             aStar.display();
             aStar.process(); //Apply the A* algorithm
             aStar.displayScores(); // Display the scores on the grid

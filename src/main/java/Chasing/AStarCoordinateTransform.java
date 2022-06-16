@@ -5,7 +5,7 @@ import java.util.*;
 
 public class AStarCoordinateTransform {
 
-    public static String[][] transformIntoCell(HashMap<Integer, ArrayList<Integer>> map) {
+    public static String[][] transformIntoTwoD(HashMap<Integer, ArrayList<Integer>> map) {
         String[][] cellMap = new String[map.size()][2];
         Set entries = map.entrySet();
         Iterator entriesIterator = entries.iterator();
