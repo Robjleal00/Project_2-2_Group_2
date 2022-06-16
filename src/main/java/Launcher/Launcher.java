@@ -29,7 +29,7 @@ public class Launcher {
         fileReader.readFile(filePath);
         GameController gm = new GameController(fileReader.getHeight(),fileReader.getWidth(),app);
 
-        Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing());
+        Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing(),5,10);
         gm.addVars(vr);
         addGuards(fileReader,gm,vr);
         ArrayList<Area> walls = fileReader.getWalls();
@@ -117,7 +117,7 @@ public class Launcher {
         Variables vr = new Variables(1,5,5,10);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BrickMortar(),vr),3,1,Rotations.DOWN);
         Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         // Teleporter t2 = new Teleporter(2,5,5,9,9);
         // t1.addLink(t2);

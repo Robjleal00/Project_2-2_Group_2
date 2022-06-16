@@ -20,6 +20,7 @@ import Enums.Rotations;
 import Logic.GameController;
 import OptimalSearch.TreeRoot;
 import PathMaking.Point;
+import Strategies.Strategy;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -28,7 +29,7 @@ import java.lang.reflect.Type;
 import java.util.*;
 
 
-public class BrickMortar {
+public class BrickMortar extends Strategy {
 
 
     private int [][]map;
@@ -37,8 +38,7 @@ public class BrickMortar {
     private boolean exploDone;
     private final double randomness = 0.2;
 
-
-
+    /*
     public Moves brickAndMortar(int[] xy, Rotations rot, GameController gm, Variables vr)
     {
         //Sets all cells that are in the intruder's vision to "explored"
@@ -209,7 +209,9 @@ public class BrickMortar {
         return null;
     }
 
+     */
 
+/*
     public ArrayList<Position> returnUnexploredNeighbours(int[]xy){
 
             ArrayList<Position> unexploredNeighbours = new ArrayList<Position>();
@@ -235,6 +237,9 @@ public class BrickMortar {
             return unexploredNeighbours;
         }
 
+
+ */
+    /*
     public ArrayList<Position> returnExploredNeighbours(int[]xy){
 
         ArrayList<Position> exploredNeighbours = new ArrayList<Position>();
@@ -295,6 +300,8 @@ public class BrickMortar {
     }
 
 
+
+     */
 
 
     /**
@@ -373,7 +380,7 @@ public class BrickMortar {
         this.rotationCount = 0;
     }
 
-    public Moves brickAndMortarStep(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm)
+    public Moves brickAndMortarStep(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
     {
         updateExploration(vision,xy,rot);
 
@@ -389,6 +396,8 @@ public class BrickMortar {
             //To add a cell to "visited",
             visited.put(xy[0], new ArrayList<>());
             visited.get(xy[0]).add(xy[1]);
+
+            visitedCells.add(new Position(xy[0],xy[1]));
         }
 
         //Navigation Step:
@@ -410,7 +419,16 @@ public class BrickMortar {
                     switch(rot)
                     {
                         case LEFT -> {return Moves.TURN_AROUND;}
-                        case RIGHT -> {return Moves.WALK;}
+                        case RIGHT -> {
+                            if(!isVisited(xy,vr,rot)) {
+                            return Moves.WALK;
+                            }
+                            else
+                            {
+                                //TODO: FIX LOOP STUCK POSSIBILITY
+                                return Moves.STUCK;
+                            }
+                        }
                         //TODO: Am I mixing up i and j? Is it xy or yx?
                         //Looking at Piotr's code from patroller, forward would mean it's facing down???
                         //compare starting line 266 in patroller
@@ -423,7 +441,15 @@ public class BrickMortar {
                     //Move left
                     switch(rot)
                     {
-                        case LEFT -> {return Moves.WALK;}
+                        case LEFT -> {
+                            if(!isVisited(xy,vr,rot)) {
+                                return Moves.WALK;
+                            }
+                            else
+                            {
+                                return Moves.STUCK;
+                            }
+                        }
                         case RIGHT -> {return Moves.TURN_AROUND;}
                         case FORWARD -> {return Moves.TURN_RIGHT;}
                         case BACK -> {return Moves.TURN_LEFT;}
@@ -440,7 +466,15 @@ public class BrickMortar {
                         case LEFT -> {return Moves.TURN_RIGHT;}
                         case RIGHT -> {return Moves.TURN_LEFT;}
                         case FORWARD -> {return Moves.TURN_AROUND;}
-                        case BACK -> {return Moves.WALK;}
+                        case BACK -> {
+                            if(!isVisited(xy,vr,rot)) {
+                                return Moves.WALK;
+                            }
+                            else
+                            {
+                                return Moves.STUCK;
+                            }
+                        }
                     }
                 }
                 else
@@ -449,15 +483,124 @@ public class BrickMortar {
                     {
                         case LEFT -> {return Moves.TURN_LEFT;}
                         case RIGHT -> {return Moves.TURN_RIGHT;}
-                        case FORWARD -> {return Moves.WALK;}
+                        case FORWARD -> {
+                            if(!isVisited(xy,vr,rot)) {
+                                return Moves.WALK;
+                            }
+                            else
+                            {
+                                return Moves.STUCK;
+                            }
+                        }
                         case BACK -> {return Moves.TURN_AROUND;}
                     }
                 }
             }
         }
-        ArrayList<Position> exploredNeighbours =
+        //ELSE IF: at least one of the four cells around is explored
+        ArrayList<Position> exploredNeighbours = getExploredNeighbours(xy);
+        if(exploredNeighbours.size() != 0)
+        {
+            //Make it always head into the target direction
+            //randomness makes it choose another cell to go to than the one in the direction of the target
+            double chance = Math.random();
+            if(chance > randomness)
+            {
+                return gm.getNextBestMove(intruder);
+            }
+            else
+            {
+                //else do an arbitrary move
+                //Placeholder for now
+                double randomMove = Math.random();
+                if(randomMove < 0.25)
+                {
+                    return Moves.TURN_RIGHT;
+                }
+                if(randomMove < 0.5)
+                {
+                    return Moves.TURN_LEFT;
+                }
+                if(randomMove < 0.75)
+                {
+                    return Moves.TURN_AROUND;
+                }
+                if(randomMove < 1)
+                {
+                    return Moves.WALK;
+                }
+            }
 
+
+        }
+        else
+        {
+            return Moves.STUCK;
+        }
+        return null;
     }
+
+    //Whenever the intruder wants to walk it first has to make sure the cell it's going to isn't visited
+    //POTENTIALLY ERROR CAUSING, just seems like it idk
+    public boolean isVisited(int[] xy, Variables vr, Rotations rot)
+    {
+        int[] nextPoint = new int[1];
+        if (rot == Rotations.FORWARD) {
+            if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1]+vr.walkSpeed())) {
+                Position positionToCheck = new Position(xy[0], xy[1] + vr.walkSpeed());
+                for (int i = 0; i < visitedCells.size(); i++) {
+                    int x = positionToCheck.getX();
+                    int y = positionToCheck.getY();
+
+                    if(visitedCells.get(i).getX() == x && visitedCells.get(i).getY() == y)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }else if (rot == Rotations.RIGHT) {
+            if (explored.containsKey(xy[0]+vr.walkSpeed()) && explored.get(xy[0]+ vr.walkSpeed()).contains(xy[1])) {
+                Position positionToCheck = new Position(xy[0], xy[1] + vr.walkSpeed());
+                for (int i = 0; i < visitedCells.size(); i++) {
+                    int x = positionToCheck.getX();
+                    int y = positionToCheck.getY();
+
+                    if(visitedCells.get(i).getX() == x && visitedCells.get(i).getY() == y)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }else if (rot == Rotations.LEFT) {
+            if (explored.containsKey(xy[0] - vr.walkSpeed()) && explored.get(xy[0] - vr.walkSpeed()).contains(xy[1])) {
+                Position positionToCheck = new Position(xy[0], xy[1] + vr.walkSpeed());
+                for (int i = 0; i < visitedCells.size(); i++) {
+                    int x = positionToCheck.getX();
+                    int y = positionToCheck.getY();
+
+                    if(visitedCells.get(i).getX() == x && visitedCells.get(i).getY() == y)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }else if (rot == Rotations.BACK) {
+            if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1] - vr.walkSpeed())) {
+                Position positionToCheck = new Position(xy[0], xy[1] + vr.walkSpeed());
+                for (int i = 0; i < visitedCells.size(); i++) {
+                    int x = positionToCheck.getX();
+                    int y = positionToCheck.getY();
+
+                    if(visitedCells.get(i).getX() == x && visitedCells.get(i).getY() == y)
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
 
     public ArrayList<Position> getExploredNeighbours(int[] xy)
     {
@@ -477,6 +620,7 @@ public class BrickMortar {
         {
             exploredNeighbours.add(new Position(xy[0], xy[1]-1));
         }
+        return exploredNeighbours;
     }
 
     public boolean hasUnexploredNeighbours(int[] xy)
@@ -520,6 +664,7 @@ public class BrickMortar {
         {
             unexploredNeighbours.add(new Position(xy[0], xy[1]-1));
         }
+        return unexploredNeighbours;
     }
 
     public int[] getBestUnexplored(ArrayList<Position> unexploredNeighbours)
