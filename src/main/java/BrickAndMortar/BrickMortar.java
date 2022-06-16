@@ -39,24 +39,10 @@ public class BrickMortar {
 
 
 
-
-
-
-
     public Moves brickAndMortar(int[] xy, Rotations rot, GameController gm, Variables vr)
     {
         //Sets all cells that are in the intruder's vision to "explored"
-        updateVision(rot, xy,vr);
         //Marking Step:
-        //
-        if(isBlockingPath(xy) == false)
-        {
-            map[xy[0]][xy[1]] = visited;
-        }
-        else
-        {
-            map[xy[0]][xy[1]] = explored;
-        }
 
         //Navigation Step:
         //NOTE: IF AT LEAST ONE OF THE 4 SURROUNDING CELLS IS UNEXPLORED
@@ -346,70 +332,7 @@ public class BrickMortar {
         return count;
     }
 
-    public void updateVision(Rotations rotation, int[] xy, Variables vr)
-    {
-        // O = Unexplored
-        // 1 = Explored
-        // 2 = Visited
-        // 3 = Wall
 
-        int x = xy[0];
-        int y = xy[1];
-        int range = vr.eyeRange();
-        for (int i = -1; i < 2; i++) { // sideways
-            for (int j = 0; j < range; j++) { // upfront
-                int sX = range - 1 - j;
-                int sY = i + 1;
-                switch (rotation) {
-                    case BACK -> {
-                        int xM = x + j;
-                        int yM = y - i;
-                        if (inBounds(xM, yM)) {
-                            //TODO: look into this:
-                            //Copied over from Patroller which used sX/sY instead of xM, yM
-
-                            //Don't set walls, explored and visited cells as explored
-                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
-                                map[xM][yM] = explored;
-                            }
-                        }
-                    }
-                    case FORWARD -> {
-                        int xM = x - j;
-                        int yM = y + i;
-                        if (inBounds(xM, yM)) {
-                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
-                                map[xM][yM] = explored;
-                            }
-                        }
-                    }
-                    case RIGHT -> {
-                        int xM = x + i;
-                        int yM = y + j;
-                        if (inBounds(xM, yM)) {
-                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
-                                map[xM][yM] = explored;
-                            }
-                        }
-                    }
-                    case LEFT -> {
-                        int xM = x - i;
-                        int yM = y - j;
-                        if (inBounds(xM, yM)) {
-                            if (map[sX][sY]!= 3 && map[sX][sY]!= 2 && map[sX][sY]!= 1) {
-                                map[xM][yM] = explored;
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-
-    private boolean inBounds(int x, int y) {
-        return (x > -1 && x < mapHeight && y > -1 && y < mapLength);
-    }
 
 
     /**
@@ -447,6 +370,117 @@ public class BrickMortar {
         this.explorationRun = false;
         this.completeRotation = false;
         this.rotationCount = 0;
+    }
+
+    public Moves brickAndMortarStep(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm)
+    {
+        updateExploration(vision,xy,rot);
+
+        //MARKING STEP:
+        if(isBlockingPath(xy))
+        {
+            //Since we aren't "using" the unexplored HashMap, will this cause an overwrite error?
+            explored.put(xy[0], new ArrayList<>());
+            explored.get(xy[0]).add(xy[1]);
+        }
+        else
+        {
+            //To add a cell to "visited",
+            visited.put(xy[0], new ArrayList<>());
+            visited.get(xy[0]).add(xy[1]);
+        }
+
+        //Navigation Step:
+        //if one of the four cells around is "UNEXPLORED"
+        // count it's unexplored neighbours, I assume we can do this by using a negative (!) statement, so count
+        // the LACK of explored neighbours
+        if(hasUnexploredNeighbours(xy))
+        {
+            ArrayList<Position> unexploredNeighbours = getUnexploredNeighbours(xy);
+            int[] bestUnexploredPos = bestUnexplored(unexploredNeighbours);
+            int xDiff = bestUnexploredPos[0] - xy[0];
+            int yDiff = bestUnexploredPos[1] - xy[1];
+
+        }
+
+    }
+
+    public boolean hasUnexploredNeighbours(int[] xy)
+    {
+        ArrayList<Position> unexploredNeighbours = new ArrayList<Position>();
+        boolean hasUnexploredNeighbour = false;
+        //key is for up/down
+        if(!explored.containsKey(xy[0] - 1)){
+            hasUnexploredNeighbour = true;
+        }
+        if(!explored.containsKey(xy[0] + 1))
+        {
+            hasUnexploredNeighbour = true;
+        }
+        if(!explored.containsValue(xy[1] + 1))
+        {
+            hasUnexploredNeighbour = true;
+        }
+        if(!explored.containsValue(xy[1] - 1))
+        {
+            hasUnexploredNeighbour = true;
+        }
+        return hasUnexploredNeighbour;
+    }
+
+    public ArrayList<Position> getUnexploredNeighbours(int[] xy)
+    {
+        ArrayList<Position> unexploredNeighbours = new ArrayList<>();
+        if(!explored.containsKey(xy[0] - 1)){
+            unexploredNeighbours.add(new Position(xy[0] - 1, xy[1]));
+        }
+        if(!explored.containsKey(xy[0] + 1))
+        {
+            unexploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
+        }
+        if(!explored.containsValue(xy[1] + 1))
+        {
+            unexploredNeighbours.add(new Position(xy[0], xy[1]+1));
+        }
+        if(!explored.containsValue(xy[1] - 1))
+        {
+            unexploredNeighbours.add(new Position(xy[0], xy[1]-1));
+        }
+    }
+
+    public int[] getBestUnexplored(ArrayList<Position> unexploredNeighbours)
+    {
+        int count = 0;
+        int[] bestXY = new int[1];
+
+        for(Position unexplored : unexploredNeighbours)
+        {
+            int currentCount = 0;
+            int[] currentXY =  {unexplored.getX(), unexplored.getY()};
+
+            if(visited.containsKey(currentXY[0]-1) || walls.containsKey(currentXY[0]-1))
+            {
+                currentCount++;
+            }
+            if(visited.containsKey(currentXY[0]+1) || walls.containsKey(currentXY[0]+1))
+            {
+                currentCount++;
+            }
+            if(visited.containsValue(currentXY[1]+1) || walls.containsValue(currentXY[0]+1))
+            {
+                currentCount++;
+            }
+            if(visited.containsValue(currentXY[0]-1) || walls.containsValue(currentXY[0]-1))
+            {
+                currentCount++;
+            }
+            if(currentCount > count){
+                count = currentCount;
+                bestXY[0] = currentXY[0];
+                bestXY[1] = currentXY[1];
+            }
+        }
+        return bestXY;
     }
 
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
