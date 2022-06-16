@@ -442,7 +442,6 @@ public class BrickMortar {
         this.walls = new HashMap<>();
         this.objects = new HashMap<>();
         this.constraints=new Constraints();
-        this.visitedPoints =new ArrayList<>();
         this.atGoal = false;
         this.walked = true;
         this.explorationRun = false;
