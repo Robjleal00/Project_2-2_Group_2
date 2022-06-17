@@ -2,8 +2,7 @@ package BrickAndMortar;
 
 import Config.Variables;
 import Entities.Intruder;
-import Enums.Moves;
-import Enums.Rotations;
+import Enums.*;
 import Logic.GameController;
 import Patrolling.Position;
 import Strategies.Constraints;
@@ -332,13 +331,6 @@ public class BrickMortar extends Strategy {
     }
     */
 
-    public int countWallsAndVisited(int[] xy)
-    {
-        int count = 0;
-        // for every wall and visited cell add to count
-        return count;
-    }
-
 
 
 
@@ -373,16 +365,16 @@ public class BrickMortar extends Strategy {
         this.walls = new HashMap<>();
         this.objects = new HashMap<>();
         this.constraints=new Constraints();
+        this.visitedCells = new ArrayList();
         this.atGoal = false;
         this.walked = true;
-        this.explorationRun = false;
-        this.completeRotation = false;
-        this.rotationCount = 0;
+
+
     }
 
+    @Override
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
     {
-        System.out.println("YO");
         updateExploration(vision,xy,rot);
 
         //MARKING STEP:
@@ -395,12 +387,27 @@ public class BrickMortar extends Strategy {
         }
         else
         {
-            //To add a cell to "visited",
-            visited.put(xy[0], new ArrayList<>());
-            visited.get(xy[0]).add(xy[1]);
+            //TODO: change from Position into int[] xy
+            //TODO: this is whack
+            Position currentPosition = new Position(xy[0],xy[1]);
+            if(visitedCells.isEmpty())
+            {
+                visitedCells.add(currentPosition);
+            }
 
-            visitedCells.add(new Position(xy[0],xy[1]));
-            System.out.println("MARKING STEP: VISITED SOMETHING");
+            for(int i = 0; i < visitedCells.size(); i++)
+            {
+                int x = visitedCells.get(i).getX();
+                int y = visitedCells.get(i).getY();
+
+                if(xy[0] != x && xy[1] != y)
+                {
+                    visited.put(xy[0], new ArrayList<>());
+                    visited.get(xy[0]).add(xy[1]);
+                    visitedCells.add(currentPosition);
+                    System.out.println("MARKING STEP: VISITED SOMETHING, SIZE = "+visitedCells.size());
+                }
+            }
         }
 
         //Navigation Step:
@@ -487,6 +494,8 @@ public class BrickMortar extends Strategy {
                     {
                         case LEFT -> {return Moves.TURN_LEFT;}
                         case RIGHT -> {return Moves.TURN_RIGHT;}
+                        //TODO: keeps going into case forward despite it having better explored/unexplored cells
+                        //Is it because of bounds?
                         case FORWARD -> {
                             if(!isVisited(xy,vr,rot)) {
                                 return Moves.WALK;
@@ -548,7 +557,6 @@ public class BrickMortar extends Strategy {
     //POTENTIALLY ERROR CAUSING, just seems like it idk
     public boolean isVisited(int[] xy, Variables vr, Rotations rot)
     {
-        int[] nextPoint = new int[1];
         if (rot == Rotations.FORWARD) {
             if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1]+vr.walkSpeed())) {
                 Position positionToCheck = new Position(xy[0], xy[1] + vr.walkSpeed());
@@ -674,7 +682,7 @@ public class BrickMortar extends Strategy {
     public int[] getBestUnexplored(ArrayList<Position> unexploredNeighbours)
     {
         int count = 0;
-        int[] bestXY = new int[1];
+        int[] bestXY = new int[2];
 
         for(Position unexplored : unexploredNeighbours)
         {
