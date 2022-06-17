@@ -33,6 +33,7 @@ public class TreeRoot { //more stuff for basic explo
     private Constraints constraints;
     private final Variables vr;
     private final ArrayList<Point> visitedPoints;
+    private String[][] mindMap;
 
     public TreeRoot(HashMap explored, HashMap walls, int[] xy, Rotations rot, int depth, Constraints constraints, Variables vr, ArrayList<Point> visitedPoints,HashMap<Integer,int[]>objects) {
         this.explored = explored;
@@ -84,7 +85,7 @@ public class TreeRoot { //more stuff for basic explo
     }
     public Moves tryPathfinding(){
         if(PATHMAKING){
-            String[][]mindMap=giveMappings();
+            mindMap=giveMappings();
             if(hasPotential(mindMap)) {
                 PathMaker pm = new PathMaker(explored, walls, mindMap, visitedPoints, vr, xy.clone(), rot);
                 return pm.giveMove();
