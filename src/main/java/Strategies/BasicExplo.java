@@ -75,6 +75,26 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
+        int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
+        int currentX = xy[0];
+        int currentY = xy[1];
+        int escapingTurn = 0;
+        int distSpottedG = 0;
+
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+
+                if (lookingAt.contains("I")) { //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
+                    System.out.println("THIS IS THE PROBLEM");
+                    distSpottedG = i;
+                    System.out.println("Intruder SPOTTED");
+                }
+            }
+        }
+
         if (TELEPORTED) {
             teleporterGoal.putIfAbsent(lastUsedTeleporter, xy);
             TELEPORTED = false;
@@ -106,7 +126,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
             updateExploration(vision, xy, rot);
             if (!explored(xy)) visitedPoints.add(new Point(xy, new ArrayList<>()));
-            int eyeRange = vision.length;
+            eyeRange = vision.length;
             int check = eyeRange - 2;
             if (firstPhase) {
                 if (!Objects.equals(vision[check][1], " ")) {
@@ -117,7 +137,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         if (!firstPhase && !exploDone) {
             TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints, vr, visitedPoints, objects);
-            int eyeRange = vision.length;
+            eyeRange = vision.length;
             int check = eyeRange - 2;
             boolean blocked=false;
             if (blockedByObstacles(vision[check][1])) {
@@ -200,7 +220,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             else {
                 updateLastSeen(vision, rot, xy,vr);
             }
-            int eyeRange = vision.length;
+            eyeRange = vision.length;
             int check = eyeRange - 2;
             boolean blockWalk=false;
                 if (blockedByObstacles(vision[check][1])) {

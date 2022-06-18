@@ -35,6 +35,7 @@ public class AStarChase {
 
     private Cell nextMoveCoordinate;
 
+    /**
     public AStarChase(String[][] map, int[] xy, int[] intruderPosition)
     {
         //transformIntoTwoD(map);
@@ -62,6 +63,7 @@ public class AStarChase {
         }
         process();
     }
+    **/
 
     public AStarChase(int width, int height, int si, int sj, int ei, int ej, int[][] blocks) {
         grid = new Cell[width][height];
@@ -182,12 +184,6 @@ public class AStarChase {
         }
     }
 
-
-    public Cell getNextMoveCoordinate()
-    {
-        return getNextMoveCoordinate();
-    }
-
     public void display() {
         System.out.println("Grid :");
 
@@ -224,6 +220,7 @@ public class AStarChase {
         System.out.println();
     }
 
+    /**
     public Moves getMove(int[] agentPosition, Cell nextCell, Rotations rotation)
     {
         Moves nextMove = null;
@@ -278,7 +275,7 @@ public class AStarChase {
         }
         return null;
     }
-
+     **/
 
     public void displaySolution() {
         if (closedCells[endI][endJ]) {
@@ -304,7 +301,7 @@ public class AStarChase {
             for (int i = 0; i < grid.length; i++) {
                 for (int j = 0; j < grid[i].length; j++) {
                     if (i == startI && j == startJ)
-                        System.out.printf("SO "); // the soure cell
+                        System.out.printf("SO "); // the source cell
                     else if (i == endI && j == endJ)
                         System.out.printf("DE "); // Destination cell
                     else if (grid[i][j] != null)
