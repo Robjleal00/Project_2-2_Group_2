@@ -97,15 +97,73 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     distSpottedIx = i;
                     System.out.println("INTRUDER SPOTTED");
 
-                    AStarChase aStar = new AStarChase(vision, currentX, currentY, i, j);
+                    AStarChase aStar = new AStarChase(vision, currentX, currentY, i, j); //maybe using I J or H L might be better
                     aStar.display();
                     aStar.process(); //Apply the A* algorithm
                     aStar.displayScores(); // Display the scores on the grid
                     aStar.displaySolution(); // Display the solution path
                     aStar.decideNextChasingMove();
+                    Moves move = Moves.WALK;
+                    int[] nextPoint = new int[2];
+                    if (AStarChase.toWalk) {
+                        if (rot == Rotations.FORWARD) {
+                            if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1] + vr.walkSpeed())) {
+                                nextPoint[0] = xy[0];
+                                nextPoint[1] = xy[1] + vr.walkSpeed();
+                                Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                for (i = 0; i < visitedPoints.size(); i++) {
+                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                        System.out.println("LOOKING AT VISITED");
+                                        break;
+
+                                    }
+                                }
+                            }
+                        } else if (rot == Rotations.RIGHT) {
+                            if (explored.containsKey(xy[0] + vr.walkSpeed()) && explored.get(xy[0] + vr.walkSpeed()).contains(xy[1])) {
+                                nextPoint[0] = xy[0] + vr.walkSpeed();
+                                nextPoint[1] = xy[1];
+                                Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                for (i = 0; i < visitedPoints.size(); i++) {
+                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                        System.out.println("LOOKING AT VISITED");
+                                        break;
+                                    }
+                                }
+                            }
+                        } else if (rot == Rotations.LEFT) {
+                            if (explored.containsKey(xy[0] - vr.walkSpeed()) && explored.get(xy[0] - vr.walkSpeed()).contains(xy[1])) {
+                                nextPoint[0] = xy[0] - vr.walkSpeed();
+                                nextPoint[1] = xy[1];
+                                Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                for (i = 0; i < visitedPoints.size(); i++) {
+                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                        System.out.println("LOOKING AT VISITED");
+                                        break;
+                                    }
+
+                                }
+                            }
+                        } else if (rot == Rotations.BACK) {
+                            if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1] - vr.walkSpeed())) {
+                                nextPoint[0] = xy[0];
+                                nextPoint[1] = xy[1] - vr.walkSpeed();
+                                Point toCheck = new Point(nextPoint, new ArrayList<>());
+                                for (i = 0; i < visitedPoints.size(); i++) {
+                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
+                                        System.out.println("LOOKING AT VISITED");
+                                        break;
+                                    }
+
+                                }
+                            }
+                        }
+                    }
+
                 }
             }
         }
+
 
         if (TELEPORTED) {
             teleporterGoal.putIfAbsent(lastUsedTeleporter, xy);

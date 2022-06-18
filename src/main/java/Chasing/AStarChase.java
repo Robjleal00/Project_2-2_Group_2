@@ -13,6 +13,7 @@ public class AStarChase {
     // creating the costs for diagonal and vertical/horizontal moves
     public static final int DIAGONAL_COST = 14;
     public static final int V_H_COST = 10;
+    public static boolean toWalk;
 
     //creating the cells for the grid we will make
     private Cell[][] grid;
@@ -34,6 +35,8 @@ public class AStarChase {
     private Cell nextMoveCoordinate;
 
     private LinkedList<Cell> linky = new LinkedList<>();
+
+
 
 
     /**
@@ -315,9 +318,10 @@ public class AStarChase {
         }
 
         public Cell decideNextChasingMove() {
-            if (!linky.isEmpty())
+            if (!linky.isEmpty()) {
+                toWalk = true;
                 return linky.removeLast();
-            else {
+            } else {
                 return null;
             }
         }
