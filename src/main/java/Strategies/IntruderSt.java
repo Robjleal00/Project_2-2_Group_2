@@ -30,7 +30,7 @@ public class IntruderSt extends Strategy{
     private boolean atGoal;
     private boolean walked;
     private int count = 0;
-    private boolean explorationRun;
+    private boolean onlyExplore;
     private boolean releaseMarkers;
 
 
@@ -42,7 +42,7 @@ public class IntruderSt extends Strategy{
         this.visitedPoints=new ArrayList<>();
         this.atGoal = false;
         this.walked = true;
-        this.explorationRun = false;
+        this.onlyExplore = false;
         this.releaseMarkers = false;
 
     }
@@ -65,31 +65,41 @@ public class IntruderSt extends Strategy{
 
         int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
 
+        if(!onlyExplore){
+            for (int i = 0; i < eyeRange; i++) { //i= upfront
+                for (int j = -1; j < 2; j++) { //j==sideways
+                    int h = eyeRange - (i + 1);
+                    int l = j + 1;
+                    final String lookingAt = vision[h][l];
 
-        for (int i = 0; i < eyeRange; i++) { //i= upfront
-            for (int j = -1; j < 2; j++) { //j==sideways
-                int h = eyeRange - (i + 1);
-                int l = j + 1;
-                final String lookingAt = vision[h][l];
+                    if(lookingAt.contains("V1")){
+                        System.out.println("TARGET SPOTTED");
+                        releaseMarkers = true;
 
-                if(lookingAt.contains("V1")){
-                    System.out.println("TARGET SPOTTED");
-                    releaseMarkers = true;
-
-                    if(j == 1){
-                        walked = false;
-                        return translateMove(Moves.TURN_RIGHT);
+                        if(j == 1){
+                            walked = false;
+                            return translateMove(Moves.TURN_RIGHT);
+                        }
+                        else if(j == 0){
+                            walked = true;
+                            return translateMove(Moves.WALK);
+                        }
+                        else{
+                            walked = false;
+                            return translateMove(Moves.TURN_LEFT);
+                        }
                     }
-                    else if(j == 0){
-                        walked = true;
-                        return translateMove(Moves.WALK);
-                    }
-                    else{
-                        walked = false;
-                        return translateMove(Moves.TURN_LEFT);
+                    if(lookingAt.contains("33")) {
+                        System.out.println("Pheromone spotted");
+                        onlyExplore = true;
                     }
                 }
             }
+        }
+
+        if(onlyExplore){
+            TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints,vr,visitedPoints,objects);
+            return root.getMove(false);
         }
 
         if(searching){
