@@ -392,6 +392,8 @@ public class BrickMortar extends Strategy {
             Position currentPosition = new Position(xy[0],xy[1]);
             if(visitedCells.isEmpty())
             {
+                visited.put(xy[0], new ArrayList<>());
+                visited.get(xy[0]).add(xy[1]);
                 visitedCells.add(currentPosition);
             }
 
@@ -414,11 +416,11 @@ public class BrickMortar extends Strategy {
         //if one of the four cells around is "UNEXPLORED"
         // count it's unexplored neighbours, I assume we can do this by using a negative (!) statement, so count
         // the LACK of explored neighbours
-        if(hasUnexploredNeighbours(xy))
+        if(hasUnexploredNeighbours(xy, vr))
         {
             System.out.println("NAVIGATION STEP: CHECKING UNEXPLORED NEIGHBOURS");
-            ArrayList<Position> unexploredNeighbours = getUnexploredNeighbours(xy);
-            int[] bestUnexploredPos = getBestUnexplored(unexploredNeighbours);
+            ArrayList<Position> unexploredNeighbours = getUnexploredNeighbours(xy, vr);
+            int[] bestUnexploredPos = getBestUnexplored(unexploredNeighbours, vr);
             int xDiff = bestUnexploredPos[0] - xy[0];
             int yDiff = bestUnexploredPos[1] - xy[1];
             if(yDiff == 0)
@@ -635,51 +637,54 @@ public class BrickMortar extends Strategy {
         return exploredNeighbours;
     }
 
-    public boolean hasUnexploredNeighbours(int[] xy)
+    //Giving the same treatment, changing if conditions to POS -/+ vr
+    public boolean hasUnexploredNeighbours(int[] xy, Variables vr)
     {
         ArrayList<Position> unexploredNeighbours = new ArrayList<Position>();
         boolean hasUnexploredNeighbour = false;
         //key is for up/down
-        if(!explored.containsKey(xy[0] - 1)){
+        if(!explored.containsKey((xy[0] - 1 ) - vr.walkSpeed())){
             hasUnexploredNeighbour = true;
         }
-        if(!explored.containsKey(xy[0] + 1))
+        if(!explored.containsKey((xy[0] + 1) + vr.walkSpeed()))
         {
             hasUnexploredNeighbour = true;
         }
-        if(!explored.containsValue(xy[1] + 1))
+        if(!explored.containsValue((xy[1] + 1) + vr.walkSpeed()))
         {
             hasUnexploredNeighbour = true;
         }
-        if(!explored.containsValue(xy[1] - 1))
+        if(!explored.containsValue((xy[1] - 1) - vr.walkSpeed()))
         {
             hasUnexploredNeighbour = true;
         }
         return hasUnexploredNeighbour;
     }
 
-    public ArrayList<Position> getUnexploredNeighbours(int[] xy)
+    public ArrayList<Position> getUnexploredNeighbours(int[] xy, Variables vr)
     {
         ArrayList<Position> unexploredNeighbours = new ArrayList<>();
-        if(!explored.containsKey(xy[0] - 1)){
+        if(!explored.containsKey((xy[0] - 1 ) - vr.walkSpeed())){
             unexploredNeighbours.add(new Position(xy[0] - 1, xy[1]));
         }
-        if(!explored.containsKey(xy[0] + 1))
+        if(!explored.containsKey((xy[0] + 1) + vr.walkSpeed()))
         {
             unexploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
         }
-        if(!explored.containsValue(xy[1] + 1))
+        if(!explored.containsValue((xy[1] + 1) + vr.walkSpeed()))
         {
             unexploredNeighbours.add(new Position(xy[0], xy[1]+1));
         }
-        if(!explored.containsValue(xy[1] - 1))
+        if(!explored.containsValue((xy[1] - 1) - vr.walkSpeed()))
         {
             unexploredNeighbours.add(new Position(xy[0], xy[1]-1));
         }
         return unexploredNeighbours;
     }
 
-    public int[] getBestUnexplored(ArrayList<Position> unexploredNeighbours)
+    //CHANGING THIS MADE IT NO LONGER GO TO THE RIGHT
+    //change 2: removing vr.walkspeed again    RESULT: GOES BACK TO THE RIGHT AGAIN
+    public int[] getBestUnexplored(ArrayList<Position> unexploredNeighbours, Variables vr)
     {
         int count = 0;
         int[] bestXY = new int[2];
@@ -689,19 +694,19 @@ public class BrickMortar extends Strategy {
             int currentCount = 0;
             int[] currentXY =  {unexplored.getX(), unexplored.getY()};
 
-            if(visited.containsKey(currentXY[0]-1) || walls.containsKey(currentXY[0]-1))
+            if(visited.containsKey((currentXY[0]-1)) || walls.containsKey((currentXY[0]-1)))
             {
                 currentCount++;
             }
-            if(visited.containsKey(currentXY[0]+1) || walls.containsKey(currentXY[0]+1))
+            if(visited.containsKey((currentXY[0]+1)) || walls.containsKey((currentXY[0]+1)))
             {
                 currentCount++;
             }
-            if(visited.containsValue(currentXY[1]+1) || walls.containsValue(currentXY[0]+1))
+            if(visited.containsValue((currentXY[1]+1)) || walls.containsValue((currentXY[0]+1)))
             {
                 currentCount++;
             }
-            if(visited.containsValue(currentXY[0]-1) || walls.containsValue(currentXY[0]-1))
+            if(visited.containsValue((currentXY[0]-1)) || walls.containsValue((currentXY[0]-1)))
             {
                 currentCount++;
             }
