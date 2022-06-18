@@ -10,6 +10,7 @@ import Logic.GameController;
 import Strategies.BasicExplo;
 import javafx.application.Application;
 import javafx.concurrent.Task;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
@@ -139,6 +140,8 @@ public class MainApp extends Application {
         FileInputStream input_stream15 = new FileInputStream("src/main/java/Images/treasure.png");
         treasure = new Image(input_stream15);
 
+        //TODO: make the pheromones of different guards of different colours
+        //TODO: Make the circles smaller
         FileInputStream input_stream16 = new FileInputStream("src/main/java/Images/pheromone.png");
         pheromone = new Image(input_stream16);
 
@@ -179,12 +182,14 @@ public class MainApp extends Application {
 
         exitButton = new Button("EXIT APPLICATION");
         exitButton.setOnAction(e -> {
-            closeProgram(primaryStage);
+            //closeProgram(primaryStage);
+            primaryStage.close();
         });
 
         primaryStage.setOnCloseRequest(e -> {
             e.consume();
-            closeProgram(primaryStage);
+            //closeProgram(primaryStage);
+            primaryStage.close();
         });
 
 
@@ -198,6 +203,8 @@ public class MainApp extends Application {
 
         playButton.setOnAction(e -> {
             try {
+                borderPane.setPadding(new Insets(10, 20, 10, 20));
+                primaryStage.setFullScreen(true);
                 startGame();
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
@@ -235,6 +242,7 @@ public class MainApp extends Application {
 
 
     }
+    //TODO: Problem with the resizing could be here
     public void update(String[][]map){
         borderPane.setCenter(createGrid(map));
     }
@@ -248,20 +256,6 @@ public class MainApp extends Application {
         walls = fileReader.getWalls();
     }
 
-
-    public void closeProgram(Stage primaryStage) {
-        // TODO
-        // What we need to do is to properly save the state that the user is in when playing the game
-        // That way if we they actually leave the game, we have some states saved for progress.
-        System.out.println("FILE IS SAVED!");
-
-        boolean result = exitAppHandler.exitApp("EXIT APPLICATION", "ARE YOU SURE YOU WANT TO CLOSE THE APPLICATION?");
-        System.out.println(result);
-        if(result == true){
-            System.out.println("Goodbye!");
-            primaryStage.close();
-        }
-    }
 
     //Sets a clicked grid square as a wall
 
@@ -294,7 +288,8 @@ public class MainApp extends Application {
         Rectangle[][] rectArray = new Rectangle[width][height];
         for(int i = 0; i < rectArray.length; i++) {
             for (int j = 0; j < rectArray[0].length; j++) {
-                rectArray[i][j] = new Rectangle(1300 / width, 1000 / height);
+                //rectArray[i][j] = new Rectangle(1300 / width, 1000 / height);
+                rectArray[i][j] = new Rectangle(1400 / width, 900 / height);
                 rectArray[i][j].setStroke(white);
                 rectArray[i][j].setStrokeWidth(0);
                 if (map[j][i].contains("W")) {
