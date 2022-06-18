@@ -66,7 +66,6 @@ public class IntruderTwo extends Strategy{
             int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
             int currentX = xy[0];
             int currentY = xy[1];
-            int escapingTurn = 0;
             int distSpottedG = 0;
 
             for (int i = 0; i < eyeRange; i++) { //i= upfront
@@ -76,19 +75,23 @@ public class IntruderTwo extends Strategy{
                     final String lookingAt = vision[h][l];
 
                     if(lookingAt.contains("G")){ //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
-                        System.out.println("THIS IS THE PROBLEM");
-                        distSpottedG = i;
-                        System.out.println("GUARD SPOTTED");
-                        if(!escaping){
-                            prevDist = -1;
-                            rotationCount = 4;
-                            setBooleansIntruder(false, false, true);
+                        if(l ==1){
+                            System.out.println("THIS IS THE PROBLEM");
+                            distSpottedG = i;
+                            System.out.println("GUARD SPOTTED");
+                            if(!escaping){
+                                prevDist = -1;
+                                rotationCount = 4;
+                                setBooleansIntruder(false, false, true);
+                            }
                         }
                     }
                     else if(lookingAt.contains("V1")){
-                        System.out.println("TARGET SPOTTED");
-                        rotationCount = 4;
-                        setBooleansIntruder(false, true, false); //chasing the target
+                        if(l == 1){
+                            System.out.println("TARGET SPOTTED");
+                            rotationCount = 4;
+                            setBooleansIntruder(false, true, false); //chasing the target
+                        }
                     }
                 }
             }

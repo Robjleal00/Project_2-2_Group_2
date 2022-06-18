@@ -850,7 +850,8 @@ public class GameController { // self explanatory
 
     private boolean blockedByObstacles(String s) {
         // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
-        return s.contains("I") || s.contains("G") || s.contains("E") || s.contains("W") ||s.contains("V1");
+        return s.contains("I") || s.contains("G") || s.contains("E") || s.contains("W");
+
     }
 
     private boolean canBePutThere(int[] target, Entity e) {

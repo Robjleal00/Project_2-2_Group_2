@@ -59,7 +59,6 @@ public class IntruderSt extends Strategy{
 
         Moves move = Moves.STUCK;
         if(searching){
-            //TODO: Check when it sees guard and chasing is set to true
             if(walked == false ){
                 walked = true;
                 move = Moves.WALK;

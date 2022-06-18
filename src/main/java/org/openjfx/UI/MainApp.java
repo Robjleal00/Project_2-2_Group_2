@@ -58,6 +58,7 @@ public class MainApp extends Application {
     protected Image guardUP, guardDOWN, guardRIGHT, guardLEFT;
     protected Image teleport_icon;
     protected Image treasure;
+    protected Image pheromone;
 
 
     File fileMap;
@@ -137,6 +138,9 @@ public class MainApp extends Application {
 
         FileInputStream input_stream15 = new FileInputStream("src/main/java/Images/treasure.png");
         treasure = new Image(input_stream15);
+
+        FileInputStream input_stream16 = new FileInputStream("src/main/java/Images/pheromone.png");
+        pheromone = new Image(input_stream16);
 
         chooseMap = new Button("Select a map");
         chooseMap.setOnAction(e -> {
@@ -296,59 +300,62 @@ public class MainApp extends Application {
                 if (map[j][i].contains("W")) {
                     rectArray[i][j].setFill(black);
                 }
-                if (map[j][i].contains(" ")) {
+                else if (map[j][i].contains(" ")) {
                     rectArray[i][j].setFill(white);
                 }
                 //ADD THE ICONS FOR AGENT INTO GUI
-                if (map[j][i].contains("E^")) {
+                else if (map[j][i].contains("E^")) {
                     rectArray[i][j].setFill(new ImagePattern(agentUP));
                 }
-                if (map[j][i].contains("E>")) {
+                else if (map[j][i].contains("E>")) {
                     rectArray[i][j].setFill(new ImagePattern(agentRIGHT));
                 }
-                if (map[j][i].contains("E<")) {
+                else if (map[j][i].contains("E<")) {
                     rectArray[i][j].setFill(new ImagePattern(agentLEFT));
                 }
-                if (map[j][i].contains("Ed")) {
+                else if (map[j][i].contains("Ed")) {
                     rectArray[i][j].setFill(new ImagePattern(agentDOWN));
                 }
 
                 //ADD THE ICONS FOR GUARD INTO GUI
-                if (map[j][i].contains("G^")) {
+                else if (map[j][i].contains("G^")) {
                     rectArray[i][j].setFill(new ImagePattern(guardUP));
                 }
-                if (map[j][i].contains("G>")) {
+                else if (map[j][i].contains("G>")) {
                     rectArray[i][j].setFill(new ImagePattern(guardRIGHT));
                 }
-                if (map[j][i].contains("G<")) {
+                else if (map[j][i].contains("G<")) {
                     rectArray[i][j].setFill(new ImagePattern(guardLEFT));
                 }
-                if (map[j][i].contains("Gd")) {
+                else if (map[j][i].contains("Gd")) {
                     rectArray[i][j].setFill(new ImagePattern(guardDOWN));
                 }
 
                 //ADD THE ICONS FOR INTRUDER INTO GUI
-                if (map[j][i].contains("I^")) {
+                else if (map[j][i].contains("I^")) {
                     rectArray[i][j].setFill(new ImagePattern(intruderUP));
                 }
-                if (map[j][i].contains("I>")) {
+                else if (map[j][i].contains("I>")) {
                     rectArray[i][j].setFill(new ImagePattern(intruderRIGHT));
                 }
-                if (map[j][i].contains("I<")) {
+                else if (map[j][i].contains("I<")) {
                     rectArray[i][j].setFill(new ImagePattern(intruderLEFT));
                 }
-                if (map[j][i].contains("Id")) {
+                else if (map[j][i].contains("Id")) {
                     rectArray[i][j].setFill(new ImagePattern(intruderDOWN));
                 }
 
-                if (map[j][i].contains("T")) {
+                else if (map[j][i].contains("T")) {
                     rectArray[i][j].setFill(new ImagePattern(teleport_icon));
                 }
-                if (map[j][i].contains("P")) {
+                else if (map[j][i].contains("P")) {
                   //  rectArray[i][j].setFill(new ImagePattern(champagne_toast));
                 }
-                if (map[j][i].contains("V1")) {
+                else if (map[j][i].contains("V1")) {
                     rectArray[i][j].setFill(new ImagePattern(treasure));
+                }
+                else if (!map[j][i].contains(" ")){
+                    rectArray[i][j].setFill(new ImagePattern(pheromone));
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
