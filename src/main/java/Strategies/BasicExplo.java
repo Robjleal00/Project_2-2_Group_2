@@ -102,7 +102,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     aStar.process(); //Apply the A* algorithm
                     aStar.displayScores(); // Display the scores on the grid
                     aStar.displaySolution(); // Display the solution path
-                    aStar.decideNextChasingMove();
+                    Cell coordinate = aStar.decideNextChasingMove(currentX, currentY);
                     Moves move = Moves.WALK;
                     int[] nextPoint = new int[2];
                     if (AStarChase.toWalk) {

@@ -36,6 +36,8 @@ public class AStarChase {
 
     private LinkedList<Cell> linky = new LinkedList<>();
 
+    private Cell current;
+
 
 
 
@@ -276,7 +278,7 @@ public class AStarChase {
         if (closedCells[endI][endJ]) {
             // Here we will track back the path
             System.out.println("Path :");
-            Cell current = grid[endI][endJ];
+            current = grid[endI][endJ];
             System.out.println(current);
             linky.add(current);
             grid[current.i][current.j].solution = true;
@@ -317,13 +319,17 @@ public class AStarChase {
 
         }
 
-        public Cell decideNextChasingMove() {
-            if (!linky.isEmpty()) {
+        public Cell decideNextChasingMove(int currentX, int currentY) {
+        if (currentX == current.parent.i && currentY == current.parent.j){
+            linky.remove();
+        }
+        if (!linky.isEmpty()) {
                 toWalk = true;
-                return linky.removeLast();
+                return linky.getLast();
             } else {
                 return null;
             }
         }
+
 }
 
