@@ -127,18 +127,22 @@ public class Launcher {
      */
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
-        FileReader fileReader = new FileReader();
-        Variables vr = new Variables(1,5,5,10);
+        //FileReader fileReader = new FileReader();
+        Variables vr = new Variables(1,5,1,20);
         gm.addVars(vr);
         gm.printMap();
-        gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
-        Teleporter t1 = new Teleporter(1,3 ,3,8,8);
+        Goal target = new Goal(1, 6,4);
+        gm.addObject(target);
+       // gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
+        //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         // Teleporter t2 = new Teleporter(2,5,5,9,9);
         // t1.addLink(t2);
-        gm.addObject(t1);
+        //gm.addObject(t1);
         //gm.addObject(t2);
         // gm.printMap();
-        gm.addWall(0,5,19,5);
+       // gm.addWall(0,5,19,5);
+        gm.addWall(0,5,6,5);
         return gm;
     }
 

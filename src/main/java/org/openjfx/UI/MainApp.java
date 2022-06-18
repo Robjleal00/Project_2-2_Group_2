@@ -57,6 +57,7 @@ public class MainApp extends Application {
     // GUARD: BLUE TRIANGLE
     protected Image guardUP, guardDOWN, guardRIGHT, guardLEFT;
     protected Image teleport_icon;
+    protected Image treasure;
 
 
     File fileMap;
@@ -130,9 +131,12 @@ public class MainApp extends Application {
         FileInputStream input_stream13 = new FileInputStream("src/main/java/Images/guardRIGHT.png");
         guardRIGHT = new Image(input_stream13);
 
+        //OTHER
         FileInputStream input_stream14 = new FileInputStream("src/main/java/Images/teleport_icon.png");
         teleport_icon = new Image(input_stream14);
 
+        FileInputStream input_stream15 = new FileInputStream("src/main/java/Images/treasure.png");
+        treasure = new Image(input_stream15);
 
         chooseMap = new Button("Select a map");
         chooseMap.setOnAction(e -> {
@@ -342,6 +346,9 @@ public class MainApp extends Application {
                 }
                 if (map[j][i].contains("P")) {
                   //  rectArray[i][j].setFill(new ImagePattern(champagne_toast));
+                }
+                if (map[j][i].contains("V1")) {
+                    rectArray[i][j].setFill(new ImagePattern(treasure));
                 }
                 GridPane.setConstraints(rectArray[i][j], i, j);
                 gridPane.getChildren().add(rectArray[i][j]);
