@@ -109,11 +109,11 @@ public class Launcher {
         gm.addObject(target);
 
         gm.addWall(0,5,6,5);
-        gm.setGameMode(GameMode.PATROL_CHASE);
+        //gm.setGameMode(GameMode.PATROL_CHASE);
         //gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.RIGHT);
-        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,5,Rotations.LEFT);
-        //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
+        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,3,Rotations.UP);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);
+        //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,13,Rotations.UP);
        // Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         //gm.addObject(t1);

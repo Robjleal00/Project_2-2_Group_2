@@ -31,6 +31,8 @@ public class IntruderTwo extends Strategy{
     private boolean explorationRun;
     private boolean completeRotation;
     private int rotationCount;
+    private int prevDist;
+
     //At every move it turns 360 and checks whether the target is there
     // maybe puts a # second marker when it sees a guard or a wall or the target
 
@@ -59,11 +61,13 @@ public class IntruderTwo extends Strategy{
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder) {
         Moves move = Moves.STUCK;
         updateExploration(vision, xy, rot);
-        if(rotationCount != 4){
+        if(rotationCount != 4){ // put if walked is false?
             //before rotating -> check what the intruder is seeing
             int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
             int currentX = xy[0];
             int currentY = xy[1];
+            int escapingTurn = 0;
+            int distSpottedG = 0;
 
             for (int i = 0; i < eyeRange; i++) { //i= upfront
                 for (int j = -1; j < 2; j++) { //j==sideways
@@ -72,11 +76,18 @@ public class IntruderTwo extends Strategy{
                     final String lookingAt = vision[h][l];
 
                     if(lookingAt.contains("G")){ //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
+                        System.out.println("THIS IS THE PROBLEM");
+                        distSpottedG = i;
                         System.out.println("GUARD SPOTTED");
-                        setBooleansIntruder(false, false, true); //escaping from guard
+                        if(!escaping){
+                            prevDist = -1;
+                            rotationCount = 4;
+                            setBooleansIntruder(false, false, true);
+                        }
                     }
                     else if(lookingAt.contains("V1")){
                         System.out.println("TARGET SPOTTED");
+                        rotationCount = 4;
                         setBooleansIntruder(false, true, false); //chasing the target
                     }
                 }
@@ -84,10 +95,15 @@ public class IntruderTwo extends Strategy{
 
             // TODO: what happens with the rotations? should they continue?
             if(chasing){
-                return chasingTarget();
+                System.out.println("CHASING THE TARGET, JUST WALKING");
+                return Moves.WALK; //this is needed so that it just goes straight to the target and does not rotate
             }
             if(escaping){
-                return escapingGuard();
+                //first check is the guard and the intruder are looking at eachother
+                if(prevDist > distSpottedG){
+                    return escapingGuard(currentX, currentY, true, rot, distSpottedG);
+                }
+                return escapingGuard(currentX, currentY, false, rot, distSpottedG);
             }
 
             //if it sees something -- Chasing starts
@@ -100,6 +116,10 @@ public class IntruderTwo extends Strategy{
             rotationCount = 0;
             completeRotation = true;
             visitedPoints.add(new Point(xy,new ArrayList<>()));
+
+            if(chasing){
+                return Moves.WALK;
+            }
 
             if(walked == false ){
                 walked = true;
@@ -214,15 +234,60 @@ public class IntruderTwo extends Strategy{
         return false;
     }
 
-    public Moves chasingTarget(){
-        return Moves.WALK;
-    }
-
-    public Moves escapingGuard(){
+    public Moves escapingGuard(int currentX, int currentY, boolean proceed, Rotations rot, int guardDist){
         //first check if the guard saw the intruder or is moving closer
+        if(!proceed){
+            System.out.println("Assessing");
+            prevDist = guardDist;
+            return Moves.STUCK;
+        }
+        //if the guard is coming, move right or left, but check if it had seen a wall before
+        if(proceed){
 
+            System.out.println("Proceeding");
 
+            switch (rot){
+                case FORWARD -> {
+                    if(!walls.containsKey(currentX + 1)){
+                        //Turn right and then walk --> false
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_RIGHT;
+                    }
+                    return Moves.TURN_LEFT;
+                }
+                case BACK -> {
+                    if(!walls.containsKey(currentX + 1)){
+                        //Turn left and then walk
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_LEFT;
+                    }
+                    return Moves.TURN_RIGHT;
+                }
+                case RIGHT -> {
+                    if(!walls.containsKey(currentY + 1)){
+                        //Turn left and then walk
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_LEFT;
+                    }
+                    return Moves.TURN_RIGHT;
+                }
+                case LEFT -> {
+                    if(!walls.containsKey(currentY + 1)){
+                        //Turn right and then walk
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_RIGHT;
+                    }
+                    return Moves.TURN_LEFT;
+                }
+            }
+        }
+        //else
         return Moves.WALK;
+
     }
 
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
