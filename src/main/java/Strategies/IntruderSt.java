@@ -31,6 +31,7 @@ public class IntruderSt extends Strategy{
     private boolean walked;
     private int count = 0;
     private boolean explorationRun;
+    private boolean releaseMarkers;
 
 
     public IntruderSt(){
@@ -42,6 +43,7 @@ public class IntruderSt extends Strategy{
         this.atGoal = false;
         this.walked = true;
         this.explorationRun = false;
+        this.releaseMarkers = false;
 
     }
 
@@ -54,10 +56,27 @@ public class IntruderSt extends Strategy{
     @Override
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
 
+        //TODO: Check if intruder knows how to teleport
         updateExploration(vision, xy, rot);
         visitedPoints.add(new Point(xy,new ArrayList<>()));
 
         Moves move = Moves.STUCK;
+
+        int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
+
+
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+
+                if(lookingAt.contains("V1")){
+                    System.out.println("TARGET SPOTTED");
+                    releaseMarkers = true;
+                }
+            }
+        }
         if(searching){
             if(walked == false ){
                 walked = true;
@@ -159,6 +178,9 @@ public class IntruderSt extends Strategy{
         }
 
         count++;
+        if(releaseMarkers){
+            return translateMove(move);
+        }
         return move;
 
     }
@@ -172,6 +194,25 @@ public class IntruderSt extends Strategy{
     }
 
 
+    /**
+     * Intruder releases marker when it sees the target
+     * If this intruder gets captured its markers dissapear
+     * Idea experiments : changing the amount of markers released
+     *
+     */
+
+
+    public Moves translateMove(Moves move){
+        Moves returner = Moves.STUCK;
+        switch (move){
+            case WALK -> returner = Moves.M_WALK;
+            //case USE_TELEPORTER -> returner = Moves.M_USE_TELEPORTER;
+            case TURN_LEFT -> returner = Moves.M_TURN_LEFT;
+            case TURN_AROUND -> returner = Moves.M_TURN_AROUND;
+            case TURN_RIGHT -> returner = Moves.M_TURN_RIGHT;
+        }
+        return returner;
+    }
 
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
         Gson gson = new Gson();

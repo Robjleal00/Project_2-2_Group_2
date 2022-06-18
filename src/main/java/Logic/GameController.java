@@ -25,6 +25,7 @@ public class GameController { // self explanatory
     public boolean GUI;
     private String[][] map;
     private int[][] pheromonesMap;
+    private int[][] markersMap;
     private int mapLength;
     private int mapHeight;
     private boolean isRunning;
@@ -58,6 +59,7 @@ public class GameController { // self explanatory
         this.mapHeight = height;
         this.map = makeMap(height, length);
         this.pheromonesMap = new int[length][height];
+        this.markersMap = new int[length][height];
         makeBorders(length, height);
         isRunning = true;
         entities = new ArrayList<>();
@@ -85,6 +87,7 @@ public class GameController { // self explanatory
         this.mapHeight = height;
         this.map = makeMap(height, length);
         this.pheromonesMap = new int[length][height];
+        this.markersMap = new int[length][height];
         makeBorders(length, height);
         isRunning = true;
         entities = new ArrayList<>();
@@ -140,7 +143,9 @@ public class GameController { // self explanatory
         }
         while (isRunning) {//gameloop
             boolean allBroken = false;
-            shiftPheromones();
+            //shiftPheromones();
+            applyMarkers();
+            //TODO: Keep track of the intruder releasing the markers in case it gets captured by the guards
             // This cute little line get all the moves from the agents, effectively executing everything except turning
             entities.stream().collect(Collectors.toMap(Function.identity(), Entity::getMove, (o1, o2) -> o1, ConcurrentHashMap::new)).forEach((k, v) -> moveMap.put(k, executeMove(k, v)));
             // this checks if all of them are stuck
@@ -166,6 +171,7 @@ public class GameController { // self explanatory
                 isRunning = false;
                 wasBroken = true;
             }
+
             turns++;
             checkWin(turns);
             Thread.sleep(200);
@@ -338,6 +344,7 @@ public class GameController { // self explanatory
                                 }
                             } else vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
+
                         if (!vision[eyeRange - (i + 1)][j + 1].contains("X")) {
                             if (!vision[eyeRange - (i + 1)][j + 1].contains("W")) {
                                 allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
@@ -420,6 +427,7 @@ public class GameController { // self explanatory
                         } else {
                             vision[eyeRange - (i + 1)][j + 1] = "X";
                         }
+
                         if (!vision[eyeRange - (i + 1)][j + 1].contains("X")) {
                             if (!vision[eyeRange - (i + 1)][j + 1].contains("W")) {
                                 allUnseenTiles.remove((Object) coordsToNumber(lookingAt));
@@ -487,11 +495,51 @@ public class GameController { // self explanatory
 
     }
 
+    private void intruderMarker(int[] pos, Rotations rot){
+        int x = pos[1];
+        int y = pos[0];
+        for (int i = -1; i < 2; i++) { //TODO: this could change for experiments
+            switch (rot) {
+                case LEFT:
+                case RIGHT:
+                    int x2 = x + i;
+                    markersMap[x2][y] = 33;
+
+                    continue;
+                case DOWN:
+                case UP:
+                    int y2 = y + i;
+                    markersMap[x][y2] = 33;
+                    continue;
+            }
+        }
+    }
+
 
     private int executeMove(Entity e, Moves m) {
         Rotations rotation = entityRotationsHashMap.get(e);
         int[] pos = entityLocations.get(e);
         switch (m) {
+            case M_TURN_AROUND -> {
+                intruderMarker(pos, rotation);
+                return executeMove(e, Moves.TURN_AROUND);
+            }
+            case M_TURN_LEFT -> {
+                intruderMarker(pos, rotation);
+                return executeMove(e, Moves.TURN_LEFT);
+            }
+            case M_TURN_RIGHT -> {
+                intruderMarker(pos, rotation);
+                return executeMove(e, Moves.TURN_RIGHT);
+            }
+            case M_WALK -> {
+                intruderMarker(pos, rotation);
+                return executeMove(e, Moves.WALK);
+            }
+            case M_USE_TELEPORTER -> {
+                intruderMarker(pos, rotation);
+                return executeMove(e, Moves.USE_TELEPORTER);
+            }
             case P_TURN_AROUND -> {
                 pheromoneSide(pos, rotation);
                 return executeMove(e, Moves.TURN_AROUND);
@@ -850,7 +898,7 @@ public class GameController { // self explanatory
 
     private boolean blockedByObstacles(String s) {
         // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
-        return s.contains("I") || s.contains("G") || s.contains("E") || s.contains("W");
+        return s.contains("I") || s.contains("G") || s.contains("E") || s.contains("W") || s.contains("V1");
 
     }
 
@@ -900,6 +948,18 @@ public class GameController { // self explanatory
                     }
                     else if(val>0) {
                         map[i][j] = String.valueOf(pheromonesMap[i][j]);
+                    }
+                }
+            }
+        }
+    }
+
+    public void applyMarkers(){
+        for ( int i=0;i<markersMap.length;i++){
+            for(int j = 0; j < markersMap[0].length; j++){
+                if(!blockedByObstacles(map[i][j])) {
+                    if(markersMap[i][j] == 33){
+                        map[i][j] = String.valueOf(markersMap[i][j]);
                     }
                 }
             }
