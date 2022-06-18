@@ -3,8 +3,6 @@ package org.openjfx.UI;
 import ObjectsOnMap.ObjectOnMap;
 import ObjectsOnMap.Teleporter;
 
-import ObjectsOnMap.Teleporter;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -116,11 +114,11 @@ public class FileReader {
                     case "spawnAreaGuards":
                         spawnArea = createArea(value);
                         break;
-                   /* case "teleport":
+                    case "teleport":
                         teleporters.add(addTeleporter(value,TpId));
                         TpId++;
                         break;
-*/
+
                 }
             }
         }
@@ -174,13 +172,6 @@ public class FileReader {
     }
 
 
-/*    public Teleporter createTeleporter(String input)
-    {
-        String[] values = input.split(" ");
-        int[] firstCorner = {Integer.valueOf(values[0]),Integer.valueOf(values[1])};
-        int[] secondCorner;
-
-    } */
     public Area createArea(String input)
     {
         String[] values = input.split(" ");

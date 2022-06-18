@@ -14,15 +14,13 @@ import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.*;
 
-import static java.util.Collections.max;
-import static java.util.Collections.min;
-
-public class IntruderSt extends Strategy{
+public class IntruderTwo extends Strategy{
     private final HashMap<Integer, ArrayList<Integer>> explored;
     private final HashMap<Integer, ArrayList<Integer>> walls;
     private final HashMap<Integer,int[]> objects;
-    private boolean chased;
+    private boolean chasing;
     private boolean searching;
+    private boolean escaping;
     private final Constraints constraints;
     Rotations[] avaliableRotations = {Rotations.BACK, Rotations.RIGHT, Rotations.LEFT, Rotations.FORWARD};
     Moves[] availableMoves = {Moves.TURN_RIGHT, Moves.TURN_LEFT, Moves.TURN_AROUND};
@@ -31,9 +29,14 @@ public class IntruderSt extends Strategy{
     private boolean walked;
     private int count = 0;
     private boolean explorationRun;
+    private boolean completeRotation;
+    private int rotationCount;
+    private int prevDist;
 
+    //At every move it turns 360 and checks whether the target is there
+    // maybe puts a # second marker when it sees a guard or a wall or the target
 
-    public IntruderSt(){
+    public IntruderTwo(){
         this.explored = new HashMap<>();
         this.walls = new HashMap<>();
         this.objects = new HashMap<>();
@@ -42,24 +45,82 @@ public class IntruderSt extends Strategy{
         this.atGoal = false;
         this.walked = true;
         this.explorationRun = false;
+        this.completeRotation = false;
+        this.rotationCount = 0;
 
     }
 
     @Override
-    public void setBooleans(boolean s, boolean c) {
-        this.searching = true;
-        this.chased = false;
+    public void setBooleansIntruder(boolean s, boolean c, boolean e) {
+        this.searching = s;
+        this.chasing = c; //goes after target
+        this.escaping = e;
     }
 
     @Override
-    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
-
-        updateExploration(vision, xy, rot);
-        visitedPoints.add(new Point(xy,new ArrayList<>()));
-
+    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder) {
         Moves move = Moves.STUCK;
-        if(searching){
-            //TODO: Check when it sees guard and chasing is set to true
+        updateExploration(vision, xy, rot);
+        if(rotationCount != 4){ // put if walked is false?
+            //before rotating -> check what the intruder is seeing
+            int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
+            int currentX = xy[0];
+            int currentY = xy[1];
+            int escapingTurn = 0;
+            int distSpottedG = 0;
+
+            for (int i = 0; i < eyeRange; i++) { //i= upfront
+                for (int j = -1; j < 2; j++) { //j==sideways
+                    int h = eyeRange - (i + 1);
+                    int l = j + 1;
+                    final String lookingAt = vision[h][l];
+
+                    if(lookingAt.contains("G")){ //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
+                        System.out.println("THIS IS THE PROBLEM");
+                        distSpottedG = i;
+                        System.out.println("GUARD SPOTTED");
+                        if(!escaping){
+                            prevDist = -1;
+                            rotationCount = 4;
+                            setBooleansIntruder(false, false, true);
+                        }
+                    }
+                    else if(lookingAt.contains("V1")){
+                        System.out.println("TARGET SPOTTED");
+                        rotationCount = 4;
+                        setBooleansIntruder(false, true, false); //chasing the target
+                    }
+                }
+            }
+
+            // TODO: what happens with the rotations? should they continue?
+            if(chasing){
+                System.out.println("CHASING THE TARGET, JUST WALKING");
+                return Moves.WALK; //this is needed so that it just goes straight to the target and does not rotate
+            }
+            if(escaping){
+                //first check is the guard and the intruder are looking at eachother
+                if(prevDist > distSpottedG){
+                    return escapingGuard(currentX, currentY, true, rot, distSpottedG);
+                }
+                return escapingGuard(currentX, currentY, false, rot, distSpottedG);
+            }
+
+            //if it sees something -- Chasing starts
+            //or escaping starts
+            rotationCount++;
+            return Moves.TURN_RIGHT;
+        }
+        else {
+            //Complete rotation has been done
+            rotationCount = 0;
+            completeRotation = true;
+            visitedPoints.add(new Point(xy,new ArrayList<>()));
+
+            if(chasing){
+                return Moves.WALK;
+            }
+
             if(walked == false ){
                 walked = true;
                 move = Moves.WALK;
@@ -157,12 +218,13 @@ public class IntruderSt extends Strategy{
                     }
                 }
             }
+
         }
 
         count++;
         return move;
-
     }
+
 
     public boolean stuck(int[]xy){
         Point p = visitedPoints.get(visitedPoints.size()-2);
@@ -172,7 +234,61 @@ public class IntruderSt extends Strategy{
         return false;
     }
 
+    public Moves escapingGuard(int currentX, int currentY, boolean proceed, Rotations rot, int guardDist){
+        //first check if the guard saw the intruder or is moving closer
+        if(!proceed){
+            System.out.println("Assessing");
+            prevDist = guardDist;
+            return Moves.STUCK;
+        }
+        //if the guard is coming, move right or left, but check if it had seen a wall before
+        if(proceed){
 
+            System.out.println("Proceeding");
+
+            switch (rot){
+                case FORWARD -> {
+                    if(!walls.containsKey(currentX + 1)){
+                        //Turn right and then walk --> false
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_RIGHT;
+                    }
+                    return Moves.TURN_LEFT;
+                }
+                case BACK -> {
+                    if(!walls.containsKey(currentX + 1)){
+                        //Turn left and then walk
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_LEFT;
+                    }
+                    return Moves.TURN_RIGHT;
+                }
+                case RIGHT -> {
+                    if(!walls.containsKey(currentY + 1)){
+                        //Turn left and then walk
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_LEFT;
+                    }
+                    return Moves.TURN_RIGHT;
+                }
+                case LEFT -> {
+                    if(!walls.containsKey(currentY + 1)){
+                        //Turn right and then walk
+                        walked = false;
+                        setBooleansIntruder(true, false, false);
+                        return Moves.TURN_RIGHT;
+                    }
+                    return Moves.TURN_LEFT;
+                }
+            }
+        }
+        //else
+        return Moves.WALK;
+
+    }
 
     private HashMap<Integer, ArrayList<Integer>> deepClone(HashMap<Integer, ArrayList<Integer>> maptoCopy) {
         Gson gson = new Gson();
@@ -182,7 +298,7 @@ public class IntruderSt extends Strategy{
         return gson.fromJson(jsonString, type);
     }
 
-
+    //Same method as in the other strategies
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
         int eyeRange = vision.length;
         int currentX = xy[0];
@@ -355,4 +471,5 @@ public class IntruderSt extends Strategy{
         }
 
     }
+
 }
