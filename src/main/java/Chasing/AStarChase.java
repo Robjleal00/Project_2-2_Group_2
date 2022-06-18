@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.PriorityQueue;
 import static Chasing.AStarCoordinateTransform.transformIntoTwoD;
+import OptimalSearch.TreeRoot;
 
 public class AStarChase {
 
