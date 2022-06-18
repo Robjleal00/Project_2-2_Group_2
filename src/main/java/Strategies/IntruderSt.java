@@ -57,6 +57,7 @@ public class IntruderSt extends Strategy{
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
 
         //TODO: Check if intruder knows how to teleport
+        //TODO: Stuck problem could be because the intruder coordinates seem inverted
         updateExploration(vision, xy, rot);
         visitedPoints.add(new Point(xy,new ArrayList<>()));
 
@@ -74,9 +75,23 @@ public class IntruderSt extends Strategy{
                 if(lookingAt.contains("V1")){
                     System.out.println("TARGET SPOTTED");
                     releaseMarkers = true;
+
+                    if(j == 1){
+                        walked = false;
+                        return translateMove(Moves.TURN_RIGHT);
+                    }
+                    else if(j == 0){
+                        walked = true;
+                        return translateMove(Moves.WALK);
+                    }
+                    else{
+                        walked = false;
+                        return translateMove(Moves.TURN_LEFT);
+                    }
                 }
             }
         }
+
         if(searching){
             if(walked == false ){
                 walked = true;
