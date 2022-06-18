@@ -20,6 +20,11 @@ import java.util.*;
 import static java.util.Collections.max;
 import static java.util.Collections.min;
 
+import Chasing.AStarChase;
+import Chasing.Cell;
+import Chasing.AStarCoordinateTransform;
+
+
 
 public class BasicExplo extends Strategy { // no need to touch, basic explo
     private final HashMap<Integer, ArrayList<Integer>> explored;
@@ -79,7 +84,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         int currentX = xy[0];
         int currentY = xy[1];
         int escapingTurn = 0;
-        int distSpottedG = 0;
+        int distSpottedIx = 0;
 
         for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
@@ -89,8 +94,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
                 if (lookingAt.contains("I")) { //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
                     System.out.println("THIS IS THE PROBLEM");
-                    distSpottedG = i;
-                    System.out.println("Intruder SPOTTED");
+                    distSpottedIx = i;
+                    System.out.println("INTRUDER SPOTTED");
+
+                    AStarChase aStar = new AStarChase(vision, currentX, currentY, i, j);
+                    aStar.display();
+                    aStar.process(); //Apply the A* algorithm
+                    aStar.displayScores(); // Display the scores on the grid
+                    aStar.displaySolution(); // Display the solution path
+                    aStar.decideNextChasingMove();
                 }
             }
         }

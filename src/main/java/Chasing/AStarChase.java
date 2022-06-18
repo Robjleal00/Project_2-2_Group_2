@@ -3,10 +3,8 @@ package Chasing;
 import Enums.Moves;
 import Enums.Rotations;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.PriorityQueue;
+import java.util.*;
+
 import static Chasing.AStarCoordinateTransform.transformIntoTwoD;
 import OptimalSearch.TreeRoot;
 
@@ -34,6 +32,9 @@ public class AStarChase {
     private int endI, endJ;
 
     private Cell nextMoveCoordinate;
+
+    private LinkedList<Cell> linky = new LinkedList<>();
+
 
     /**
     public AStarChase(String[][] map, int[] xy, int[] intruderPosition)
@@ -65,10 +66,10 @@ public class AStarChase {
     }
     **/
 
-    public AStarChase(int width, int height, int si, int sj, int ei, int ej, int[][] blocks) {
-        grid = new Cell[width][height];
-        closedCells = new boolean[width][height];
-        openCells = new PriorityQueue<Cell>(Comparator.comparingInt((Cell c) -> c.finalCost));
+    public AStarChase(String[][] vision, int si, int sj, int ei, int ej) {
+        grid = new Cell[vision.length][vision.length];
+        closedCells = new boolean[vision.length][vision.length];
+        openCells = new PriorityQueue<>(Comparator.comparingInt((Cell c) -> c.finalCost));
 
         startCell(si, sj);
         endCell(ei, ej);
@@ -83,15 +84,6 @@ public class AStarChase {
 
         }
         grid[startI][startJ].finalCost = 0;
-
-        // we put the blocks on the grid
-        for (int i = 0; i < blocks.length; i++) {
-            addBlockOnCell(blocks[i][0], blocks[i][1]);
-        }
-    }
-
-    public void addBlockOnCell(int i, int j) {
-        grid[i][j] = null;
     }
 
     public void startCell(int i, int j) {
@@ -283,10 +275,12 @@ public class AStarChase {
             System.out.println("Path :");
             Cell current = grid[endI][endJ];
             System.out.println(current);
+            linky.add(current);
             grid[current.i][current.j].solution = true;
 
             while (current.parent != null && current.parent != grid[startI][startJ]) {
                 System.out.print(" -> " + current.parent);
+                linky.add(current.parent);
                 grid[current.parent.i][current.parent.j].solution = true;
                 current = current.parent;
             }
@@ -297,6 +291,8 @@ public class AStarChase {
             nextMoveCoordinate = current;
             System.out.println(nextMoveCoordinate);
             System.out.println("\n");
+            System.out.println(linky);
+            System.out.println(linky.getLast());
 
             for (int i = 0; i < grid.length; i++) {
                 for (int j = 0; j < grid[i].length; j++) {
@@ -318,21 +314,12 @@ public class AStarChase {
 
         }
 
-        public static void main(String[] args){
-            AStarChase aStar = new AStarChase(5, 5, 0, 0, 3, 2,
-                        new int[][]{
-                    {0, 4}, {2, 2}, {3, 1}, {3, 3}, {2, 1}, {2, 3}
-                    }
-            );
-
-            aStar.display();
-            aStar.process(); //Apply the A* algorithm
-            aStar.displayScores(); // Display the scores on the grid
-            aStar.displaySolution(); // Display the solution path
-
-       }
-
-
-
-
+        public Cell decideNextChasingMove() {
+            if (!linky.isEmpty())
+                return linky.removeLast();
+            else {
+                return null;
+            }
+        }
 }
+
