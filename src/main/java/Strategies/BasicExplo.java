@@ -86,8 +86,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         int escapingTurn = 0;
         int distSpottedIx = 0;
         int distSpottedJy = 0;
-        int intruderCoordinateX;
-        int intruderCoordinateY;
+        int intruderCoordinateX = 0;
+        int intruderCoordinateY = 0;
 
         for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
@@ -145,10 +145,12 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             if (distSpottedJy < 0) {
                                 intruderCoordinateY = currentY - 1;
                                 intruderCoordinateX = currentX + i;
-=                            } else if (j == 0) {
+                            } else if (j == 0) {
                                 intruderCoordinateY = currentY;
+                                intruderCoordinateX = currentX + distSpottedIx;
                             } else {
                                 intruderCoordinateY = currentY + 1;
+                                intruderCoordinateX = currentX + distSpottedIx;
                             }
                         }
                     }
