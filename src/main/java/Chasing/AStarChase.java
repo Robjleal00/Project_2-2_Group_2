@@ -327,6 +327,7 @@ public class AStarChase {
                 toWalk = true;
                 return linky.getLast();
             } else {
+                toWalk = false;
                 return null;
             }
         }
