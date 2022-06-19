@@ -36,7 +36,7 @@ public class Launcher {
         GameController gm = new GameController(fileReader.getHeight(),fileReader.getWidth(),app);
 
         Variables vr = new Variables(fileReader.getBaseSpeedGuard(),fileReader.getDistanceViewing(),5,10);
-        gm.addVars(vr);
+        gm.addVarsG(vr);
         addGuards(fileReader,gm,vr);
         ArrayList<Area> walls = fileReader.getWalls();
         ArrayList<Teleporter> telepors = fileReader.getTeleporters();
@@ -103,8 +103,10 @@ public class Launcher {
     public static void main(String[] args) throws InterruptedException {
         //GameController gm = new GameController(11, 20);
         GameController gm = new GameController(20, 30);
-        Variables vr = new Variables(1,5,1,20);
-        gm.addVars(vr);
+        Variables vrG = new Variables(5,5,1,20);
+        Variables vrI = new Variables(1,5,1,20);
+        gm.addVarsG(vrG);
+        gm.addVarsI(vrI);
         gm.printMap();
         Goal target = new Goal(1, 6,4);
         gm.addObject(target);
@@ -113,9 +115,9 @@ public class Launcher {
         //gm.addWall(12,15,12,29);
         //gm.setGameMode(GameMode.PATROL_CHASE);
         //gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.RIGHT);
-        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,3,Rotations.DOWN);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 7,15,Rotations.UP);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 7,17,Rotations.UP);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),3,3,Rotations.DOWN);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 7,15,Rotations.UP);
+        //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 7,17,Rotations.UP);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,13,Rotations.UP);
        // Teleporter t1 = new Teleporter(1,3 ,3,8,8);
@@ -132,7 +134,7 @@ public class Launcher {
         GameController gm = new GameController(11, 20,app);
         //FileReader fileReader = new FileReader();
         Variables vr = new Variables(1,5,1,20);
-        gm.addVars(vr);
+        gm.addVarsG(vr);
         gm.printMap();
         //Goal target = new Goal(1, 6,4);
         //gm.addObject(target);

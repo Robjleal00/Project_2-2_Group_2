@@ -91,6 +91,7 @@ public class IntruderSt extends Strategy{
                     }
                     if(lookingAt.contains("33")) {
                         System.out.println("Pheromone spotted");
+                        gm.addVarsI(new Variables(1, 5, 1,20));
                         onlyExplore = true;
                     }
                 }

@@ -44,6 +44,8 @@ public class GameController { // self explanatory
     private boolean DEBUG_EPXLO;
     private int maxExploNum;
     private int walkSpeed;
+    private int walkSpeedG;
+    private int walkSpeedI;
     private MainApp graphicsUpdater;
     private Rotations globalRotation;
     private Rotations intruderGlobalRotation;
@@ -124,10 +126,15 @@ public class GameController { // self explanatory
         return entities;
     }
 
-    public void addVars(Variables vr) {
-        this.walkSpeed = vr.walkSpeed();
+    public void addVarsG(Variables vr) {
+        this.walkSpeedG = vr.walkSpeed();
         this.eyeRange = vr.eyeRange();
         this.pheromonesDuration = vr.pDur();
+    }
+
+    public void addVarsI(Variables vr) {
+        this.walkSpeedI = vr.walkSpeed();
+        this.eyeRange = vr.eyeRange();
     }
 
     public void init() throws InterruptedException {
@@ -668,6 +675,11 @@ public class GameController { // self explanatory
             case WALK -> {
                 switch (rotation) {
                     case UP -> {
+                        if(e instanceof Intruder){
+                            walkSpeed = walkSpeedI;
+                        } else {
+                            walkSpeed = walkSpeedG;
+                        }
                         int[] targetlocation = {pos[0], pos[1] - walkSpeed};
                         if (canBePutThere(targetlocation, e) && noWallsOnTheWay(pos, targetlocation, rotation, e)) {
                             putOnMap(symbol(e), targetlocation);
@@ -693,6 +705,11 @@ public class GameController { // self explanatory
                         return -1;
                     }
                     case DOWN -> {
+                        if(e instanceof Intruder){
+                            walkSpeed = walkSpeedI;
+                        } else {
+                            walkSpeed = walkSpeedG;
+                        }
                         int[] targetlocation = {pos[0], pos[1] + walkSpeed};
                         if (canBePutThere(targetlocation, e) && noWallsOnTheWay(pos, targetlocation, rotation, e)) {
                             putOnMap(symbol(e), targetlocation);
@@ -718,6 +735,11 @@ public class GameController { // self explanatory
                         return -1;
                     }
                     case RIGHT -> {
+                        if(e instanceof Intruder){
+                            walkSpeed = walkSpeedI;
+                        } else {
+                            walkSpeed = walkSpeedG;
+                        }
                         int[] targetlocation = {pos[0] + walkSpeed, pos[1]};
                         if (canBePutThere(targetlocation, e) && noWallsOnTheWay(pos, targetlocation, rotation, e)) {
                             putOnMap(symbol(e), targetlocation);
@@ -743,6 +765,11 @@ public class GameController { // self explanatory
                         return -1;
                     }
                     case LEFT -> {
+                        if(e instanceof Intruder){
+                            walkSpeed = walkSpeedI;
+                        } else {
+                            walkSpeed = walkSpeedG;
+                        }
                         int[] targetlocation = {pos[0] - walkSpeed, pos[1]};
                         if (canBePutThere(targetlocation, e) && noWallsOnTheWay(pos, targetlocation, rotation, e)) {
                             putOnMap(symbol(e), targetlocation);
