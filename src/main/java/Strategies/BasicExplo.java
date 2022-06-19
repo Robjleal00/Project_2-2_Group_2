@@ -93,7 +93,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 int l = j + 1;
                 final String lookingAt = vision[h][l];
 
-                if (lookingAt.contains("I")) { //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
+                if (lookingAt.contains("I") || AStarChase.toWalk) { //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
                     System.out.println("THIS IS THE PROBLEM");
                     distSpottedIx = i;
                     distSpottedJy = j;
@@ -104,7 +104,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     aStar.process(); //Apply the A* algorithm
                     aStar.displayScores(); // Display the scores on the grid
                     aStar.displaySolution(); // Display the solution path
-                    Cell coordinate = aStar.decideNextChasingMove(currentX, currentY); //Need to account for horizonal and vertical distances so I know how to make one step in what direction
+                    Cell coordinate = aStar.decideNextChasingMove(currentX, currentY); //Need to account for horizontal and vertical distances so I know how to make one step in what direction
                     int chasingX = coordinate.i;
                     int chasingY = coordinate.j;
                     //int differenceX =
