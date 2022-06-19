@@ -127,6 +127,14 @@ public class GameController { // self explanatory
         this.pheromonesDuration=vr.pDur();
     }
 
+    public int getMapLength() {
+        return mapLength;
+    }
+
+    public int getMapHeight() {
+        return mapHeight;
+    }
+
     public void init() throws InterruptedException {
         this.maxExploNum = allUnseenTiles.size();
         boolean wasBroken = false;
