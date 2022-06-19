@@ -85,6 +85,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         int currentY = xy[1];
         int escapingTurn = 0;
         int distSpottedIx = 0;
+        int distSpottedJy = 0;
 
         for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
@@ -95,6 +96,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 if (lookingAt.contains("I")) { //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
                     System.out.println("THIS IS THE PROBLEM");
                     distSpottedIx = i;
+                    distSpottedJy = j;
                     System.out.println("INTRUDER SPOTTED");
 
                     AStarChase aStar = new AStarChase(vision, currentX, currentY, i, j); //maybe using I J or H L might be better
@@ -102,7 +104,10 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     aStar.process(); //Apply the A* algorithm
                     aStar.displayScores(); // Display the scores on the grid
                     aStar.displaySolution(); // Display the solution path
-                    Cell coordinate = aStar.decideNextChasingMove(currentX, currentY);
+                    Cell coordinate = aStar.decideNextChasingMove(currentX, currentY); //Need to account for horizonal and vertical distances so I know how to make one step in what direction
+                    int chasingX = coordinate.i;
+                    int chasingY = coordinate.j;
+                    //int differenceX =
                     //Moves move = Moves.WALK;
                     if (AStarChase.toWalk) {
                         switch (rot) {
