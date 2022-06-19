@@ -103,7 +103,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     aStar.displayScores(); // Display the scores on the grid
                     aStar.displaySolution(); // Display the solution path
                     Cell coordinate = aStar.decideNextChasingMove(currentX, currentY);
-                    Moves move = Moves.WALK;
+                    //Moves move = Moves.WALK;
                     if (AStarChase.toWalk) {
                         switch (rot) {
                             case FORWARD -> {
@@ -111,36 +111,46 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                                     //Turn right and then walk --> false
                                     walked = false;
                                     return Moves.TURN_RIGHT;
+                                } else {
+                                    walked = true;
+                                    return Moves.TURN_LEFT;
                                 }
-                                return Moves.TURN_LEFT;
                             }
                             case BACK -> {
                                 if (!walls.containsKey(currentX + 1)) {
                                     //Turn left and then walk
                                     walked = false;
                                     return Moves.TURN_LEFT;
+                                } else {
+                                    walked = true;
+                                    return Moves.TURN_RIGHT;
                                 }
-                                return Moves.TURN_RIGHT;
                             }
                             case RIGHT -> {
                                 if (!walls.containsKey(currentY + 1)) {
                                     //Turn left and then walk
                                     walked = false;
                                     return Moves.TURN_LEFT;
+                                } else {
+                                    walked = true;
+                                    return Moves.TURN_RIGHT;
                                 }
-                                return Moves.TURN_RIGHT;
                             }
                             case LEFT -> {
                                 if (!walls.containsKey(currentY + 1)) {
                                     //Turn right and then walk
                                     walked = false;
                                     return Moves.TURN_RIGHT;
+                                } else {
+                                    walked = true;
+                                    return Moves.TURN_LEFT;
                                 }
-                                return Moves.TURN_LEFT;
                             }
                         }
                     }
-                    return Moves.WALK;
+                    if (walked) {
+                        return Moves.WALK;
+                    }
                 }
             }
         }
