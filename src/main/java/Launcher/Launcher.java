@@ -102,8 +102,8 @@ public class Launcher {
     // easy launching for testing
     public static void main(String[] args) throws InterruptedException {
         //GameController gm = new GameController(11, 20);
-        GameController gm = new GameController(20, 30);
-        Variables vrG = new Variables(5,5,1,20);
+        GameController gm = new GameController(11, 20);
+        Variables vrG = new Variables(1,5,1,20);
         Variables vrI = new Variables(1,5,1,20);
         gm.addVarsG(vrG);
         gm.addVarsI(vrI);
@@ -113,9 +113,9 @@ public class Launcher {
 
         gm.addWall(0,5,6,5);
         //gm.addWall(12,15,12,29);
-        //gm.setGameMode(GameMode.PATROL_CHASE);
-        //gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.RIGHT);
+        gm.setGameMode(GameMode.PATROL_CHASE);
         gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),3,3,Rotations.DOWN);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),1,5,Rotations.UP);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 7,15,Rotations.UP);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 7,17,Rotations.UP);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);

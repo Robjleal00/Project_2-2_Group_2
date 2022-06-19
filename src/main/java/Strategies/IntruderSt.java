@@ -33,7 +33,7 @@ public class IntruderSt extends Strategy{
     private boolean onlyExplore;
     private boolean releaseMarkers;
 
-
+    //THIS IS THE COOPERATIVE INTRUDER - not aware of its surroundings but communicates with other intruders
     public IntruderSt(){
         this.explored = new HashMap<>();
         this.walls = new HashMap<>();
@@ -57,7 +57,6 @@ public class IntruderSt extends Strategy{
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
 
         //TODO: Check if intruder knows how to teleport
-        //TODO: Stuck problem could be because the intruder coordinates seem inverted
         updateExploration(vision, xy, rot);
         visitedPoints.add(new Point(xy,new ArrayList<>()));
 

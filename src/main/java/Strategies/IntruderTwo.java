@@ -36,6 +36,7 @@ public class IntruderTwo extends Strategy{
     //At every move it turns 360 and checks whether the target is there
     // maybe puts a # second marker when it sees a guard or a wall or the target
 
+    //THIS IS THE SELFISH INTRUDER - always aware of its surroundings but slower and does not communicate with other intruders
     public IntruderTwo(){
         this.explored = new HashMap<>();
         this.walls = new HashMap<>();

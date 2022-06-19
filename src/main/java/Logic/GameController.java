@@ -150,7 +150,7 @@ public class GameController { // self explanatory
         }
         while (isRunning) {//gameloop
             boolean allBroken = false;
-            //shiftPheromones();
+            shiftPheromones();
             applyMarkers();
             //TODO: Keep track of the intruder releasing the markers in case it gets captured by the guards
             // This cute little line get all the moves from the agents, effectively executing everything except turning
@@ -1008,8 +1008,8 @@ public class GameController { // self explanatory
             int[] intruderLoc = entityLocations.get(intEntity);
 
             //Stopping condition
-            if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
-                isRunning = false;
+            //if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
+                //isRunning = false;
 
 
             double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);

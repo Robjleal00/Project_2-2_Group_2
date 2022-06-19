@@ -42,7 +42,9 @@ public class Guard extends Entity{
     public Moves getMove() {
         String[][] vision = gm.giveVision(this);
         int[] xy = {x, y};
-        return st.decideOnMove(vision, xy, currentRotation,vr);
+        Moves move = st.decideOnMove(vision, xy, currentRotation,vr);
+        System.out.println("GUARD MOVEEE: " + move.toString());
+        return move;
     }
 
     @Override
