@@ -86,6 +86,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         int escapingTurn = 0;
         int distSpottedIx = 0;
         int distSpottedJy = 0;
+        int intruderCoordinateX;
+        int intruderCoordinateY;
 
         for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
@@ -99,7 +101,58 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     distSpottedJy = j;
                     System.out.println("INTRUDER SPOTTED");
 
-                    AStarChase aStar = new AStarChase(vision, currentX, currentY, i, j); //maybe using I J or H L might be better
+                    //Calculating intruder's coordinate (aka AStar target) using the distances acquired from the vision:
+                    // please remember to account for not having to do this every single time! or maybe this is the best solution
+                    // make sure to add the remaining cases in the "left" case!
+                    switch (rot) {
+                        case FORWARD -> {
+                            if (distSpottedJy < 0) {
+                                intruderCoordinateX = currentX - 1;
+                                intruderCoordinateY = currentY + distSpottedIx;
+                            }
+                            else if (j == 0) {
+                                intruderCoordinateX = currentX;
+                                intruderCoordinateY = currentY + distSpottedIx;
+                            } else {
+                                intruderCoordinateX = currentX + 1;
+                            }
+                        }
+                        case BACK -> {
+                            if (distSpottedJy < 0) {
+                                intruderCoordinateX = currentX + 1;
+                                intruderCoordinateY = currentY - distSpottedIx;
+                            } else if (j == 0) {
+                                intruderCoordinateX = currentX;
+                                intruderCoordinateY = currentY - distSpottedIx;
+                            } else{
+                                intruderCoordinateX = currentX - 1;
+                                intruderCoordinateY = currentY - distSpottedIx;
+                            }
+                        }
+                        case RIGHT -> {
+                            if (distSpottedJy < 0) {
+                                intruderCoordinateY = currentY + 1;
+                                intruderCoordinateX = currentX + distSpottedIx;
+                            } else if (j == 0) {
+                                intruderCoordinateY = currentY;
+                                intruderCoordinateX = currentX + distSpottedIx;
+                            } else {
+                                intruderCoordinateY = currentY - 1;
+                                intruderCoordinateX = currentX + distSpottedIx;
+                            }
+                        }
+                        case LEFT -> {
+                            if (distSpottedJy < 0) {
+                                intruderCoordinateY = currentY - 1;
+                                intruderCoordinateX = currentX + i;
+=                            } else if (j == 0) {
+                                intruderCoordinateY = currentY;
+                            } else {
+                                intruderCoordinateY = currentY + 1;
+                            }
+                        }
+                    }
+                    AStarChase aStar = new AStarChase(vision, currentX, currentY, intruderCoordinateX, intruderCoordinateY); //maybe using I J or H L might be better
                     aStar.display();
                     aStar.process(); //Apply the A* algorithm
                     aStar.displayScores(); // Display the scores on the grid
