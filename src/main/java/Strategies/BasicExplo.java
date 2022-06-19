@@ -48,7 +48,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private boolean PATROLLING_SETUP_DEBUG;
     private ArrayList<Integer> intruderCoordinates;
     private String[][] patrollingMap;
-
+    private boolean walked;
 
     public BasicExplo() {
         this.explored = new HashMap<>();
@@ -104,62 +104,43 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     aStar.displaySolution(); // Display the solution path
                     Cell coordinate = aStar.decideNextChasingMove(currentX, currentY);
                     Moves move = Moves.WALK;
-                    int[] nextPoint = new int[2];
                     if (AStarChase.toWalk) {
-                        if (rot == Rotations.FORWARD) {
-                            if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1] + vr.walkSpeed())) {
-                                nextPoint[0] = xy[0];
-                                nextPoint[1] = xy[1] + vr.walkSpeed();
-                                Point toCheck = new Point(nextPoint, new ArrayList<>());
-                                for (i = 0; i < visitedPoints.size(); i++) {
-                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
-                                        System.out.println("LOOKING AT VISITED");
-                                        break;
-
-                                    }
+                        switch (rot) {
+                            case FORWARD -> {
+                                if (!walls.containsKey(currentX + 1)) {
+                                    //Turn right and then walk --> false
+                                    walked = false;
+                                    return Moves.TURN_RIGHT;
                                 }
+                                return Moves.TURN_LEFT;
                             }
-                        } else if (rot == Rotations.RIGHT) {
-                            if (explored.containsKey(xy[0] + vr.walkSpeed()) && explored.get(xy[0] + vr.walkSpeed()).contains(xy[1])) {
-                                nextPoint[0] = xy[0] + vr.walkSpeed();
-                                nextPoint[1] = xy[1];
-                                Point toCheck = new Point(nextPoint, new ArrayList<>());
-                                for (i = 0; i < visitedPoints.size(); i++) {
-                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
-                                        System.out.println("LOOKING AT VISITED");
-                                        break;
-                                    }
+                            case BACK -> {
+                                if (!walls.containsKey(currentX + 1)) {
+                                    //Turn left and then walk
+                                    walked = false;
+                                    return Moves.TURN_LEFT;
                                 }
+                                return Moves.TURN_RIGHT;
                             }
-                        } else if (rot == Rotations.LEFT) {
-                            if (explored.containsKey(xy[0] - vr.walkSpeed()) && explored.get(xy[0] - vr.walkSpeed()).contains(xy[1])) {
-                                nextPoint[0] = xy[0] - vr.walkSpeed();
-                                nextPoint[1] = xy[1];
-                                Point toCheck = new Point(nextPoint, new ArrayList<>());
-                                for (i = 0; i < visitedPoints.size(); i++) {
-                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
-                                        System.out.println("LOOKING AT VISITED");
-                                        break;
-                                    }
-
+                            case RIGHT -> {
+                                if (!walls.containsKey(currentY + 1)) {
+                                    //Turn left and then walk
+                                    walked = false;
+                                    return Moves.TURN_LEFT;
                                 }
+                                return Moves.TURN_RIGHT;
                             }
-                        } else if (rot == Rotations.BACK) {
-                            if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1] - vr.walkSpeed())) {
-                                nextPoint[0] = xy[0];
-                                nextPoint[1] = xy[1] - vr.walkSpeed();
-                                Point toCheck = new Point(nextPoint, new ArrayList<>());
-                                for (i = 0; i < visitedPoints.size(); i++) {
-                                    if (Arrays.equals(visitedPoints.get(i).xy(), toCheck.xy())) {
-                                        System.out.println("LOOKING AT VISITED");
-                                        break;
-                                    }
-
+                            case LEFT -> {
+                                if (!walls.containsKey(currentY + 1)) {
+                                    //Turn right and then walk
+                                    walked = false;
+                                    return Moves.TURN_RIGHT;
                                 }
+                                return Moves.TURN_LEFT;
                             }
                         }
                     }
-
+                    return Moves.WALK;
                 }
             }
         }
