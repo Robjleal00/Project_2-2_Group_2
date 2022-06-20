@@ -682,8 +682,11 @@ public class BrickMortar extends Strategy {
         //TODO: getDirection seems to only return walk
         //return gm.getDirection(intruder);
         Moves nextMove = gm.getDirection(intruder);
+        Moves bestMove = gm.getNextBestMove(intruder);
         System.out.println("Direction move: "+nextMove);
-        return nextMove;
+        System.out.println("Best move: "+bestMove);
+        //return nextMove;
+        return bestMove;
     }
 
 
@@ -692,6 +695,7 @@ public class BrickMortar extends Strategy {
         Position p = new Position(lastPosition.getX(), lastPosition.getY());
         if(lastMove.equals(Moves.WALK) && count > 1 && (p.getX() == xy[0] && p.getY() == xy[1]))
         {
+            count = 0;
             return true;
         }
         if(visitedCells.size() < 3)
@@ -833,7 +837,8 @@ public class BrickMortar extends Strategy {
         }
 
          */
-        return hasUnexploredNeighbour;
+        return false;
+        //return hasUnexploredNeighbour;
     }
 
     //V2: using get().containsValue
@@ -871,6 +876,7 @@ public class BrickMortar extends Strategy {
 
     //CHANGING THIS MADE IT NO LONGER GO TO THE RIGHT
     //change 2: removing vr.walkspeed again    RESULT: GOES BACK TO THE RIGHT AGAIN
+    //V3: changed if statement contents
     public int[] getBestUnexplored(ArrayList<Position> unexploredNeighbours, Variables vr)
     {
         int count = 0;
@@ -889,6 +895,18 @@ public class BrickMortar extends Strategy {
             {
                 currentCount++;
             }
+            /* v3
+            if(visited.get((currentXY[0])).contains(currentXY[1] +1) || walls.get((currentXY[0])).contains(currentXY[1] +1))
+            {
+                currentCount++;
+            }
+            if(visited.get((currentXY[0])).contains(currentXY[1] -1) || walls.get((currentXY[0])).contains(currentXY[1] -1))
+            {
+                currentCount++;
+            }
+
+             */
+            //v2
             if(visited.containsValue((currentXY[1]+1)) || walls.containsValue((currentXY[0]+1)))
             {
                 currentCount++;
@@ -897,6 +915,7 @@ public class BrickMortar extends Strategy {
             {
                 currentCount++;
             }
+
             if(currentCount > count){
                 count = currentCount;
                 bestXY[0] = currentXY[0];
