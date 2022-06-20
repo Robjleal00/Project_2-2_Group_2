@@ -103,9 +103,9 @@ public class Launcher {
     public static void main(String[] args) throws InterruptedException {
         //GameController gm = new GameController(11, 20);
         GameController gm = new GameController(11, 20);
-        //Variables vrG = new Variables(1,5,1,20);
+        Variables vrG = new Variables(1,5,1,20);
         Variables vrI = new Variables(1,5,1,20);
-        //gm.addVarsG(vrG);
+        gm.addVarsG(vrG);
         gm.addVarsI(vrI);
         gm.printMap();
         Goal target = new Goal(1, 6,4);
@@ -113,11 +113,11 @@ public class Launcher {
 
         gm.addWall(0,5,6,5);
         //gm.addWall(12,15,12,29);
-        //gm.setGameMode(GameMode.PATROL_CHASE);
-        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),3,3,Rotations.DOWN);
+        gm.setGameMode(GameMode.PATROL_CHASE);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),3,13,Rotations.DOWN);
         //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),1,5,Rotations.UP);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 7,15,Rotations.UP);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 7,17,Rotations.UP);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 3,15,Rotations.UP);
+        //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 7,17,Rotations.UP);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,13,Rotations.UP);
        // Teleporter t1 = new Teleporter(1,3 ,3,8,8);

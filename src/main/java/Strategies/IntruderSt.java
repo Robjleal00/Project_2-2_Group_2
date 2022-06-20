@@ -32,6 +32,7 @@ public class IntruderSt extends Strategy{
     private int count = 0;
     private boolean onlyExplore;
     private boolean releaseMarkers;
+    private final boolean DEBUG = true;
 
     //THIS IS THE COOPERATIVE INTRUDER - not aware of its surroundings but communicates with other intruders
     public IntruderSt(){
@@ -44,7 +45,6 @@ public class IntruderSt extends Strategy{
         this.walked = true;
         this.onlyExplore = false;
         this.releaseMarkers = false;
-
     }
 
     @Override
@@ -55,6 +55,8 @@ public class IntruderSt extends Strategy{
 
     @Override
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder){
+
+        //if(DEBUG) return Moves.STUCK; //TODO: Intruder can be stuck until the exploration has been done
 
         //TODO: Check if intruder knows how to teleport
         updateExploration(vision, xy, rot);

@@ -61,6 +61,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         this.teleporterAll = new HashMap<>();
         this.completeRotation = false;
         this.rotationCount = 0;
+        this.walked = false;
         Config c = new Config();
         PATROLLING_SETUP_DEBUG=c.PATROLLING_SETUP_DEBUG;
         this.DEBUG_LASTSEEN = c.BASIC_EXPLO_LASTSEEN;
@@ -100,8 +101,14 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         */
 
         //TODO: I think the last thing to do is just making sure that the next more is to walk
+        //TODO: The speed becomes the distance: Sprint
         //int eyeRange = vision.length;
-        /*int eyeRange = vision.length;
+        int eyeRange = vision.length;
+
+        if(chasing && !walked){
+            walked = true;
+            return Moves.WALK;
+        }
 
         for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
@@ -111,20 +118,33 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
                 if(lookingAt.contains("I")){
                     System.out.println("Intruder SPOTTED");
+                    System.out.println("i: " + i + ", j: " + j);
                     chasing = true;
                     completeRotation = false;
                     rotationCount = 0;
 
                     if(j == 1){
+                        walked = false;
                         return Moves.TURN_RIGHT;
                     }
                     else if(j == 0){
+                        walked = true;
                         return Moves.WALK;
                     }
                     else{
+                        walked = false;
                         return Moves.TURN_LEFT;
                     }
                 }
+            }
+        }
+
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+
                 if(chasing){
                     if(!lookingAt.contains("I")){
                         System.out.println("Was chasing but can't see intruder anymore");
@@ -139,15 +159,14 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                 }
                 if(chasing){
                     if(!lookingAt.contains("I")){
-                        System.out.println("4 rotations have been tried but nothing");
-                        chasing = false;
+                        if(completeRotation){
+                            System.out.println("4 rotations have been tried but nothing");
+                            chasing = false;
+                        }
                     }
                 }
-
-
             }
-        }*/
-
+        }
 
         if (!exploDone) {
             /*
@@ -159,7 +178,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
              */
 
             updateExploration(vision, xy, rot);
-            int eyeRange = vision.length;
+            eyeRange = vision.length;
             if (!explored(xy)) visitedPoints.add(new Point(xy, new ArrayList<>()));
             int check = eyeRange - 2;
             if (firstPhase) {
@@ -171,7 +190,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         if (!firstPhase && !exploDone) {
             TreeRoot root = new TreeRoot(deepClone(explored), deepClone(walls), xy.clone(), rot, 5, constraints, vr, visitedPoints, objects);
-            int eyeRange = vision.length;
+            eyeRange = vision.length;
             int check = eyeRange - 2;
             boolean blocked=false;
             if (blockedByObstacles(vision[check][1])) {
@@ -254,7 +273,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
             else {
                 updateLastSeen(vision, rot, xy,vr);
             }
-            int eyeRange = vision.length;
+            eyeRange = vision.length;
             int check = eyeRange - 2;
             boolean blockWalk=false;
                 if (blockedByObstacles(vision[check][1])) {

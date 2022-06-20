@@ -3,6 +3,7 @@ package Logic;
 import Config.Config;
 import Config.Variables;
 import Entities.Entity;
+import Entities.Guard;
 import Entities.Intruder;
 import Enums.EntityType;
 import Enums.GameMode;
@@ -524,6 +525,13 @@ public class GameController { // self explanatory
 
 
     private int executeMove(Entity e, Moves m) {
+        //DEBUG
+        if(e instanceof Intruder){
+            System.out.println("Global Intruder: " + entityLocations.get(e)[0] + ", " + entityLocations.get(e)[1]);
+        }
+        if(e instanceof Guard){
+            System.out.println("Global Guard: " + entityLocations.get(e)[0] + ", " + entityLocations.get(e)[1]);
+        }
         Rotations rotation = entityRotationsHashMap.get(e);
         int[] pos = entityLocations.get(e);
         switch (m) {
@@ -923,9 +931,14 @@ public class GameController { // self explanatory
         return "ERROR";
     }
 
-    private boolean blockedByObstacles(String s) {
+    private boolean blockedByObstaclesIntruder(String s) {
         // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
         return s.contains("I") || s.contains("G") || s.contains("E") || s.contains("W") || s.contains("V1");
+
+    }
+    private boolean blockedByObstaclesGuard(String s) {
+        // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
+        return s.contains("G") || s.contains("E") || s.contains("W") || s.contains("V1");
 
     }
 
@@ -934,8 +947,8 @@ public class GameController { // self explanatory
             if (e.getType() == EntityType.INTRUDER) {
                 if (Objects.equals(map[target[1]][target[0]], "V1"))
                     return true;
-                else return !blockedByObstacles(map[target[1]][target[0]]);
-            } else return !blockedByObstacles(map[target[1]][target[0]]);
+                else return !blockedByObstaclesIntruder(map[target[1]][target[0]]);
+            } else return !blockedByObstaclesGuard(map[target[1]][target[0]]);
         } else return false;
     }
 
@@ -969,7 +982,7 @@ public class GameController { // self explanatory
             for(int j = 0; j < pheromonesMap[0].length; j++){
                 int val = pheromonesMap[i][j];
                 if(val >0) {pheromonesMap[i][j]--;val--;}//map[i][j]=String.valueOf(pheromonesMap[i][j]);
-                if(!blockedByObstacles(map[i][j])) {
+                if(!blockedByObstaclesIntruder(map[i][j])) {
                     if(val==0){
                         map[i][j]=" ";
                     }
@@ -984,7 +997,7 @@ public class GameController { // self explanatory
     public void applyMarkers(){
         for ( int i=0;i<markersMap.length;i++){
             for(int j = 0; j < markersMap[0].length; j++){
-                if(!blockedByObstacles(map[i][j])) {
+                if(!blockedByObstaclesIntruder(map[i][j])) {
                     if(markersMap[i][j] == 33){
                         map[i][j] = String.valueOf(markersMap[i][j]);
                     }
