@@ -63,7 +63,7 @@ public class BrickMortar extends Strategy {
         {
             for(int j = -1; j < 1; j++)
             {
-                if(explored.containsKey(pos.getX() + i) && explored.get(pos.getX()).contains(pos.getY() + j))
+                if(explored.containsKey(pos.getX() + i) && explored.get(pos.getX() + i).contains(pos.getY() + j))
                 {
                     walkableNeighbors.add(new Position(pos.getX() + 1, pos.getY() + j));
                 }
