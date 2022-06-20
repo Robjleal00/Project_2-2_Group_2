@@ -75,8 +75,8 @@ public class BrickMortar extends Strategy {
 
         public BreadthFirstSearch()
         {
-            this.queue = new LinkedList<>();
             this.visited = new ArrayList<>();
+            this.queue = new LinkedList<>();
         }
 
         boolean pathExists(Position start, Position target)
@@ -86,11 +86,9 @@ public class BrickMortar extends Strategy {
             this.visited = new ArrayList<>();
             queue.add(start);
 
-            return isPossible(target);
-        }
 
-        boolean isPossible(Position target)
-        {
+            boolean isPossible;
+
             while(!queue.isEmpty())
             {
                 Position currentPos = queue.poll();
@@ -113,7 +111,9 @@ public class BrickMortar extends Strategy {
             return false;
         }
 
-        void addUnvisitedPosition(Position pos)
+
+
+        private void addUnvisitedPosition(Position pos)
         {
             if(!isVisited(pos) && !(pos.getX() == start.getX() && pos.getY() == start.getY() ))
             {
