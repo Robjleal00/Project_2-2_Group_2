@@ -53,12 +53,22 @@ public class BrickMortar extends Strategy {
                 }
             }
         }
-        return true;
+        return false;
     }
 
     public ArrayList<Position> getWalkableNeighbors(Position pos)
     {
         ArrayList<Position> walkableNeighbors = new ArrayList<>();
+        for(int i = -1; i < 1; i++)
+        {
+            for(int j = -1; j < 1; j++)
+            {
+                if(explored.containsKey(pos.getX() + i) && explored.get(pos.getX()).contains(pos.getY() + j))
+                {
+                    walkableNeighbors.add(new Position(pos.getX() + 1, pos.getY() + j));
+                }
+            }
+        }
         return walkableNeighbors;
     }
 
@@ -201,8 +211,6 @@ public class BrickMortar extends Strategy {
         }
         else
         {
-            //TODO: change from Position into int[] xy
-            //TODO: this is whack
             Position currentPosition = new Position(xy[0],xy[1]);
             if(visitedCells.isEmpty())
             {
@@ -632,10 +640,8 @@ public class BrickMortar extends Strategy {
     public Moves evadeWall(GameController gm, Intruder intruder)
     {
         //return gm.getDirection(intruder);
-        Moves nextMove= gm.getNextBestMove(intruder);
-        Moves directionMove = gm.getDirection(intruder);
-        System.out.println("Next move: "+nextMove);
-        System.out.println("Direction move: "+directionMove);
+        Moves nextMove = gm.getDirection(intruder);
+        System.out.println("Direction move: "+nextMove);
         return nextMove;
     }
 

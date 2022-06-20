@@ -915,13 +915,13 @@ public class GameController { // self explanatory
         double angle = Math.atan(tanTheta);
         int degAngle = (int) Math.toDegrees(angle);
 
-        /*
+
         System.out.println("Global rotation: " + intruderGlobalRotation.toString());
         System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
         System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
         System.out.println("tanTheta: " + tanTheta);
 
-         */
+
         //System.out.println("Deg angle : " + degAngle);
 
         if (targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]) {

@@ -51,8 +51,9 @@ public class Intruder extends Entity{
         System.out.println("Current Local Rotation before move: " + currentRotation.toString());
 
 
-
-        return  st.decideOnMoveIntruder(vision, xy, currentRotation, vr, gm, this);
+        Moves move = st.decideOnMoveIntruder(vision, xy, currentRotation, vr, gm, this);
+        System.out.println("Final move: "+move.toString());
+        return  move;
     }
 
     @Override
