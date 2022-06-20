@@ -182,8 +182,8 @@ public class BrickMortar extends Strategy {
     private boolean walked;
     private int count = 0;
     private ArrayList<Position> visitedCells;
-    private int mapHeight;
-    private int mapLength;
+    private Moves lastMove;
+    private Position lastPosition;
     public BrickMortar()
     {
         this.explored = new HashMap<>();
@@ -202,6 +202,7 @@ public class BrickMortar extends Strategy {
     @Override
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
     {
+        count++;
         System.out.println("X: "+xy[0] +" Y: "+xy[1]);
         updateExploration(vision,xy,rot);
 
@@ -253,11 +254,12 @@ public class BrickMortar extends Strategy {
         //V3: removing inBounds
         if(hasUnexploredNeighbours(xy, vr))
         {
-            System.out.println("NAVIGATION STEP: CHECKING UNEXPLORED NEIGHBOURS");
             ArrayList<Position> unexploredNeighbours = getUnexploredNeighbours(xy, vr);
+            System.out.println("CHECKING UNEXPLORED NEIGHBOURS SIZE = "+unexploredNeighbours.size());
             int[] bestUnexploredPos = getBestUnexplored(unexploredNeighbours, vr);
             int xDiff = bestUnexploredPos[0] - xy[0];
             int yDiff = bestUnexploredPos[1] - xy[1];
+            lastPosition = new Position(xy[0], xy[1]);
             if(yDiff == 0)
             {
                 //Move to the right
@@ -266,12 +268,16 @@ public class BrickMortar extends Strategy {
                     //check if it has to rotate first before moving
                     switch(rot)
                     {
-                        case LEFT -> {return Moves.TURN_AROUND;}
+                        case LEFT -> {
+                            lastMove = Moves.TURN_AROUND;
+                            return Moves.TURN_AROUND;
+                        }
                         case RIGHT -> {
                             if(stuck(xy))
                             {
                                 System.out.println("We're stuck lads");
-                                return evadeWall(gm, intruder);
+                                lastMove = evadeWall(gm, intruder);
+                                return lastMove;
                             }
                             /*
                             if(isFacingWall(xy, Rotations.RIGHT, vr, vision))
@@ -280,6 +286,7 @@ public class BrickMortar extends Strategy {
                             }
                              */
                             if(!isVisited(xy,vr,rot)) {
+                                lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
                             else
@@ -291,8 +298,13 @@ public class BrickMortar extends Strategy {
                         //TODO: Am I mixing up i and j? Is it xy or yx?
                         //Looking at Piotr's code from patroller, forward would mean it's facing down???
                         //compare starting line 266 in patroller
-                        case FORWARD -> {return Moves.TURN_LEFT;}
-                        case BACK -> {return Moves.TURN_RIGHT;}
+                        case FORWARD -> {
+                            lastMove = Moves.TURN_LEFT;
+                            return Moves.TURN_LEFT;}
+                        case BACK -> {
+                            lastMove = Moves.TURN_RIGHT;
+                            return Moves.TURN_RIGHT;
+                        }
                     }
                 }
                 else
@@ -304,7 +316,8 @@ public class BrickMortar extends Strategy {
                             if(stuck(xy))
                             {
                                 System.out.println("We're stuck lads");
-                                return evadeWall(gm, intruder);
+                                lastMove = evadeWall(gm, intruder);
+                                return lastMove;
                             }
                             /*
                             if(isFacingWall(xy, Rotations.LEFT, vr, vision))
@@ -314,6 +327,7 @@ public class BrickMortar extends Strategy {
 
                              */
                             if(!isVisited(xy,vr,rot)) {
+                                lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
                             else
@@ -321,9 +335,15 @@ public class BrickMortar extends Strategy {
                                 return Moves.STUCK;
                             }
                         }
-                        case RIGHT -> {return Moves.TURN_AROUND;}
-                        case FORWARD -> {return Moves.TURN_RIGHT;}
-                        case BACK -> {return Moves.TURN_LEFT;}
+                        case RIGHT -> {
+                            lastMove = Moves.TURN_AROUND;
+                            return Moves.TURN_AROUND;}
+                        case FORWARD -> {
+                            lastMove = Moves.TURN_RIGHT;
+                            return Moves.TURN_RIGHT;}
+                        case BACK -> {
+                            lastMove = Moves.TURN_LEFT;
+                            return Moves.TURN_LEFT;}
                     }
                 }
             }
@@ -334,14 +354,18 @@ public class BrickMortar extends Strategy {
                     //GO UP (????)
                     switch(rot)
                     {
-                        case LEFT -> {return Moves.TURN_RIGHT;}
-                        case RIGHT -> {return Moves.TURN_LEFT;}
-                        case FORWARD -> {return Moves.TURN_AROUND;}
+                        case LEFT -> {lastMove = Moves.TURN_RIGHT;
+                        return Moves.TURN_RIGHT;}
+                        case RIGHT -> {lastMove = Moves.TURN_LEFT;
+                        return Moves.TURN_LEFT;}
+                        case FORWARD -> {lastMove = Moves.TURN_AROUND;
+                        return Moves.TURN_AROUND;}
                         case BACK -> {
                             if(stuck(xy))
                             {
                                 System.out.println("We're stuck lads");
-                                return evadeWall(gm, intruder);
+                                lastMove = evadeWall(gm, intruder);
+                                return lastMove;
                             }
                             /*
                             if(isFacingWall(xy, Rotations.BACK, vr, vision))
@@ -351,6 +375,7 @@ public class BrickMortar extends Strategy {
 
                              */
                             if(!isVisited(xy,vr,rot)) {
+                                lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
                             else
@@ -364,15 +389,18 @@ public class BrickMortar extends Strategy {
                 {
                     switch(rot)
                     {
-                        case LEFT -> {return Moves.TURN_LEFT;}
-                        case RIGHT -> {return Moves.TURN_RIGHT;}
+                        case LEFT -> {lastMove = Moves.TURN_LEFT;
+                        return Moves.TURN_LEFT;}
+                        case RIGHT -> {lastMove = Moves.TURN_RIGHT;
+                        return Moves.TURN_RIGHT;}
                         //TODO: keeps going into case forward despite it having better explored/unexplored cells
                         //Is it because of bounds?
                         case FORWARD -> {
                             if(stuck(xy))
                             {
                                 System.out.println("We're stuck lads");
-                                return evadeWall(gm, intruder);
+                                lastMove = evadeWall(gm, intruder);
+                                return lastMove;
                             }
                             /*
                             if(isFacingWall(xy, Rotations.FORWARD, vr, vision))
@@ -387,6 +415,7 @@ public class BrickMortar extends Strategy {
                                 System.out.println("Well it's not visited, so it's trying to walk");
 
                                  */
+                                lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
                             else
@@ -394,7 +423,8 @@ public class BrickMortar extends Strategy {
                                 return Moves.STUCK;
                             }
                         }
-                        case BACK -> {return Moves.TURN_AROUND;}
+                        case BACK -> {lastMove = Moves.TURN_AROUND;
+                        return Moves.TURN_AROUND;}
                     }
                 }
             }
@@ -649,6 +679,7 @@ public class BrickMortar extends Strategy {
     //If it crashes into a wall, just make it cheat a move.
     public Moves evadeWall(GameController gm, Intruder intruder)
     {
+        //TODO: getDirection seems to only return walk
         //return gm.getDirection(intruder);
         Moves nextMove = gm.getDirection(intruder);
         System.out.println("Direction move: "+nextMove);
@@ -658,11 +689,16 @@ public class BrickMortar extends Strategy {
 
     public boolean stuck(int[] xy)
     {
+        Position p = new Position(lastPosition.getX(), lastPosition.getY());
+        if(lastMove.equals(Moves.WALK) && count > 1 && (p.getX() == xy[0] && p.getY() == xy[1]))
+        {
+            return true;
+        }
         if(visitedCells.size() < 3)
         {
             return false;
         }
-        Position p = visitedCells.get(visitedCells.size()-3);
+        p = visitedCells.get(visitedCells.size()-3);
         if(p.getX() == xy[0] && p.getY() == xy[1])
         {
             return true;
@@ -730,7 +766,7 @@ public class BrickMortar extends Strategy {
         return false;
     }
 
-
+    //V2:  get().containsValue same as BFS
     public ArrayList<Position> getExploredNeighbours(int[] xy)
     {
         ArrayList<Position> exploredNeighbours = new ArrayList<Position>();
@@ -741,6 +777,16 @@ public class BrickMortar extends Strategy {
         {
             exploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
         }
+        //v2 changes
+        if(explored.get(xy[0]).contains(xy[1] + 1))
+        {
+            exploredNeighbours.add(new Position(xy[0], xy[1]+1));
+        }
+        if(explored.get(xy[0]).contains(xy[1] - 1))
+        {
+            exploredNeighbours.add(new Position(xy[0], xy[1]-1));
+        }
+        /* v1
         if(explored.containsValue(xy[1] + 1))
         {
             exploredNeighbours.add(new Position(xy[0], xy[1]+1));
@@ -749,6 +795,8 @@ public class BrickMortar extends Strategy {
         {
             exploredNeighbours.add(new Position(xy[0], xy[1]-1));
         }
+
+         */
         return exploredNeighbours;
     }
 
@@ -765,6 +813,16 @@ public class BrickMortar extends Strategy {
         {
             hasUnexploredNeighbour = true;
         }
+        //v2
+        if(!explored.get(xy[0]).contains(xy[1] + 1))
+        {
+            hasUnexploredNeighbour = true;
+        }
+        if(!explored.get(xy[0]).contains(xy[1] - 1))
+        {
+            hasUnexploredNeighbour = true;
+        }
+        /*v1
         if(!explored.containsValue((xy[1] + 1) + vr.walkSpeed()))
         {
             hasUnexploredNeighbour = true;
@@ -773,9 +831,12 @@ public class BrickMortar extends Strategy {
         {
             hasUnexploredNeighbour = true;
         }
+
+         */
         return hasUnexploredNeighbour;
     }
 
+    //V2: using get().containsValue
     public ArrayList<Position> getUnexploredNeighbours(int[] xy, Variables vr)
     {
         ArrayList<Position> unexploredNeighbours = new ArrayList<>();
@@ -786,6 +847,15 @@ public class BrickMortar extends Strategy {
         {
             unexploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
         }
+        if(!explored.get(xy[0]).contains(xy[1] + 1))
+        {
+            unexploredNeighbours.add(new Position(xy[0], xy[1]+1));
+        }
+        if(!explored.get(xy[0]).contains(xy[1] - 1))
+        {
+            unexploredNeighbours.add(new Position(xy[0], xy[1]-1));
+        }
+        /*v1
         if(!explored.containsValue((xy[1] + 1) + vr.walkSpeed()))
         {
             unexploredNeighbours.add(new Position(xy[0], xy[1]+1));
@@ -794,6 +864,8 @@ public class BrickMortar extends Strategy {
         {
             unexploredNeighbours.add(new Position(xy[0], xy[1]-1));
         }
+
+         */
         return unexploredNeighbours;
     }
 
