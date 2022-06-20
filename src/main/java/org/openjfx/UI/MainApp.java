@@ -143,7 +143,9 @@ public class MainApp extends Application {
         //TODO: make the pheromones of different guards of different colours
         //TODO: Make the circles smaller
         FileInputStream input_stream16 = new FileInputStream("src/main/java/Images/pheromone.png");
+        //pheromone = new Image(input_stream16, 0.001, 0.002, true, true);
         pheromone = new Image(input_stream16);
+
 
         chooseMap = new Button("Select a map");
         chooseMap.setOnAction(e -> {

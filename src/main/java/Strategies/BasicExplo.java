@@ -43,6 +43,9 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private boolean PATROLLING_SETUP_DEBUG;
     private ArrayList<Integer> intruderCoordinates;
     private String[][] patrollingMap;
+    private boolean completeRotation;
+    private int rotationCount;
+    private boolean walked;
 
 
     public BasicExplo() {
@@ -56,7 +59,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         this.setup=false;
         this.teleporterGoal = new HashMap<>();
         this.teleporterAll = new HashMap<>();
-
+        this.completeRotation = false;
+        this.rotationCount = 0;
         Config c = new Config();
         PATROLLING_SETUP_DEBUG=c.PATROLLING_SETUP_DEBUG;
         this.DEBUG_LASTSEEN = c.BASIC_EXPLO_LASTSEEN;
@@ -95,6 +99,56 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         }
         */
 
+        //TODO: I think the last thing to do is just making sure that the next more is to walk
+        //int eyeRange = vision.length;
+        /*int eyeRange = vision.length;
+
+        for (int i = 0; i < eyeRange; i++) { //i= upfront
+            for (int j = -1; j < 2; j++) { //j==sideways
+                int h = eyeRange - (i + 1);
+                int l = j + 1;
+                final String lookingAt = vision[h][l];
+
+                if(lookingAt.contains("I")){
+                    System.out.println("Intruder SPOTTED");
+                    chasing = true;
+                    completeRotation = false;
+                    rotationCount = 0;
+
+                    if(j == 1){
+                        return Moves.TURN_RIGHT;
+                    }
+                    else if(j == 0){
+                        return Moves.WALK;
+                    }
+                    else{
+                        return Moves.TURN_LEFT;
+                    }
+                }
+                if(chasing){
+                    if(!lookingAt.contains("I")){
+                        System.out.println("Was chasing but can't see intruder anymore");
+                        if(rotationCount != 4 && !completeRotation){
+                            rotationCount++;
+                            if(rotationCount == 4){
+                                completeRotation = true;
+                            }
+                            return Moves.TURN_RIGHT; //maybe it could be faster if it just turns around twice
+                        }
+                    }
+                }
+                if(chasing){
+                    if(!lookingAt.contains("I")){
+                        System.out.println("4 rotations have been tried but nothing");
+                        chasing = false;
+                    }
+                }
+
+
+            }
+        }*/
+
+
         if (!exploDone) {
             /*
             int[] newxy = coordT.transform(xy);
@@ -105,8 +159,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
              */
 
             updateExploration(vision, xy, rot);
-            if (!explored(xy)) visitedPoints.add(new Point(xy, new ArrayList<>()));
             int eyeRange = vision.length;
+            if (!explored(xy)) visitedPoints.add(new Point(xy, new ArrayList<>()));
             int check = eyeRange - 2;
             if (firstPhase) {
                 if (!Objects.equals(vision[check][1], " ")) {

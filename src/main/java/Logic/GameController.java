@@ -1008,8 +1008,8 @@ public class GameController { // self explanatory
             int[] intruderLoc = entityLocations.get(intEntity);
 
             //Stopping condition
-            //if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
-                //isRunning = false;
+            if(intruderLoc[0] == targetLoc[0] && intruderLoc[1] == targetLoc[1])
+                isRunning = false;
 
 
             double tanTheta = (double)(targetLoc[1] - intruderLoc[1])/(targetLoc[0]-intruderLoc[0]);

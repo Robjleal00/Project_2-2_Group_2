@@ -88,10 +88,12 @@ public class IntruderSt extends Strategy{
                             return translateMove(Moves.TURN_LEFT);
                         }
                     }
-                    if(lookingAt.contains("33")) {
-                        System.out.println("Pheromone spotted");
-                        gm.addVarsI(new Variables(1, 5, 1,20));
-                        onlyExplore = true;
+                    if(!releaseMarkers){
+                        if(lookingAt.contains("33")) {
+                            System.out.println("Pheromone spotted");
+                            gm.addVarsI(new Variables(1, 5, 1,20));
+                            onlyExplore = true;
+                        }
                     }
                 }
             }
