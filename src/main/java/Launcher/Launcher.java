@@ -1,6 +1,7 @@
 package Launcher;
 
 import Config.Variables;
+import Entities.Entity;
 import Entities.Explorer;
 import Entities.Guard;
 import Entities.Intruder;
@@ -113,9 +114,10 @@ public class Launcher {
         //gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.RIGHT);
         //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,3,Rotations.UP);
         gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);
+        gm.addEntity(new Guard(EntityType.GUARD,gm, new BasicExplo(), vr), 7, 4, Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,13,Rotations.UP);
-       // Teleporter t1 = new Teleporter(1,3 ,3,8,8);
+        Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         //gm.addObject(t1);
         gm.init();
 

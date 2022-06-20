@@ -24,6 +24,10 @@ import Chasing.AStarChase;
 import Chasing.Cell;
 import Chasing.AStarCoordinateTransform;
 
+import Logic.GameController;
+import Entities.Guard;
+import Entities.Intruder;
+
 
 
 public class BasicExplo extends Strategy { // no need to touch, basic explo
@@ -109,31 +113,44 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             if (distSpottedJy < 0) {
                                 intruderCoordinateX = currentX - 1;
                                 intruderCoordinateY = currentY + distSpottedIx;
+                                System.out.println("This is the Forward first condition intruderX coordinate " + intruderCoordinateX);
+                                System.out.println("This is the Forward first condition intruderY coordinate " + intruderCoordinateY);
                             }
-                            else if (j == 0) {
+                            else if (distSpottedJy == 0) {
                                 intruderCoordinateX = currentX;
                                 intruderCoordinateY = currentY + distSpottedIx;
+                                System.out.println("This is the Forward second condition intruderX coordinate " + intruderCoordinateX);
+                                System.out.println("This is the Forward second condition intruderY coordinate " + intruderCoordinateY);
                             } else {
                                 intruderCoordinateX = currentX + 1;
+                                intruderCoordinateY = currentY + distSpottedIx;
+                                System.out.println("This is the Forward third condition intruderX coordinate " + intruderCoordinateX);
+                                System.out.println("This is the Forward third condition intruderY coordinate " + intruderCoordinateY);
                             }
                         }
                         case BACK -> {
                             if (distSpottedJy < 0) {
                                 intruderCoordinateX = currentX + 1;
                                 intruderCoordinateY = currentY - distSpottedIx;
-                            } else if (j == 0) {
+                                System.out.println("This is the Back first condition intruderX coordinate " + intruderCoordinateX);
+                                System.out.println("This is the Back first condition intruderY coordinate " + intruderCoordinateY);
+                            } else if (distSpottedJy == 0) {
                                 intruderCoordinateX = currentX;
                                 intruderCoordinateY = currentY - distSpottedIx;
+                                System.out.println("This is the Back second condition intruderX coordinate " + intruderCoordinateX);
+                                System.out.println("This is the Back second condition intruderY coordinate " + intruderCoordinateY);
                             } else{
                                 intruderCoordinateX = currentX - 1;
                                 intruderCoordinateY = currentY - distSpottedIx;
+                                System.out.println("This is the Back third condition intruderX coordinate " + intruderCoordinateX);
+                                System.out.println("This is the Back third condition intruderY coordinate " + intruderCoordinateY);
                             }
                         }
                         case RIGHT -> {
                             if (distSpottedJy < 0) {
                                 intruderCoordinateY = currentY + 1;
                                 intruderCoordinateX = currentX + distSpottedIx;
-                            } else if (j == 0) {
+                            } else if (distSpottedJy == 0) {
                                 intruderCoordinateY = currentY;
                                 intruderCoordinateX = currentX + distSpottedIx;
                             } else {
@@ -145,7 +162,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             if (distSpottedJy < 0) {
                                 intruderCoordinateY = currentY - 1;
                                 intruderCoordinateX = currentX + i;
-                            } else if (j == 0) {
+                            } else if (distSpottedJy == 0) {
                                 intruderCoordinateY = currentY;
                                 intruderCoordinateX = currentX + distSpottedIx;
                             } else {
@@ -154,6 +171,12 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                             }
                         }
                     }
+                    //intruderCoordinateX = Entities.Intruder.getX();
+                    //intruderCoordinateY = Entities.Intruder.getY();
+                    System.out.println("This is the intruderX coordinate " + intruderCoordinateX);
+                    System.out.println("This is the intruderY coordinate " + intruderCoordinateY);
+                    System.out.println("This is the distance I upward spotted " + distSpottedIx);
+                    System.out.println("This is the distance J sideway spottted "+ distSpottedJy);
                     AStarChase aStar = new AStarChase(vision, currentX, currentY, intruderCoordinateX, intruderCoordinateY); //maybe using I J or H L might be better
                     aStar.display();
                     aStar.process(); //Apply the A* algorithm
