@@ -41,6 +41,8 @@ public class BrickMortar extends Strategy {
      */
     public boolean isBlockingPath(int[] xy)
     {
+        return false;
+        /*
         Position pos = new Position(xy[0], xy[1]);
         ArrayList<Position> neighbouringCells = getWalkableNeighbors(pos);
         for(int i = 0; i < neighbouringCells.size(); i++)
@@ -54,6 +56,8 @@ public class BrickMortar extends Strategy {
             }
         }
         return false;
+
+         */
     }
 
     public ArrayList<Position> getWalkableNeighbors(Position pos)
@@ -205,9 +209,11 @@ public class BrickMortar extends Strategy {
         if(isBlockingPath(xy))
         {
             //Since we aren't "using" the unexplored HashMap, will this cause an overwrite error?
+
             explored.put(xy[0], new ArrayList<>());
             explored.get(xy[0]).add(xy[1]);
             System.out.println("MARKING STEP: EXPLORED SOMETHING");
+
         }
         else
         {
@@ -218,19 +224,23 @@ public class BrickMortar extends Strategy {
                 visited.get(xy[0]).add(xy[1]);
                 visitedCells.add(currentPosition);
             }
-
+            boolean shouldSave = true;
             for(int i = 0; i < visitedCells.size(); i++)
             {
                 int x = visitedCells.get(i).getX();
                 int y = visitedCells.get(i).getY();
 
-                if(xy[0] != x && xy[1] != y)
+                if(xy[0] == x && xy[1] == y)
                 {
-                    visited.put(xy[0], new ArrayList<>());
-                    visited.get(xy[0]).add(xy[1]);
-                    visitedCells.add(currentPosition);
-                    System.out.println("MARKING STEP: VISITED SOMETHING, SIZE = "+visitedCells.size());
+                    shouldSave = false;
                 }
+            }
+            if(shouldSave == true){
+
+                visited.put(xy[0], new ArrayList<>());
+                visited.get(xy[0]).add(xy[1]);
+                visitedCells.add(currentPosition);
+                System.out.println("MARKING STEP: VISITED SOMETHING, SIZE = "+visitedCells.size());
             }
         }
 
