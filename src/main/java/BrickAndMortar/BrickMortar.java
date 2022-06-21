@@ -60,8 +60,7 @@ public class BrickMortar extends Strategy {
          */
 
     }
-    //TODO: verify if this shit makes sense top to bottom
-    //gonna change it now to arraylists
+
     public ArrayList<Position> getWalkableNeighbors(Position pos)
     {
         ArrayList<Position> walkableNeighbors = new ArrayList<>();
@@ -103,7 +102,7 @@ public class BrickMortar extends Strategy {
             this.visited = new ArrayList<>();
             queue.add(start);
 
-
+            //TODO: gets into an infinite loop here
             while(!queue.isEmpty())
             {
                 Position currentPos = queue.poll();
@@ -115,6 +114,7 @@ public class BrickMortar extends Strategy {
                 //small change, taking it out of for loop
                 ArrayList<Position> neighbours = getWalkableNeighbors(currentPos);
 
+                //TODO: specifically here
                 for(Position neighbour : neighbours)
                 {
                     if(neighbour.getX() == target.getX() && neighbour.getY() == target.getY())
@@ -166,8 +166,9 @@ public class BrickMortar extends Strategy {
     private ArrayList<Position> visitedCells;
     private Moves lastMove;
     private Position lastPosition;
+    private Position lastBest;
 
-    //TODO: REAL SHIT
+
     private ArrayList<Position> exploredCells;
     private ArrayList<Position> wallCells;
     private Position nextBest;
@@ -247,20 +248,8 @@ public class BrickMortar extends Strategy {
         //Navigation step
         if(hasUnexploredNeighbors(xy))
         {
-            //TODO: Update ^ method, make it check it's neighbours with a counter
-            //Make it look in it's four directions, get the bestUnexplored, make it walk to it
-            //actually then it wouldn't make sense to use a counter, it would still need the bestUnexplored
-            //ACTUALLY NO, I KNOW HOW TO DO THIS
-            //THIS IS WHERE THE EXPLORED HASHMAP COMES IN
-            //ALRIGHT BABY, WE NEED A NEW METHOD WITH THE ROTATION INCLUDED
-            //CHECK IT'S FOUR NEIGHBOURS, WE CAN USE VISITEDCELLS AND EXPLOREDCELLS
-            //HELL I GOT A PLAN
-            //CREATE AN EXPLOREDCELLS ARRAYLIST
-            //FUCK THE HASHMAPS
-            //THEY'RE DUMB AS SHIT;
-            System.out.println("LET'S DO THIS BABY");
-
             Position bestUnexplored = getBestUnexplored();
+            lastBest = bestUnexplored;
             int xDiff = bestUnexplored.getX() - xy[0];
             int yDiff = bestUnexplored.getY() - xy[1];
             lastPosition = new Position(xy[0], xy[1]);
@@ -357,10 +346,14 @@ public class BrickMortar extends Strategy {
                                 return lastMove;
                             }
                             if(!isVisited(xy,vr,rot)) {
-
                                 System.out.println("Cringe");
+                                lastMove = evadeWall(gm, intruder);
+                                return lastMove;
+                                /*
                                 lastMove = Moves.WALK;
                                 return Moves.WALK;
+
+                                 */
                             }
                             else
                             {
@@ -441,19 +434,24 @@ public class BrickMortar extends Strategy {
     //If it crashes into a wall, just make it cheat a move.
     public Moves evadeWall(GameController gm, Intruder intruder)
     {
-        //TODO: getDirection seems to only return walk
         //return gm.getDirection(intruder);
         Moves nextMove = gm.getDirection(intruder);
         Moves bestMove = gm.getNextBestMove(intruder);
         System.out.println("Direction move: "+nextMove);
         System.out.println("Best move: "+bestMove);
-        //return nextMove;
-        return bestMove;
+        return nextMove;
+        //return bestMove;
     }
 
 
     public boolean stuck(int[] xy)
     {
+        if(lastMove == null)
+        {
+            System.out.println("Last move doesn't exist");
+            return false;
+        }
+        System.out.println("Last move does exist it was :"+lastMove);
 
         Position p = new Position(lastPosition.getX(), lastPosition.getY());
         if(lastMove.equals(Moves.WALK) && count > 2 && (p.getX() == xy[0] && p.getY() == xy[1]))
@@ -761,32 +759,11 @@ public class BrickMortar extends Strategy {
 
     public boolean hasUnexploredNeighbors(int[] xy)
     {
-        //HOW TO APPROACH THIS?
-        //to check if it has unexploredNeighbors it would have to access a hashmap that DOESNT EXIST
-        //so we'll need to have it look around itself
-        //WE NEED A SEEN ARRAYLIST BABY --> exploredCells
-        //I'M ADDING AN ADD TO UPDATEEXPLORATION
-        //I AM JOSE MOURINHO
-        //DUDE FUCK IT, LET'S ADD A WALL ARRAYLIST
-        //WHY THE FUCK DID I EVEN TRY HASHMAPS HUH?
-        //wait would this work?
-        //Since updateExploration now adds the walls and cells it sees
-        //it could also "know" what it has not seen, so if one of those things has not been seen yet, it
-        //would then make the next move a rotation, to check it out?
-        // fuck it refocus Kaiwei
-        // du muss lo kucken op et unexplored Neighbours huet
-        // dat bedeit du kuckst elo op eppes net existeiert, an wann et net existeiert
-        // Ah mee, kannst du net einfach kucken op die positioun, uewen, lenks, riets, ennen net deel vun den drei arraylists sinn?
-        //Dat giff vlait klappen
-        //TODO: verify^
-        boolean ret = false;
         ArrayList<Position> check = getSurroundings(new Position(xy[0], xy[1]));
         //The cell has to be in either explored, visited or walls
         //else it's unexplored
         int count = 0;
         int previousCount = 0;
-        //clear unexploredNeighbours first
-        //TODO: problem?^
         unexploredNeighbours.clear();
         exploredNeighbours.clear();
         for(int i = 0; i < check.size(); i++)
@@ -850,10 +827,12 @@ public class BrickMortar extends Strategy {
 
     public Position getBestUnexplored()
     {
-        //TODO: NULL ERROR POSSIBLE
+        //I assume it always tries to go into a wall, because a wall is usually surrounded by walls and X's
+        //TODO: FIX THIS^
 
         int count = 0;
         int bestPositionIndex = 0;
+        int second = 0;
         for(int i = 0; i < unexploredNeighbours.size(); i++)
         {
             ArrayList<Position> check = getSurroundings(unexploredNeighbours.get(i));
@@ -877,12 +856,22 @@ public class BrickMortar extends Strategy {
                 if(currentCount > count)
                 {
                     count = currentCount;
+                    int help = 0;
+                    help = bestPositionIndex;
                     bestPositionIndex = i;
+                    second = help;
                 }
             }
 
         }
         Position bestPosition = unexploredNeighbours.get(bestPositionIndex);
+        if(lastBest != null)
+        {
+            if(isSame(bestPosition, lastBest))
+            {
+                bestPosition = unexploredNeighbours.get(second);
+            }
+        }
         return bestPosition;
     }
 
