@@ -210,6 +210,7 @@ public class BrickMortar extends Strategy {
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
     {
         updateExploration(vision, xy, rot);
+        lastPosition = new Position(xy[0], xy[1]);
         //Marking Step:
         if(!isBlockingPath(xy))
         {
@@ -217,15 +218,15 @@ public class BrickMortar extends Strategy {
             Position currentPosition = new Position(xy[0], xy[1]);
             if(visitedCells.isEmpty())
             {
-                System.out.println("Added something to visited");
                 visitedCells.add(currentPosition);
+                System.out.println("Added something to visited. Cell X: "+ currentPosition.getX()+" Y:"+currentPosition.getY());
             }
             else
             {
                 if(!checkArray(visitedCells, currentPosition))
                 {
-                    System.out.println("Added something to visited");
                     visitedCells.add(currentPosition);
+                    System.out.println("Added something to visited. Cell X: "+ currentPosition.getX()+" Y:"+currentPosition.getY());
                     if(checkArray(exploredCells, currentPosition))
                     {
                         System.out.println("Removed something from explored");
@@ -265,87 +266,56 @@ public class BrickMortar extends Strategy {
         }
 
         //Navigation step
-        if(hasUnexploredNeighbors(xy))
-        {
+        if(hasUnexploredNeighbors(xy)) {
             Position bestUnexplored = getBestUnexplored();
             lastBest = bestUnexplored;
             int xDiff = bestUnexplored.getX() - xy[0];
             int yDiff = bestUnexplored.getY() - xy[1];
             lastPosition = new Position(xy[0], xy[1]);
-            if(isVisited(xy, vr, rot))
-            {
-                bestUnexplored = getBestUnexplored();
-            }
-            if(yDiff == 0)
-            {
+            System.out.println("Fuck up in step 9");
+            if (yDiff == 0) {
                 //Move to the right
-                if(xDiff > 0)
-                {
-                    Rotations nextRotation = Rotations.RIGHT;
-                    if(isVisited(xy, vr, nextRotation))
-                    {
-                        return Moves.TURN_AROUND;
-                        /*
-                        bestUnexplored = getBestUnexplored();
-                        return gm.getNextBestMove(intruder);
-
-                         */
-                    }
-                    else
-                    {
-                        switch(rot) {
-                            case LEFT -> {
-                                lastMove = Moves.TURN_AROUND;
-                                return Moves.TURN_AROUND;
-                            }
-                            case RIGHT -> {
-                                lastMove = Moves.WALK;
-                                return Moves.WALK;
-                            }
-                            case FORWARD -> {
-                                lastMove = Moves.TURN_LEFT;
-                                return Moves.TURN_LEFT;
-                            }
-                            case BACK -> {
-                                lastMove = Moves.TURN_RIGHT;
-                                return Moves.TURN_RIGHT;
-                            }
+                if (xDiff > 0) {
+                    switch (rot) {
+                        case LEFT -> {
+                            lastMove = Moves.TURN_AROUND;
+                            return Moves.TURN_AROUND;
                         }
+                        case RIGHT -> {
+                            lastMove = Moves.WALK;
+                            return Moves.WALK;
+                        }
+                        case FORWARD -> {
+                            lastMove = Moves.TURN_LEFT;
+                            return Moves.TURN_LEFT;
+                        }
+                        case BACK -> {
+                            lastMove = Moves.TURN_RIGHT;
+                            return Moves.TURN_RIGHT;
+                        }
+                    }
                     //check if it has to rotate first before moving
-
-                    }
                 }
-                else
-                {
-                    Rotations nextRotation = Rotations.LEFT;
-                    if(isVisited(xy, vr, nextRotation))
-                    {
-                        return Moves.TURN_AROUND;
-                        /*
-                        bestUnexplored = getBestUnexplored();
-                        return gm.getNextBestMove(intruder);
+                else {
 
-                         */
-                    }
-                    else {
-                        switch (rot) {
-                            case LEFT -> {
-                                lastMove = Moves.WALK;
-                                return Moves.WALK;
+                    switch (rot) {
+                        case LEFT -> {
+                            lastMove = Moves.WALK;
+                            return Moves.WALK;
 
-                            }
-                            case RIGHT -> {
-                                lastMove = Moves.TURN_AROUND;
-                                return Moves.TURN_AROUND;}
-                            case FORWARD -> {
-                                lastMove = Moves.TURN_RIGHT;
-                                return Moves.TURN_RIGHT;}
-                            case BACK -> {
-                                lastMove = Moves.TURN_LEFT;
-                                return Moves.TURN_LEFT;
-                            }
                         }
-
+                        case RIGHT -> {
+                            lastMove = Moves.TURN_AROUND;
+                            return Moves.TURN_AROUND;
+                        }
+                        case FORWARD -> {
+                            lastMove = Moves.TURN_RIGHT;
+                            return Moves.TURN_RIGHT;
+                        }
+                        case BACK -> {
+                            lastMove = Moves.TURN_LEFT;
+                            return Moves.TURN_LEFT;
+                        }
                     }
                 }
             }
@@ -353,76 +323,87 @@ public class BrickMortar extends Strategy {
             {
                 if(yDiff < 0)
                 {
-                    //GO UP (????)
-                    Rotations nextRotation = Rotations.BACK;
-                    if(isVisited(xy, vr, nextRotation))
-                    {
-                        return Moves.TURN_AROUND;
-                        /*
-                        bestUnexplored = getBestUnexplored();
-                        return gm.getNextBestMove(intruder);
-
-                         */
-                    }
-                    else {
-                        switch (rot) {
-                            case LEFT -> {lastMove = Moves.TURN_RIGHT;
-                                return Moves.TURN_RIGHT;}
-                            case RIGHT -> {lastMove = Moves.TURN_LEFT;
-                                return Moves.TURN_LEFT;}
-                            case FORWARD -> {lastMove = Moves.TURN_AROUND;
-                                return Moves.TURN_AROUND;}
-                            case BACK -> {
-                                    lastMove = Moves.WALK;
-                                    return Moves.WALK;
-                                }
-                            }
+                    switch (rot) {
+                        case LEFT -> {lastMove = Moves.TURN_RIGHT;
+                        return Moves.TURN_RIGHT;}
+                        case RIGHT -> {lastMove = Moves.TURN_LEFT;
+                        return Moves.TURN_LEFT;}
+                        case FORWARD -> {lastMove = Moves.TURN_AROUND;
+                        return Moves.TURN_AROUND;}
+                        case BACK -> {
+                            lastMove = Moves.WALK;
+                            return Moves.WALK;
                         }
+                    }
+
                 }
                 else
                 {
-                    Rotations nextRotation = Rotations.FORWARD;
-                    if(isVisited(xy, vr, nextRotation))
-                    {
-                        return Moves.TURN_AROUND;
-                        /*
-                        bestUnexplored = getBestUnexplored();
-                        return gm.getNextBestMove(intruder);
-
-                         */
-                    }
-                    else {
-                        switch (rot) {
-                            case LEFT -> {lastMove = Moves.TURN_LEFT;
-                                return Moves.TURN_LEFT;}
-                            case RIGHT -> {lastMove = Moves.TURN_RIGHT;
-                                return Moves.TURN_RIGHT;}
-                            case FORWARD -> {
-                                    lastMove = Moves.WALK;
-                                    return Moves.WALK;
-                            }
-                            case BACK -> {lastMove = Moves.TURN_AROUND;
-                                return Moves.TURN_AROUND;}
+                    switch (rot) {
+                        case LEFT -> {lastMove = Moves.TURN_LEFT;
+                        return Moves.TURN_LEFT;}
+                        case RIGHT -> {lastMove = Moves.TURN_RIGHT;
+                        return Moves.TURN_RIGHT;}
+                        case FORWARD -> {
+                            lastMove = Moves.WALK;
+                            return Moves.WALK;
                         }
+                        case BACK -> {lastMove = Moves.TURN_AROUND;
+                        return Moves.TURN_AROUND;}
                     }
-
                 }
             }
         }
         else
         {
             //TODO: make it go to the first explored according to paper
+            System.out.println("Problem in step 11");
             if(!exploredNeighbours.isEmpty())
             {
+                System.out.println("Explored neighbours size: "+exploredNeighbours.size());
                 for(int i = 0; i < exploredNeighbours.size(); i++)
                 {
                     if(!checkArray(visitedCells, exploredNeighbours.get(i)))
                     {
-                        Position bestExplored = getIdealNeighbour();
+                        //GET IDEAL NEIGHBOUR SHOULD NET RETURN A VISITED CELL
+                        Position bestExplored = getIdealNeighbour(xy);
                         lastBest = bestExplored;
                         int xDiff = bestExplored.getX() - xy[0];
                         int yDiff = bestExplored.getY() - xy[1];
-                        lastPosition = new Position(xy[0], xy[1]);
+                        Rotations desiredRot = rot;
+                        if(yDiff == 0)
+                        {
+                            if(xDiff > 0)
+                            {
+                                desiredRot = Rotations.RIGHT;
+                            }
+                            else
+                            {
+                                desiredRot = Rotations.LEFT;
+                            }
+                        }
+                        else if(xDiff == 0)
+                        {
+                            if(yDiff < 0)
+                            {
+                                desiredRot = Rotations.BACK;
+                            }
+                            else
+                            {
+                                desiredRot = Rotations.FORWARD;
+                            }
+                        }
+                        //IF THE CELL IT WANTS TO GO TO IS VISITED
+                        //GET SECOND BEST EXPLORED
+                        if(isVisited(xy, vr, desiredRot))
+                        {
+                            bestExplored = getSecondBest(bestExplored);
+                        }
+                        lastBest = bestExplored;
+                        xDiff = bestExplored.getX() - xy[0];
+                        yDiff = bestExplored.getY() - xy[1];
+                        System.out.println("Next position X:"+bestExplored.getX()+" Y:"+bestExplored.getY());
+
 
                         if(yDiff == 0)
                         {
@@ -433,6 +414,7 @@ public class BrickMortar extends Strategy {
                                 switch(rot)
                                 {
                                     case LEFT -> {
+                                        System.out.println("This one");
                                         lastMove = Moves.TURN_AROUND;
                                         return Moves.TURN_AROUND;
                                     }
@@ -526,7 +508,7 @@ public class BrickMortar extends Strategy {
         //return bestMove;
     }
 
-
+/*
     public boolean stuck(int[] xy)
     {
         if(lastMove == null)
@@ -554,7 +536,7 @@ public class BrickMortar extends Strategy {
 
         return false;
     }
-
+*/
     //Whenever the intruder wants to walk it first has to make sure the cell it's going to isn't visited
     //POTENTIALLY ERROR CAUSING, just seems like it idk
     public boolean isVisited(int[] xy, Variables vr, Rotations rot)
@@ -871,52 +853,31 @@ public class BrickMortar extends Strategy {
         ArrayList<Position> check = getSurroundings(new Position(xy[0], xy[1]));
         //The cell has to be in either explored, visited or walls
         //else it's unexplored
-        int count = 0;
+        int count = 4;
         int previousCount = 0;
+        boolean ret = false;
         unexploredNeighbours.clear();
         exploredNeighbours.clear();
         for(int i = 0; i < check.size(); i++)
         {
-            //PRAY THAT COUNT NEVER GOES HIGHER THAN 4
-            //ELSE THAT MEANS THERE'S OVERLAP BETWEEN THE ARRAYS
-            for(int j = 0; j < exploredCells.size(); j++)
+            if(checkArray(exploredCells, check.get(i)) == true)
             {
-                if(isSame(check.get(i), exploredCells.get(j)))
-                {
-                    count++;
-                    exploredNeighbours.add(check.get(i));
-                }
+                exploredNeighbours.add(check.get(i));
             }
-            for(int j = 0 ; j < visitedCells.size(); j++)
+            else if(checkArray(wallCells, check.get(i)) == true || checkArray(visitedCells, check.get(i)) == true)
             {
-                if(isSame(check.get(i), visitedCells.get(j)))
-                {
-                    count++;
-                }
+                count--;
             }
-            for(int j = 0; j < wallCells.size(); j++)
-            {
-                if(isSame(check.get(i), wallCells.get(j)))
-                {
-                    count++;
-                }
-            }
-            //if previousCount didn't increase, that means it didn't exist in any array
-            // --> add this specific position to unexploredneigh
-            if(previousCount != count)
+            else
             {
                 unexploredNeighbours.add(check.get(i));
             }
-            previousCount = count;
         }
-        if(count == 4)
-        {
-            return false;
-        }
-        else
+        if(!unexploredNeighbours.isEmpty())
         {
             return true;
         }
+        return false;
     }
 
     public ArrayList<Position> getSurroundings(Position pos)
@@ -942,38 +903,41 @@ public class BrickMortar extends Strategy {
         int count = 0;
         int bestPositionIndex = 0;
         int second = 0;
+        System.out.println("Unexplored neighbours: "+unexploredNeighbours.size());
         for(int i = 0; i < unexploredNeighbours.size(); i++)
         {
-            ArrayList<Position> check = getSurroundings(unexploredNeighbours.get(i));
-            for(int k = 0; k < check.size(); k++)
+            if(checkArray(wallCells, unexploredNeighbours.get(i)) == true)
             {
-                int currentCount = 0;
-                for(int j = 0 ; j < visitedCells.size(); j++)
-                {
-                    if(isSame(unexploredNeighbours.get(i), visitedCells.get(j)))
-                    {
-                        currentCount++;
+                System.out.println("We skip this one");
+            }
+            else
+            {
+                ArrayList<Position> check = getSurroundings(unexploredNeighbours.get(i));
+                for(int k = 0; k < check.size(); k++) {
+                    int currentCount = 0;
+                    for (int j = 0; j < visitedCells.size(); j++) {
+                        if (isSame(unexploredNeighbours.get(i), visitedCells.get(j))) {
+                            currentCount++;
+                        }
                     }
-                }
-                for(int j = 0; j < wallCells.size(); j++)
-                {
-                    if(isSame(unexploredNeighbours.get(i), wallCells.get(j)))
-                    {
-                        currentCount++;
+                    for (int j = 0; j < wallCells.size(); j++) {
+                        if (isSame(unexploredNeighbours.get(i), wallCells.get(j))) {
+                            currentCount++;
+                        }
                     }
-                }
-                if(currentCount > count)
-                {
-                    count = currentCount;
-                    int help = 0;
-                    help = bestPositionIndex;
-                    bestPositionIndex = i;
-                    second = help;
+                    if (currentCount > count) {
+                        count = currentCount;
+                        int help = 0;
+                        help = bestPositionIndex;
+                        bestPositionIndex = i;
+                        second = help;
+                    }
                 }
             }
 
         }
         Position bestPosition = unexploredNeighbours.get(bestPositionIndex);
+
         if(lastBest != null)
         {
             if(isSame(bestPosition, lastBest))
@@ -1018,10 +982,17 @@ public class BrickMortar extends Strategy {
     //IF CURRENT NEIGHBOUR IS LASTPOSITION OR A WALL OR VISITED
     //GO TO THE NEXT NEIGHBOUR
     //RETURN IDEAL NEIGHBOUR
-    public Position getIdealNeighbour()
+    public Position getIdealNeighbour(int[] xy)
     {
+        ArrayList<Position> neighbours = getSurroundings(new Position(xy[0], xy[1]));
+        /*
+        for(Position neighbour : neighbours)
+        {
+            if(!checkArray(visitedCells, neighbour) && !check)
+        }
+
+         */
         Position idealNeighbour = null;
-        Position secondBest = null;
         for(Position neighbour : exploredNeighbours)
         {
             if(checkArray(exploredCells, neighbour))
@@ -1030,12 +1001,34 @@ public class BrickMortar extends Strategy {
                 if(checkArray(visitedCells, neighbour) == false || checkArray(wallCells, neighbour) == false)
                 {
                     idealNeighbour = neighbour;
-                    //TODO: add code so that it takes the one that isn't the last cell it has been to
-                    //if(isSame(neighbour, lastPosition))
+                    if(!isSame(neighbour, lastPosition))
+                    {
+                        idealNeighbour = neighbour;
+                    }
                 }
             }
         }
         return idealNeighbour;
+    }
+
+    public Position getSecondBest(Position firstOption)
+    {
+        Position secondBest = null;
+        for(Position neighbour : exploredNeighbours)
+        {
+            if(checkArray(exploredCells, neighbour))
+            {
+                //Move onto next neighbour if current one is visited or a wall
+                if(checkArray(visitedCells, neighbour) == false || checkArray(wallCells, neighbour) == false)
+                {
+                    if(isSame(neighbour, firstOption))
+                    {
+                        secondBest = neighbour;
+                    }
+                }
+            }
+        }
+        return secondBest;
     }
 }
 
