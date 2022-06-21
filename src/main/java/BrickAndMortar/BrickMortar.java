@@ -41,8 +41,8 @@ public class BrickMortar extends Strategy {
      */
     public boolean isBlockingPath(int[] xy)
     {
-        return false;
-        /*
+        //return false;
+
         Position pos = new Position(xy[0], xy[1]);
         ArrayList<Position> neighbouringCells = getWalkableNeighbors(pos);
         for(int i = 0; i < neighbouringCells.size(); i++)
@@ -57,7 +57,7 @@ public class BrickMortar extends Strategy {
         }
         return false;
 
-         */
+
 
     }
 
@@ -219,17 +219,17 @@ public class BrickMortar extends Strategy {
             if(visitedCells.isEmpty())
             {
                 visitedCells.add(currentPosition);
-                System.out.println("Added something to visited. Cell X: "+ currentPosition.getX()+" Y:"+currentPosition.getY());
+                //System.out.println("Added something to visited. Cell X: "+ currentPosition.getX()+" Y:"+currentPosition.getY());
             }
             else
             {
                 if(!checkArray(visitedCells, currentPosition))
                 {
                     visitedCells.add(currentPosition);
-                    System.out.println("Added something to visited. Cell X: "+ currentPosition.getX()+" Y:"+currentPosition.getY());
+                    //System.out.println("Added something to visited. Cell X: "+ currentPosition.getX()+" Y:"+currentPosition.getY());
                     if(checkArray(exploredCells, currentPosition))
                     {
-                        System.out.println("Removed something from explored");
+                        //System.out.println("Removed something from explored");
                         exploredCells.remove(currentPosition);
                     }
                 }
@@ -257,7 +257,6 @@ public class BrickMortar extends Strategy {
         }
         else
         {
-            System.out.println("I stopped for some reason");
             Position pos = new Position(xy[0], xy[1]);
             if(!checkArray(exploredCells, pos))
             {
@@ -272,7 +271,7 @@ public class BrickMortar extends Strategy {
             int xDiff = bestUnexplored.getX() - xy[0];
             int yDiff = bestUnexplored.getY() - xy[1];
             lastPosition = new Position(xy[0], xy[1]);
-            System.out.println("Fuck up in step 9");
+            System.out.println("Move origin Step 9");
             if (yDiff == 0) {
                 //Move to the right
                 if (xDiff > 0) {
@@ -357,7 +356,6 @@ public class BrickMortar extends Strategy {
         else
         {
             //TODO: make it go to the first explored according to paper
-            System.out.println("Problem in step 11");
             if(!exploredNeighbours.isEmpty())
             {
                 System.out.println("Explored neighbours size: "+exploredNeighbours.size());
@@ -397,12 +395,15 @@ public class BrickMortar extends Strategy {
                         //GET SECOND BEST EXPLORED
                         if(isVisited(xy, vr, desiredRot))
                         {
+                            System.out.println("IT'S GOING TO A VISITED CELL");
+                            System.out.println("OLD Best X:"+bestExplored.getX()+" Y:"+bestExplored.getY());
                             bestExplored = getSecondBest(bestExplored);
+
+                            System.out.println("New Best X:"+bestExplored.getX()+" Y:"+bestExplored.getY());
                         }
                         lastBest = bestExplored;
                         xDiff = bestExplored.getX() - xy[0];
                         yDiff = bestExplored.getY() - xy[1];
-                        System.out.println("Next position X:"+bestExplored.getX()+" Y:"+bestExplored.getY());
 
 
                         if(yDiff == 0)
@@ -414,7 +415,6 @@ public class BrickMortar extends Strategy {
                                 switch(rot)
                                 {
                                     case LEFT -> {
-                                        System.out.println("This one");
                                         lastMove = Moves.TURN_AROUND;
                                         return Moves.TURN_AROUND;
                                     }
@@ -549,7 +549,6 @@ public class BrickMortar extends Strategy {
                 System.out.println("Visited "+checkArray(visitedCells, pos));
                 System.out.println("Walls "+checkArray(wallCells, pos));
                 System.out.println("X: "+pos.getX()+" Y: "+pos.getY());
-                System.out.println("It's heading for a visited cell or a wall");
                 return true;
             }
         }
@@ -561,7 +560,6 @@ public class BrickMortar extends Strategy {
                 System.out.println("Visited "+checkArray(visitedCells, pos));
                 System.out.println("Walls "+checkArray(wallCells, pos));
                 System.out.println("X: "+pos.getX()+" Y: "+pos.getY());
-                System.out.println("It's heading for a visited cell or a wall");
                 return true;
             }
         }
@@ -570,7 +568,9 @@ public class BrickMortar extends Strategy {
             Position pos = new Position(xy[0]+1, xy[1]);
             if(checkArray(visitedCells,pos) == true || checkArray(wallCells,pos) == true)
             {
-                System.out.println("It's heading for a visited cell or a wall");
+                System.out.println("Visited "+checkArray(visitedCells, pos));
+                System.out.println("Walls "+checkArray(wallCells, pos));
+                System.out.println("X: "+pos.getX()+" Y: "+pos.getY());
                 return true;
             }
         }
@@ -579,7 +579,9 @@ public class BrickMortar extends Strategy {
             Position pos = new Position(xy[0]-1, xy[1]);
             if(checkArray(visitedCells,pos) == true || checkArray(wallCells,pos) == true)
             {
-                System.out.println("It's heading for a visited cell or a wall");
+                System.out.println("Visited "+checkArray(visitedCells, pos));
+                System.out.println("Walls "+checkArray(wallCells, pos));
+                System.out.println("X: "+pos.getX()+" Y: "+pos.getY());
                 return true;
             }
         }
@@ -665,18 +667,11 @@ public class BrickMortar extends Strategy {
                         }
                         if (!Objects.equals(lookingAt, "X")) {
                             if (!Objects.equals(lookingAt, "W")&&!lookingAt.contains("T")) {
-                                if (explored.containsKey(currentX + j)) {
-                                    if (!explored.get(currentX + j).contains(currentY + i)) {
-                                        explored.get(currentX + j).add(currentY + i);
-                                        exploredCells.add(new Position(currentX + j, currentY + i));
-                                    }
-
-                                } else {
-                                    explored.put(currentX + j, new ArrayList<>());
-                                    explored.get(currentX + j).add(currentY + i);
+                                if (checkArray(exploredCells, new Position(currentX + j, currentY + i))) {
                                     exploredCells.add(new Position(currentX + j, currentY + i));
+
                                 }
-                            } else {
+                            }else {
                                 if(lookingAt.contains("T")){
                                     String id = lookingAt.replace("T","");
                                     int ide = Integer.valueOf(id);
@@ -998,7 +993,7 @@ public class BrickMortar extends Strategy {
             if(checkArray(exploredCells, neighbour))
             {
                 //Move onto next neighbour if current one is visited or a wall
-                if(checkArray(visitedCells, neighbour) == false || checkArray(wallCells, neighbour) == false)
+                if(checkArray(visitedCells, neighbour) == false && checkArray(wallCells, neighbour) == false)
                 {
                     idealNeighbour = neighbour;
                     if(!isSame(neighbour, lastPosition))
@@ -1019,9 +1014,9 @@ public class BrickMortar extends Strategy {
             if(checkArray(exploredCells, neighbour))
             {
                 //Move onto next neighbour if current one is visited or a wall
-                if(checkArray(visitedCells, neighbour) == false || checkArray(wallCells, neighbour) == false)
+                if(checkArray(visitedCells, neighbour) == false && checkArray(wallCells, neighbour) == false)
                 {
-                    if(isSame(neighbour, firstOption))
+                    if(!isSame(neighbour, firstOption))
                     {
                         secondBest = neighbour;
                     }
