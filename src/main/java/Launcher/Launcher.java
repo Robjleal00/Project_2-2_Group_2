@@ -112,11 +112,15 @@ public class Launcher {
         gm.addObject(target);
 
         gm.addWall(0,5,6,5);
+        //gm.addWall(15,5,15,10);
+        //gm.addWall(7,3,13,3);
         //gm.addWall(12,15,12,29);
-        gm.setGameMode(GameMode.PATROL_CHASE);
-        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),3,13,Rotations.DOWN);
-        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),1,5,Rotations.UP);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 3,15,Rotations.UP);
+        //gm.setGameMode(GameMode.PATROL_CHASE);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),6,1,Rotations.DOWN);
+        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),8,8,Rotations.RIGHT);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),1,5,Rotations.UP);
+       // gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 5,19,Rotations.UP);
+        //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 3,1,Rotations.RIGHT);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 7,17,Rotations.UP);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderTwo(),vr), 3,1,Rotations.DOWN);
         //gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 8,13,Rotations.UP);
@@ -133,17 +137,19 @@ public class Launcher {
     public GameController giveTest(MainApp app){
         GameController gm = new GameController(11, 20,app);
         //FileReader fileReader = new FileReader();
-        Variables vr = new Variables(1,5,1,20);
-        gm.addVarsI(vr);
+        Variables vrG = new Variables(1,5,1,20);
+        Variables vrI = new Variables(1,5,1,20);
+        gm.addVarsG(vrG);
+        gm.addVarsI(vrI);
         gm.printMap();
         Goal target = new Goal(1, 6,4);
         gm.addObject(target);
-        //gm.setGameMode(GameMode.PATROL_CHASE);
-        //gm.addEntity(new Guard(EntityType.GUARD, gm, new BasicExplo(), vr), 6, 3, Rotations.RIGHT);
-        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vr),3,3,Rotations.DOWN);
-       // gm.addEntity(new Explorer(EntityType.EXPLORER,gm,new BasicExplo(),vr),3,1,Rotations.DOWN);
-        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vr), 3,1,Rotations.DOWN);
-        //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
+        gm.setGameMode(GameMode.PATROL_CHASE);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),3,13,Rotations.DOWN);
+        gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),8,8,Rotations.RIGHT);
+        //gm.addEntity(new Guard(EntityType.GUARD,gm,new BasicExplo(),vrG),1,5,Rotations.UP);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 3,15,Rotations.UP);
+        gm.addEntity(new Intruder(EntityType.INTRUDER,gm,new IntruderSt(),vrI), 3,1,Rotations.RIGHT);        //Teleporter t1 = new Teleporter(1,3 ,3,8,8);
         // Teleporter t2 = new Teleporter(2,5,5,9,9);
         // t1.addLink(t2);
         //gm.addObject(t1);

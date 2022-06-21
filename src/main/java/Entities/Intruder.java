@@ -19,6 +19,7 @@ public class Intruder extends Entity{
     private final Variables vr;
     private Rotations globalRotation;
     private boolean walked;
+    public boolean caught;
 
 
     //TODO: Compare this to Explorer class
@@ -33,6 +34,7 @@ public class Intruder extends Entity{
         this.st = st;
         this.vr = vr;
         this.walked = true;
+        this.caught = false;
         //true false initially when looking for goal and not avoiding guards
         st.setBooleans(true, false);
     }
@@ -44,6 +46,10 @@ public class Intruder extends Entity{
 
     @Override
     public Moves getMove() {
+        if(caught){
+            return Moves.STUCK;
+        }
+
         String[][] vision = gm.giveVision(this);
 
         int[] xy = {x,y};

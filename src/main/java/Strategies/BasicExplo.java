@@ -55,6 +55,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
     private boolean completeRotation;
     private int rotationCount;
     private boolean walked;
+    private boolean spotted;
 
 
     public BasicExplo() {
@@ -70,7 +71,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         this.teleporterAll = new HashMap<>();
         this.completeRotation = false;
         this.rotationCount = 0;
-        this.walked = false;
+        this.walked = true;
+        this.spotted = false;
         Config c = new Config();
         PATROLLING_SETUP_DEBUG=c.PATROLLING_SETUP_DEBUG;
         this.DEBUG_LASTSEEN = c.BASIC_EXPLO_LASTSEEN;
@@ -89,7 +91,15 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
 
     @Override
     public Moves decideOnMove(String[][] vision, int[] xy, Rotations rot, Variables vr) {
-        int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
+        if (TELEPORTED) {
+            teleporterGoal.putIfAbsent(lastUsedTeleporter, xy);
+            TELEPORTED = false;
+        }
+        Moves returner = Moves.STUCK;
+
+
+        //A* Search
+        /*int eyeRange = vision.length; //CAN WE JUST USE VISION AS LOOKING AT ARRAY?
         int currentX = xy[0];
         int currentY = xy[1];
         int escapingTurn = 0;
@@ -98,175 +108,161 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
         int intruderCoordinateX = 0;
         int intruderCoordinateY = 0;
 
+        if(!spotted) {
+            for (int i = 0; i < eyeRange; i++) { //i= upfront
+                for (int j = -1; j < 2; j++) { //j==sideways
+                    int h = eyeRange - (i + 1);
+                    int l = j + 1;
+                    final String lookingAt = vision[h][l];
+
+                    if (lookingAt.contains("I") || AStarChase.toWalk) { //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
+                        distSpottedIx = i;
+                        //System.out.println("DISTSPOTTED IX: " + distSpottedIx);
+                        distSpottedJy = j;
+                        //System.out.println("DISTSPOTTED jy: " + distSpottedJy);
+                        //System.out.println("INTRUDER SPOTTED");
+                        spotted = true;
+                        break;
+                    }
+                }
+            }
+        }
+
+        boolean stillLooking = false;
         for (int i = 0; i < eyeRange; i++) { //i= upfront
             for (int j = -1; j < 2; j++) { //j==sideways
                 int h = eyeRange - (i + 1);
                 int l = j + 1;
                 final String lookingAt = vision[h][l];
 
-                if (lookingAt.contains("I") || AStarChase.toWalk) { //MAYBE CALCULATE DISTANCE AND WEATHER THE GUARD IS MOVING TO ITS DIRECTION, SO INTRUDER STAYS FERMO PER UN TURNO E VEDE SE LA GUARD SI STA AVVICINANDO
-                    System.out.println("THIS IS THE PROBLEM");
-                    distSpottedIx = i;
-                    distSpottedJy = j;
-                    System.out.println("INTRUDER SPOTTED");
-
-                    //Calculating intruder's coordinate (aka AStar target) using the distances acquired from the vision:
-                    // please remember to account for not having to do this every single time! or maybe this is the best solution
-                    // make sure to add the remaining cases in the "left" case!
-                    switch (rot) {
-                        case FORWARD -> {
-                            if (distSpottedJy < 0) {
-                                intruderCoordinateX = currentX - 1;
-                                intruderCoordinateY = currentY + distSpottedIx;
-                                System.out.println("This is the Forward first condition intruderX coordinate " + intruderCoordinateX);
-                                System.out.println("This is the Forward first condition intruderY coordinate " + intruderCoordinateY);
-                            }
-                            else if (distSpottedJy == 0) {
-                                intruderCoordinateX = currentX;
-                                intruderCoordinateY = currentY + distSpottedIx;
-                                System.out.println("This is the Forward second condition intruderX coordinate " + intruderCoordinateX);
-                                System.out.println("This is the Forward second condition intruderY coordinate " + intruderCoordinateY);
-                            } else {
-                                intruderCoordinateX = currentX + 1;
-                                intruderCoordinateY = currentY + distSpottedIx;
-                                System.out.println("This is the Forward third condition intruderX coordinate " + intruderCoordinateX);
-                                System.out.println("This is the Forward third condition intruderY coordinate " + intruderCoordinateY);
-                            }
-                        }
-                        case BACK -> {
-                            if (distSpottedJy < 0) {
-                                intruderCoordinateX = currentX + 1;
-                                intruderCoordinateY = currentY - distSpottedIx;
-                                System.out.println("This is the Back first condition intruderX coordinate " + intruderCoordinateX);
-                                System.out.println("This is the Back first condition intruderY coordinate " + intruderCoordinateY);
-                            } else if (distSpottedJy == 0) {
-                                intruderCoordinateX = currentX;
-                                intruderCoordinateY = currentY - distSpottedIx;
-                                System.out.println("This is the Back second condition intruderX coordinate " + intruderCoordinateX);
-                                System.out.println("This is the Back second condition intruderY coordinate " + intruderCoordinateY);
-                            } else{
-                                intruderCoordinateX = currentX - 1;
-                                intruderCoordinateY = currentY - distSpottedIx;
-                                System.out.println("This is the Back third condition intruderX coordinate " + intruderCoordinateX);
-                                System.out.println("This is the Back third condition intruderY coordinate " + intruderCoordinateY);
-                            }
-                        }
-                        case RIGHT -> {
-                            if (distSpottedJy < 0) {
-                                intruderCoordinateY = currentY + 1;
-                                intruderCoordinateX = currentX + distSpottedIx;
-                            } else if (distSpottedJy == 0) {
-                                intruderCoordinateY = currentY;
-                                intruderCoordinateX = currentX + distSpottedIx;
-                            } else {
-                                intruderCoordinateY = currentY - 1;
-                                intruderCoordinateX = currentX + distSpottedIx;
-                            }
-                        }
-                        case LEFT -> {
-                            if (distSpottedJy < 0) {
-                                intruderCoordinateY = currentY - 1;
-                                intruderCoordinateX = currentX + i;
-                            } else if (distSpottedJy == 0) {
-                                intruderCoordinateY = currentY;
-                                intruderCoordinateX = currentX + distSpottedIx;
-                            } else {
-                                intruderCoordinateY = currentY + 1;
-                                intruderCoordinateX = currentX + distSpottedIx;
-                            }
-                        }
-                    }
-                    //intruderCoordinateX = Entities.Intruder.getX();
-                    //intruderCoordinateY = Entities.Intruder.getY();
-                    System.out.println("This is the guardX current coordinate " + currentX);
-                    System.out.println("This is the guardY current coordinate " + currentY);
-                    System.out.println("This is the intruderX coordinate " + intruderCoordinateX);
-                    System.out.println("This is the intruderY coordinate " + intruderCoordinateY);
-                    System.out.println("This is the distance I upward spotted " + distSpottedIx);
-                    System.out.println("This is the distance J sideway spottted "+ distSpottedJy);
-                    AStarChase aStar = new AStarChase(vision, currentX, currentY, intruderCoordinateX, intruderCoordinateY); //maybe using I J or H L might be better
-                    aStar.display();
-                    aStar.process(); //Apply the A* algorithm
-                    aStar.displayScores(); // Display the scores on the grid
-                    aStar.displaySolution(); // Display the solution path
-                    Cell coordinate = aStar.decideNextChasingMove(currentX, currentY); //Need to account for horizontal and vertical distances so I know how to make one step in what direction
-                    int chasingX = coordinate.i;
-                    int chasingY = coordinate.j;
-                    //int differenceX =
-                    //Moves move = Moves.WALK;
-                    if (AStarChase.toWalk) {
-                        switch (rot) {
-                            case FORWARD -> {
-                                if (!walls.containsKey(currentX + 1)) {
-                                    //Turn right and then walk --> false
-                                    walked = false;
-                                    return Moves.TURN_RIGHT;
-                                } else {
-                                    walked = true;
-                                    return Moves.TURN_LEFT;
-                                }
-                            }
-                            case BACK -> {
-                                if (!walls.containsKey(currentX + 1)) {
-                                    //Turn left and then walk
-                                    walked = false;
-                                    return Moves.TURN_LEFT;
-                                } else {
-                                    walked = true;
-                                    return Moves.TURN_RIGHT;
-                                }
-                            }
-                            case RIGHT -> {
-                                if (!walls.containsKey(currentY + 1)) {
-                                    //Turn left and then walk
-                                    walked = false;
-                                    return Moves.TURN_LEFT;
-                                } else {
-                                    walked = true;
-                                    return Moves.TURN_RIGHT;
-                                }
-                            }
-                            case LEFT -> {
-                                if (!walls.containsKey(currentY + 1)) {
-                                    //Turn right and then walk
-                                    walked = false;
-                                    return Moves.TURN_RIGHT;
-                                } else {
-                                    walked = true;
-                                    return Moves.TURN_LEFT;
-                                }
-                            }
-                        }
-                    }
-                    if (walked) {
-                        return Moves.WALK;
-                    }
+                if (lookingAt.contains("I")) {
+                    //System.out.println("TRIAL");
+                    stillLooking = true;
                 }
             }
         }
-
-
-        if (TELEPORTED) {
-            teleporterGoal.putIfAbsent(lastUsedTeleporter, xy);
-            TELEPORTED = false;
+        if(!stillLooking){
+            System.out.println("GONE HERE");
+            spotted = false;
         }
-        Moves returner = Moves.STUCK;
-        /*
-        if(chasing)
-        {
-            int[] newxy = coordT.transform(xy);
-            TreeRoot tr = new TreeRoot(deepClone(explored), deepClone(walls), newxy, rot, 5, constraints,vr,visitedPoints,objects);
-            String[][] map = makeMap(tr.giveMappings());
-            AStarChase astar = new AStarChase(map, newxy, intruderPosition);
-            returner = astar.getMove(newxy, astar.getNextMoveCoordinate(), rot);
-            checkVision(map, newxy, rot, vr);
 
-            //TODO: want to avoid getting into the other statements, so I added a return here
-            return returner;
-        }
-        */
+        if(spotted){
 
-        /*//TODO: I think the last thing to do is just making sure that the next more is to walk
+            //Calculating intruder's coordinate (aka AStar target) using the distances acquired from the vision:
+            // please remember to account for not having to do this every single time! or maybe this is the best solution
+            // make sure to add the remaining cases in the "left" case!
+            switch (rot) {
+                case FORWARD -> {
+                    if (distSpottedJy < 0) {
+                        intruderCoordinateX = currentX - 1;
+                        intruderCoordinateY = currentY + distSpottedIx;
+                        System.out.println("This is the Forward first condition intruderX coordinate " + intruderCoordinateX);
+                        System.out.println("This is the Forward first condition intruderY coordinate " + intruderCoordinateY);
+                    }
+                    else if (distSpottedJy == 0) {
+                        System.out.println("DOING THIS");
+                        intruderCoordinateX = currentX;
+                        intruderCoordinateY = currentY + distSpottedIx;
+                        System.out.println("This is the Forward second condition intruderX coordinate " + intruderCoordinateX);
+                        System.out.println("This is the Forward second condition intruderY coordinate " + intruderCoordinateY);
+
+                    } else {
+                        intruderCoordinateX = currentX + 1;
+                        intruderCoordinateY = currentY + distSpottedIx;
+                        System.out.println("This is the Forward third condition intruderX coordinate " + intruderCoordinateX);
+                        System.out.println("This is the Forward third condition intruderY coordinate " + intruderCoordinateY);
+
+                    }
+                }
+                case BACK -> {
+                    if (distSpottedJy < 0) {
+                        intruderCoordinateX = currentX + 1;
+                        intruderCoordinateY = currentY - distSpottedIx;
+                        System.out.println("This is the Back first condition intruderX coordinate " + intruderCoordinateX);
+                        System.out.println("This is the Back first condition intruderY coordinate " + intruderCoordinateY);
+                    } else if (distSpottedJy == 0) {
+                        intruderCoordinateX = currentX;
+                        intruderCoordinateY = currentY - distSpottedIx;
+                        System.out.println("This is the Back second condition intruderX coordinate " + intruderCoordinateX);
+                        System.out.println("This is the Back second condition intruderY coordinate " + intruderCoordinateY);
+                    } else{
+                        intruderCoordinateX = currentX - 1;
+                        intruderCoordinateY = currentY - distSpottedIx;
+                        System.out.println("This is the Back third condition intruderX coordinate " + intruderCoordinateX);
+                        System.out.println("This is the Back third condition intruderY coordinate " + intruderCoordinateY);
+                    }
+                }
+                case RIGHT -> {
+                    if (distSpottedJy < 0) {
+                        intruderCoordinateY = currentY + 1;
+                        intruderCoordinateX = currentX + distSpottedIx;
+                    } else if (distSpottedJy == 0) {
+                        intruderCoordinateY = currentY;
+                        intruderCoordinateX = currentX + distSpottedIx;
+                    } else {
+                        intruderCoordinateY = currentY - 1;
+                        intruderCoordinateX = currentX + distSpottedIx;
+                    }
+                }
+                case LEFT -> {
+                    if (distSpottedJy < 0) {
+                        intruderCoordinateY = currentY - 1;
+                        intruderCoordinateX = currentX + distSpottedIx;
+                    } else if (distSpottedJy == 0) {
+                        intruderCoordinateY = currentY;
+                        intruderCoordinateX = currentX + distSpottedIx;
+                    } else {
+                        intruderCoordinateY = currentY + 1;
+                        intruderCoordinateX = currentX + distSpottedIx;
+                    }
+                }
+            }
+
+
+            System.out.println("This is the guardX current coordinate " + currentX);
+            System.out.println("This is the guardY current coordinate " + currentY);
+            System.out.println("This is the intruderX coordinate " + intruderCoordinateX);
+            System.out.println("This is the intruderY coordinate " + intruderCoordinateY);
+            System.out.println("This is the distance I upward spotted " + distSpottedIx);
+            System.out.println("This is the distance J sideway spottted "+ distSpottedJy);
+
+            AStarChase aStar = new AStarChase(vision, Math.abs(currentX), Math.abs(currentY), Math.abs(intruderCoordinateX), Math.abs(intruderCoordinateY)); //maybe using I J or H L might be better
+            aStar.display();
+            aStar.process(); //Apply the A* algorithm
+            aStar.displayScores(); // Display the scores on the grid
+            aStar.displaySolution(); // Display the solution path
+            Cell coordinate = aStar.decideNextChasingMove(currentX, currentY); //Need to account for horizontal and vertical distances so I know how to make one step in what direction
+            int chasingX = coordinate.i;
+            int chasingY = coordinate.j;
+            //int differenceX =
+            //Moves move = Moves.WALK;
+            if (!walked) {
+                walked = true;
+                return Moves.WALK;
+            }
+
+            if (AStarChase.toWalk) {
+                if (currentX == chasingX && currentY < chasingY) {
+                    walked = true;
+                    distSpottedIx--;
+                    return Moves.WALK;
+                } else if (currentY == chasingY && currentX > chasingX) {
+                    walked = false;
+                    distSpottedJy--;
+                    return Moves.TURN_LEFT;
+                } else if (currentY == chasingY && currentX < chasingX) {
+                    walked = false;
+                    distSpottedJy--;
+                    return Moves.TURN_RIGHT;
+                }
+            }
+        }*/
+
+
+
+
+
+        //TODO: I think the last thing to do is just making sure that the next more is to walk
         //TODO: The speed becomes the distance: Sprint
         //int eyeRange = vision.length;
         int eyeRange = vision.length;
@@ -332,7 +328,7 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     }
                 }
             }
-        }*/
+        }
 
         if (!exploDone) {
             /*

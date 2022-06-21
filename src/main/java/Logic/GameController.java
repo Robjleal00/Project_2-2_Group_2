@@ -51,6 +51,10 @@ public class GameController { // self explanatory
     private Rotations globalRotation;
     private Rotations intruderGlobalRotation;
     private GameMode gameMode = GameMode.EXPLORATION;
+    private int[] intLocation = new int[2];
+    private int[] guardLocation = new int[2];
+    private boolean goalRemoved;
+    private int[] goalXY;
 
     /*
     Use this to construct with graphics.
@@ -78,6 +82,7 @@ public class GameController { // self explanatory
         this.maxExploNum = allUnseenTiles.size();
         this.graphicsUpdater = graphics;
         entityInitialPoses = new HashMap<>();
+        this.goalRemoved = false;
     }
 
     /*
@@ -105,6 +110,7 @@ public class GameController { // self explanatory
         this.GUI = false;
         DEBUG_EPXLO = con.DEBUG_EXPLO;
         entityInitialPoses = new HashMap<>();
+        this.goalRemoved = false;
     }
 
     /*
@@ -151,8 +157,42 @@ public class GameController { // self explanatory
         }
         while (isRunning) {//gameloop
             boolean allBroken = false;
+
+            if(goalRemoved){
+                Goal g = new Goal(1, goalXY[0],goalXY[1]);
+                addObject(g);
+            }
             shiftPheromones();
             applyMarkers();
+
+            Entity caughtIntruder = null;
+            for(Entity guard: entities){
+                for(Entity intruder: entities){
+                    if(guard instanceof Guard && intruder instanceof Intruder){
+                        if(entityLocations.get(guard)[0] == entityLocations.get(intruder)[0] && entityLocations.get(guard)[1] == entityLocations.get(intruder)[1]){
+                            removeFromMap(entityLocations.get(intruder));
+                            ((Intruder) intruder).caught = true;
+                            caughtIntruder = intruder;
+                            System.out.println("Caught!");
+                            for (int i = 0; i < markersMap.length; i++) {
+                                for (int j = 0; j < markersMap[0].length; j++) {
+                                    if(!blockedByObstaclesIntruder(map[i][j])) {
+                                        if(markersMap[i][j] == 33){
+                                            map[i][j] = " ";
+                                            markersMap[i][j] = 0;
+                                            System.out.println("Removed marker from: " + i + "," +j);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if(caughtIntruder!= null){
+                entities.remove(caughtIntruder);
+                entityLocations.remove(caughtIntruder);
+            }
             //TODO: Keep track of the intruder releasing the markers in case it gets captured by the guards
             // This cute little line get all the moves from the agents, effectively executing everything except turning
             entities.stream().collect(Collectors.toMap(Function.identity(), Entity::getMove, (o1, o2) -> o1, ConcurrentHashMap::new)).forEach((k, v) -> moveMap.put(k, executeMove(k, v)));
@@ -525,13 +565,37 @@ public class GameController { // self explanatory
 
 
     private int executeMove(Entity e, Moves m) {
-        //DEBUG
+
         if(e instanceof Intruder){
             System.out.println("Global Intruder: " + entityLocations.get(e)[0] + ", " + entityLocations.get(e)[1]);
+            intLocation = entityLocations.get(e);
         }
         if(e instanceof Guard){
             System.out.println("Global Guard: " + entityLocations.get(e)[0] + ", " + entityLocations.get(e)[1]);
+            guardLocation = entityLocations.get(e);
         }
+
+        /*if (e instanceof Intruder) {
+            if (guardLocation[0] == intLocation[0] && guardLocation[1] == intLocation[1]) {
+                removeFromMap(intLocation);
+                entityLocations.remove(e);
+                ((Intruder) e).caught = true;
+                entities.remove(e);
+                System.out.println("Caught!");
+                for (int i = 0; i < markersMap.length; i++) {
+                    for (int j = 0; j < markersMap[0].length; j++) {
+                        if(!blockedByObstaclesIntruder(map[i][j])) {
+                            if(markersMap[i][j] == 33){
+                                map[i][j] = " ";
+                                markersMap[i][j] = 0;
+                                System.out.println("Removed marker from: " + i + "," +j);
+                            }
+                        }
+                    }
+                }
+                return 0;
+            }
+        }*/
         Rotations rotation = entityRotationsHashMap.get(e);
         int[] pos = entityLocations.get(e);
         switch (m) {
@@ -827,10 +891,13 @@ public class GameController { // self explanatory
         this.intruderGlobalRotation = rot;
     }
 
-    public void addObject(ObjectOnMap o) {
+    public void addObject(ObjectOnMap o) { //TODO: Make sure that the target remains there
         objects.add(o);
         int[] yx = o.getXy();
         objectsLocations.put(o, yx);
+        if(o instanceof Goal){
+            goalXY = o.getXy();
+        }
         putObjectOnMap(o);
     }
 
@@ -938,7 +1005,7 @@ public class GameController { // self explanatory
     }
     private boolean blockedByObstaclesGuard(String s) {
         // PUT ALL STUFF THAT BLOCK MOVEMENT HERE PLS
-        return s.contains("G") || s.contains("E") || s.contains("W") || s.contains("V1");
+        return s.contains("G") || s.contains("E") || s.contains("W") ;
 
     }
 
@@ -948,7 +1015,13 @@ public class GameController { // self explanatory
                 if (Objects.equals(map[target[1]][target[0]], "V1"))
                     return true;
                 else return !blockedByObstaclesIntruder(map[target[1]][target[0]]);
-            } else return !blockedByObstaclesGuard(map[target[1]][target[0]]);
+            } else {
+                if(map[target[1]][target[0]].contains("V1")){
+                    goalRemoved = true;
+                    return true;
+                }
+                return !blockedByObstaclesGuard(map[target[1]][target[0]]);
+            }
         } else return false;
     }
 
@@ -972,7 +1045,16 @@ public class GameController { // self explanatory
                 if (turns > MAX_TURNS) isRunning = false;
             }
             case PATROL_CHASE -> {
-                //TODO intruder win/lose
+                boolean stillIntruder = false;
+                for(Entity e: entities){
+                    if(e instanceof Intruder){
+                        stillIntruder = true;
+                    }
+                }
+                if(!stillIntruder){
+                    System.out.println("NO MORE INTRUDERS - GUARDS WON");
+                    isRunning = false;
+                }
             }
         }
     }
@@ -1029,10 +1111,10 @@ public class GameController { // self explanatory
             double angle = Math.atan(tanTheta);
             int degAngle = (int) Math.toDegrees(angle);
 
-            System.out.println("Global rotation: " + globRot.toString());
-            System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
-            System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
-            System.out.println("tanTheta: " + tanTheta);
+           // System.out.println("Global rotation: " + globRot.toString());
+           // System.out.println("Global xy TARGET : " + targetLoc[0] + "," + targetLoc[1]);
+           // System.out.println("Global xy INTRUDER : " + intruderLoc[0] + "," + intruderLoc[1]);
+           // System.out.println("tanTheta: " + tanTheta);
             //System.out.println("Deg angle : " + degAngle);
 
             if(targetLoc[1] < intruderLoc[1] && targetLoc[0] < intruderLoc[0]) {
