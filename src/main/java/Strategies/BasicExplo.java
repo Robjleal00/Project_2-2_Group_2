@@ -173,6 +173,8 @@ public class BasicExplo extends Strategy { // no need to touch, basic explo
                     }
                     //intruderCoordinateX = Entities.Intruder.getX();
                     //intruderCoordinateY = Entities.Intruder.getY();
+                    System.out.println("This is the guardX current coordinate " + currentX);
+                    System.out.println("This is the guardY current coordinate " + currentY);
                     System.out.println("This is the intruderX coordinate " + intruderCoordinateX);
                     System.out.println("This is the intruderY coordinate " + intruderCoordinateY);
                     System.out.println("This is the distance I upward spotted " + distSpottedIx);

@@ -7,6 +7,7 @@ import java.util.*;
 
 import static Chasing.AStarCoordinateTransform.transformIntoTwoD;
 import OptimalSearch.TreeRoot;
+import Strategies.BasicExplo;
 
 public class AStarChase {
 
@@ -132,9 +133,9 @@ public class AStarChase {
             }
             closedCells[current.i][current.j] = true;
 
-            if (current.equals(grid[endI][endJ])) {
-                return;
-            }
+            //if (current.equals(grid[endI][endJ])) {
+                //return;
+            //}
 
             Cell t;
 
@@ -183,6 +184,7 @@ public class AStarChase {
 
     public void display() {
         System.out.println("Grid :");
+
 
         for (int i = 0; i < grid.length; i++) {
             for (int j = 0; j < grid[i].length; j++) {
