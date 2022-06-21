@@ -58,8 +58,10 @@ public class BrickMortar extends Strategy {
         return false;
 
          */
-    }
 
+    }
+    //TODO: verify if this shit makes sense top to bottom
+    //gonna change it now to arraylists
     public ArrayList<Position> getWalkableNeighbors(Position pos)
     {
         ArrayList<Position> walkableNeighbors = new ArrayList<>();
@@ -67,9 +69,10 @@ public class BrickMortar extends Strategy {
         {
             for(int j = -1; j < 1; j++)
             {
-                if(explored.containsKey(pos.getX() + i) && explored.get(pos.getX() + i).contains(pos.getY() + j))
+                Position check = new Position(pos.getX()+i, pos.getY()+j);
+                if(checkArray(exploredCells, check))
                 {
-                    walkableNeighbors.add(new Position(pos.getX() + 1, pos.getY() + j));
+                    walkableNeighbors.add(check);
                 }
             }
         }
@@ -101,8 +104,6 @@ public class BrickMortar extends Strategy {
             queue.add(start);
 
 
-            boolean isPossible;
-
             while(!queue.isEmpty())
             {
                 Position currentPos = queue.poll();
@@ -111,14 +112,15 @@ public class BrickMortar extends Strategy {
                     return true;
                 }
                 visited.add(currentPos);
+                //small change, taking it out of for loop
+                ArrayList<Position> neighbours = getWalkableNeighbors(currentPos);
 
-                for(Position neighbour : getWalkableNeighbors(currentPos))
+                for(Position neighbour : neighbours)
                 {
                     if(neighbour.getX() == target.getX() && neighbour.getY() == target.getY())
                     {
                         return true;
                     }
-                    //TODO: figure this out
                     addUnvisitedPosition(neighbour);
                 }
             }
@@ -140,27 +142,6 @@ public class BrickMortar extends Strategy {
             return visited.contains(pos);
         }
     }
-
-
-    //This would probably only be called when the intruder first spawns and when it uses a
-    //teleporter, since it usually knows the way it came from, and can see to its left and right
-    //Interesting research question how this performs when we cut down its vision to only straight
-    /*
-    public boolean checkUnexploredSurroundings(int[] xy)
-    {
-        getUnexploredNeighbours(xy);
-        if(!unexploredNeighbours.isEmpty())
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-    */
-
-
 
 
     /**
@@ -216,6 +197,7 @@ public class BrickMortar extends Strategy {
     @Override
     public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
     {
+        updateExploration(vision, xy, rot);
         //Marking Step:
         if(isBlockingPath(xy))
         {
@@ -276,6 +258,7 @@ public class BrickMortar extends Strategy {
             //CREATE AN EXPLOREDCELLS ARRAYLIST
             //FUCK THE HASHMAPS
             //THEY'RE DUMB AS SHIT;
+            System.out.println("LET'S DO THIS BABY");
 
             Position bestUnexplored = getBestUnexplored();
             int xDiff = bestUnexplored.getX() - xy[0];
@@ -301,12 +284,12 @@ public class BrickMortar extends Strategy {
                                 return lastMove;
                             }
                             if(!isVisited(xy,vr,rot)) {
+                                System.out.println("Cringe");
                                 lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
                             else
                             {
-                                //TODO: FIX LOOP STUCK POSSIBILITY
                                 return Moves.STUCK;
                             }
                         }
@@ -332,6 +315,7 @@ public class BrickMortar extends Strategy {
                                 return lastMove;
                             }
                             if(!isVisited(xy,vr,rot)) {
+                                System.out.println("Cringe");
                                 lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
@@ -373,12 +357,15 @@ public class BrickMortar extends Strategy {
                                 return lastMove;
                             }
                             if(!isVisited(xy,vr,rot)) {
+
+                                System.out.println("Cringe");
                                 lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
                             else
                             {
-                                return Moves.STUCK;
+                                lastMove = Moves.WALK;
+                                return Moves.WALK;
                             }
                         }
                     }
@@ -399,6 +386,7 @@ public class BrickMortar extends Strategy {
                                 return lastMove;
                             }
                             if(!isVisited(xy,vr,rot)) {
+                                System.out.println("Cringe");
                                 lastMove = Moves.WALK;
                                 return Moves.WALK;
                             }
@@ -415,6 +403,7 @@ public class BrickMortar extends Strategy {
         }
         else
         {
+            System.out.println("IT EXPLORED ALL ITS NEIGHBOURS");
             if(!exploredNeighbours.isEmpty())
             {
                 double chance = Math.random();
@@ -449,460 +438,6 @@ public class BrickMortar extends Strategy {
         return null;
     }
 
-    /*
-    @Override
-    public Moves decideOnMoveIntruder(String[][] vision, int[] xy, Rotations rot, Variables vr, GameController gm, Intruder intruder)
-    {
-        count++;
-        System.out.println("X: "+xy[0] +" Y: "+xy[1]);
-        updateExploration(vision,xy,rot);
-
-        //MARKING STEP:
-        if(isBlockingPath(xy))
-        {
-            //Since we aren't "using" the unexplored HashMap, will this cause an overwrite error?
-
-            explored.put(xy[0], new ArrayList<>());
-            explored.get(xy[0]).add(xy[1]);
-            System.out.println("MARKING STEP: EXPLORED SOMETHING");
-
-        }
-        else
-        {
-            Position currentPosition = new Position(xy[0],xy[1]);
-            if(visitedCells.isEmpty())
-            {
-                visited.put(xy[0], new ArrayList<>());
-                visited.get(xy[0]).add(xy[1]);
-                visitedCells.add(currentPosition);
-            }
-            boolean shouldSave = true;
-            for(int i = 0; i < visitedCells.size(); i++)
-            {
-                int x = visitedCells.get(i).getX();
-                int y = visitedCells.get(i).getY();
-
-                if(xy[0] == x && xy[1] == y)
-                {
-                    shouldSave = false;
-                }
-            }
-            if(shouldSave == true){
-
-                visited.put(xy[0], new ArrayList<>());
-                visited.get(xy[0]).add(xy[1]);
-                visitedCells.add(currentPosition);
-                System.out.println("MARKING STEP: VISITED SOMETHING, SIZE = "+visitedCells.size());
-            }
-        }
-
-        //Navigation Step:
-        //if one of the four cells around is "UNEXPLORED"
-        // count it's unexplored neighbours, I assume we can do this by using a negative (!) statement, so count
-        // the LACK of explored neighbours
-        //V2: added inBounds to moves.walk statements RESULT: ends after 3 iterations
-        //code: && inBounds(bestUnexploredPos[0], bestUnexploredPos[1])
-        //V3: removing inBounds
-        if(hasUnexploredNeighbours(xy, vr))
-        {
-            ArrayList<Position> unexploredNeighbours = getUnexploredNeighbours(xy, vr);
-            System.out.println("CHECKING UNEXPLORED NEIGHBOURS SIZE = "+unexploredNeighbours.size());
-            int[] bestUnexploredPos = getBestUnexplored(unexploredNeighbours, vr);
-            int xDiff = bestUnexploredPos[0] - xy[0];
-            int yDiff = bestUnexploredPos[1] - xy[1];
-            lastPosition = new Position(xy[0], xy[1]);
-            if(yDiff == 0)
-            {
-                //Move to the right
-                if(xDiff > 0)
-                {
-                    //check if it has to rotate first before moving
-                    switch(rot)
-                    {
-                        case LEFT -> {
-                            lastMove = Moves.TURN_AROUND;
-                            return Moves.TURN_AROUND;
-                        }
-                        case RIGHT -> {
-                            if(stuck(xy))
-                            {
-                                System.out.println("We're stuck lads");
-                                lastMove = evadeWall(gm, intruder);
-                                return lastMove;
-                            }
-                            /*
-                            if(isFacingWall(xy, Rotations.RIGHT, vr, vision))
-                            {
-                                return evadeWall(gm, intruder);
-                            }
-                            if(!isVisited(xy,vr,rot)) {
-                                lastMove = Moves.WALK;
-                                return Moves.WALK;
-                            }
-                            else
-                            {
-                                //TODO: FIX LOOP STUCK POSSIBILITY
-                                return Moves.STUCK;
-                            }
-                        }
-                        //TODO: Am I mixing up i and j? Is it xy or yx?
-                        //Looking at Piotr's code from patroller, forward would mean it's facing down???
-                        //compare starting line 266 in patroller
-                        case FORWARD -> {
-                            lastMove = Moves.TURN_LEFT;
-                            return Moves.TURN_LEFT;}
-                        case BACK -> {
-                            lastMove = Moves.TURN_RIGHT;
-                            return Moves.TURN_RIGHT;
-                        }
-                    }
-                }
-                else
-                {
-                    //Move left
-                    switch(rot)
-                    {
-                        case LEFT -> {
-                            if(stuck(xy))
-                            {
-                                System.out.println("We're stuck lads");
-                                lastMove = evadeWall(gm, intruder);
-                                return lastMove;
-                            }
-
-                            if(!isVisited(xy,vr,rot)) {
-                                lastMove = Moves.WALK;
-                                return Moves.WALK;
-                            }
-                            else
-                            {
-                                return Moves.STUCK;
-                            }
-                        }
-                        case RIGHT -> {
-                            lastMove = Moves.TURN_AROUND;
-                            return Moves.TURN_AROUND;}
-                        case FORWARD -> {
-                            lastMove = Moves.TURN_RIGHT;
-                            return Moves.TURN_RIGHT;}
-                        case BACK -> {
-                            lastMove = Moves.TURN_LEFT;
-                            return Moves.TURN_LEFT;}
-                    }
-                }
-            }
-            else if(xDiff == 0)
-            {
-                if(yDiff < 0)
-                {
-                    //GO UP (????)
-                    switch(rot)
-                    {
-                        case LEFT -> {lastMove = Moves.TURN_RIGHT;
-                        return Moves.TURN_RIGHT;}
-                        case RIGHT -> {lastMove = Moves.TURN_LEFT;
-                        return Moves.TURN_LEFT;}
-                        case FORWARD -> {lastMove = Moves.TURN_AROUND;
-                        return Moves.TURN_AROUND;}
-                        case BACK -> {
-                            if(stuck(xy))
-                            {
-                                System.out.println("We're stuck lads");
-                                lastMove = evadeWall(gm, intruder);
-                                return lastMove;
-                            }
-                            if(!isVisited(xy,vr,rot)) {
-                                lastMove = Moves.WALK;
-                                return Moves.WALK;
-                            }
-                            else
-                            {
-                                return Moves.STUCK;
-                            }
-                        }
-                    }
-                }
-                else
-                {
-                    switch(rot)
-                    {
-                        case LEFT -> {lastMove = Moves.TURN_LEFT;
-                        return Moves.TURN_LEFT;}
-                        case RIGHT -> {lastMove = Moves.TURN_RIGHT;
-                        return Moves.TURN_RIGHT;}
-                        //TODO: keeps going into case forward despite it having better explored/unexplored cells
-                        //Is it because of bounds?
-                        case FORWARD -> {
-                            if(stuck(xy))
-                            {
-                                System.out.println("We're stuck lads");
-                                lastMove = evadeWall(gm, intruder);
-                                return lastMove;
-                            }
-                            if(!isVisited(xy,vr,rot)) {
-                                lastMove = Moves.WALK;
-                                return Moves.WALK;
-                            }
-                            else
-                            {
-                                return Moves.STUCK;
-                            }
-                        }
-                        case BACK -> {lastMove = Moves.TURN_AROUND;
-                        return Moves.TURN_AROUND;}
-                    }
-                }
-            }
-        }
-        //ELSE IF: at least one of the four cells around is explored
-        ArrayList<Position> exploredNeighbours = getExploredNeighbours(xy);
-        if(exploredNeighbours.size() != 0)
-        {
-            //Make it always head into the target direction
-            //randomness makes it choose another cell to go to than the one in the direction of the target
-            double chance = Math.random();
-            if(chance > randomness)
-            {
-                return gm.getNextBestMove(intruder);
-            }
-            else
-            {
-                //else do an arbitrary move
-                //Placeholder for now
-                double randomMove = Math.random();
-                if(randomMove < 0.25)
-                {
-                    return Moves.TURN_RIGHT;
-                }
-                if(randomMove < 0.5)
-                {
-                    return Moves.TURN_LEFT;
-                }
-                if(randomMove < 0.75)
-                {
-                    return Moves.TURN_AROUND;
-                }
-                if(randomMove < 1)
-                {
-                    return Moves.WALK;
-                }
-            }
-
-
-        }
-        else
-        {
-            return Moves.STUCK;
-        }
-        return null;
-    }
-
-     */
-
-    //TODO: BIANCA'S SOLUTION
-
-    //Solution 1: use updateExploration and just make it check for a wall
-    //Solution 2: create a boolean walked like in intruder and the method stuck() in intruderst
-    //V2: since it was giving me the opposite of what I wanted, I just changed the return values - REVERTED
-    public boolean isFacingWall(int[] xy, Rotations rot, Variables vr, String[][] vision)
-    {
-        //V3
-        /*
-        int eyeRange = vision.length;
-        int currentX = xy[0];
-        int currentY = xy[1];
-
-        for (int i = 0; i < eyeRange; i++) { //i= upfront
-            for (int j = -1; j < 2; j++) { //j==sideways
-                int h = eyeRange - (i + 1);
-                int l = j + 1;
-                final String lookingAt = vision[h][l];
-                switch (rot) {
-                    case FORWARD -> {
-                        if(i == 1)
-                        {
-                            if(j == 0)
-                            {
-                                if(lookingAt.contains("W"));
-                                {
-                                    System.out.println("There's a wall in front of me");
-                                    System.out.println("X = "+h+" and Y = "+l);
-                                    System.out.println(lookingAt);
-                                    System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    case BACK -> {
-                        if(i == 1)
-                        {
-                            if(j == 0)
-                            {
-                                if(lookingAt.contains("W"));
-                                {
-                                    System.out.println("There's a wall in front of me");
-                                    System.out.println("X = "+h+" and Y = "+l);
-                                    System.out.println(lookingAt);
-                                    System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    case LEFT -> {
-                        if(i == 1)
-                        {
-                            if(j == 0)
-                            {
-                                if(lookingAt.contains("W"));
-                                {
-                                    System.out.println("There's a wall in front of me");
-                                    System.out.println("X = "+h+" and Y = "+l);
-                                    System.out.println(lookingAt);
-                                    System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                    case RIGHT -> {
-                        if(i == 1)
-                        {
-                            if(j == 0)
-                            {
-                                if(lookingAt.contains("W"));
-                                {
-                                    System.out.println("There's a wall in front of me");
-                                    System.out.println("X = "+h+" and Y = "+l);
-                                    System.out.println(lookingAt);
-                                    System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                                    return true;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        */
-        /* V2
-        int eyeRange = vision.length;
-        int currentX = xy[0];
-        int currentY = xy[1];
-                int h;  // h = 1
-                int l; // set to 0
-                //TODO: modify lookingAt
-                switch (rot) {
-                    case FORWARD -> {
-                        //Working values for h/x and l/y are 3 & 2
-                        // Don't ask me why it's these values
-                        //THIS CHANGES DEPENDING ON THE STARTING ROTATION OF THE INTRUDER
-                        h = 3;
-                        l = 2;
-                        String lookingAt = vision[h][l];
-                        if(lookingAt.contains("W")){
-                            System.out.println("There's a wall in front of me");
-                            System.out.println("X = "+h+" and Y = "+l);
-                            System.out.println(lookingAt);
-                            System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                            return true;
-                        }
-                    }
-                    case BACK -> {
-                        //TODO: DETERMINE VALUES
-                        //THIS CHANGES DEPENDING ON THE STARTING ROTATION OF THE INTRUDER
-                        h = 2;
-                        l = 3;
-                        String lookingAt = vision[h][l];
-                        if(lookingAt.contains("W")){
-                            System.out.println("There's a wall in front of me");
-                            System.out.println(lookingAt);
-                            System.out.println("X = "+h+" and Y = "+l);
-                            System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                            return true;
-                        }
-                    }
-                    case LEFT -> {
-                        //TODO: determine values
-                        // THIS CHANGES DEPENDING ON THE STARTING ROTATION OF THE INTRUDER
-                        h = 2;
-                        l = 2;
-                        String lookingAt = vision[h][l];
-                        if(lookingAt.contains("W")){
-                            System.out.println("There's a wall in front of me");
-                            System.out.println("X = "+h+" and Y = "+l);
-                            System.out.println(lookingAt);
-                            System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                            return true;
-                        }
-                    }
-                    case RIGHT -> {
-                        //Values for this one
-                        //THIS CHANGES DEPENDING ON THE STARTING ROTATION OF THE INTRUDER
-                        h = 4;
-                        l = 3;
-                        String lookingAt = vision[h][l];
-                        if(lookingAt.contains("W")){
-                            System.out.println("There's a wall in front of me");
-                            System.out.println("X = "+h+" and Y = "+l);
-                            System.out.println(lookingAt);
-                            System.out.println("INTRUDER LOCATION : X ="+xy[0]+" Y = "+xy[1]);
-                            return true;
-                        }
-                    }
-
-               // }
-            //}
-        }
-
-         */
-
-        /*
-        switch(rot)
-        {
-            //
-            case FORWARD -> {
-                if(walls.containsValue((xy[1] + 1) - vr.walkSpeed()))
-                {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            case BACK -> {
-                if(walls.containsValue(xy[1] - 1))
-                {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            case LEFT -> {
-                if(walls.containsKey(xy[0] - 1))
-                {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            case RIGHT -> {
-                if(walls.containsKey(xy[0] + 1))
-                {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }
-        return false;
-         */
-        return false;
-    }
     //If it crashes into a wall, just make it cheat a move.
     public Moves evadeWall(GameController gm, Intruder intruder)
     {
@@ -919,8 +454,9 @@ public class BrickMortar extends Strategy {
 
     public boolean stuck(int[] xy)
     {
+
         Position p = new Position(lastPosition.getX(), lastPosition.getY());
-        if(lastMove.equals(Moves.WALK) && count > 1 && (p.getX() == xy[0] && p.getY() == xy[1]))
+        if(lastMove.equals(Moves.WALK) && count > 2 && (p.getX() == xy[0] && p.getY() == xy[1]))
         {
             count = 0;
             return true;
@@ -934,6 +470,7 @@ public class BrickMortar extends Strategy {
         {
             return true;
         }
+
         return false;
     }
 
@@ -941,6 +478,24 @@ public class BrickMortar extends Strategy {
     //POTENTIALLY ERROR CAUSING, just seems like it idk
     public boolean isVisited(int[] xy, Variables vr, Rotations rot)
     {
+        if(rot == Rotations.FORWARD)
+        {
+            return checkArray(visitedCells, new Position(xy[0], xy[1]+1));
+        }
+        else if(rot == Rotations.BACK)
+        {
+            return checkArray(visitedCells, new Position(xy[0], xy[1]-1));
+        }
+        else if(rot == Rotations.LEFT)
+        {
+            return checkArray(visitedCells, new Position(xy[0]+1, xy[1]));
+        }
+        else if(rot == Rotations.RIGHT)
+        {
+            return checkArray(visitedCells, new Position(xy[0]-1, xy[1]-1));
+        }
+        return false;
+        /*
         if (rot == Rotations.FORWARD) {
             if (explored.containsKey(xy[0]) && explored.get(xy[0]).contains(xy[1]+vr.walkSpeed())) {
                 Position positionToCheck = new Position(xy[0], xy[1] + vr.walkSpeed());
@@ -995,162 +550,11 @@ public class BrickMortar extends Strategy {
             }
         }
         return false;
-    }
-
-    //V2:  get().containsValue same as BFS
-    public ArrayList<Position> getExploredNeighbours(int[] xy)
-    {
-        ArrayList<Position> exploredNeighbours = new ArrayList<Position>();
-        if(explored.containsKey(xy[0] - 1)){
-            exploredNeighbours.add(new Position(xy[0] - 1, xy[1]));
-        }
-        if(explored.containsKey(xy[0] + 1))
-        {
-            exploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
-        }
-        //v2 changes
-        if(explored.get(xy[0]).contains(xy[1] + 1))
-        {
-            exploredNeighbours.add(new Position(xy[0], xy[1]+1));
-        }
-        if(explored.get(xy[0]).contains(xy[1] - 1))
-        {
-            exploredNeighbours.add(new Position(xy[0], xy[1]-1));
-        }
-        /* v1
-        if(explored.containsValue(xy[1] + 1))
-        {
-            exploredNeighbours.add(new Position(xy[0], xy[1]+1));
-        }
-        if(explored.containsValue(xy[1] - 1))
-        {
-            exploredNeighbours.add(new Position(xy[0], xy[1]-1));
-        }
 
          */
-        return exploredNeighbours;
     }
 
-    //Giving the same treatment, changing if conditions to POS -/+ vr
-    public boolean hasUnexploredNeighbours(int[] xy, Variables vr)
-    {
-        ArrayList<Position> unexploredNeighbours = new ArrayList<Position>();
-        boolean hasUnexploredNeighbour = false;
-        //key is for up/down
-        if(!explored.containsKey((xy[0] - 1 ) - vr.walkSpeed())){
-            hasUnexploredNeighbour = true;
-        }
-        if(!explored.containsKey((xy[0] + 1) + vr.walkSpeed()))
-        {
-            hasUnexploredNeighbour = true;
-        }
-        //v2
-        if(!explored.get(xy[0]).contains(xy[1] + 1))
-        {
-            hasUnexploredNeighbour = true;
-        }
-        if(!explored.get(xy[0]).contains(xy[1] - 1))
-        {
-            hasUnexploredNeighbour = true;
-        }
-        /*v1
-        if(!explored.containsValue((xy[1] + 1) + vr.walkSpeed()))
-        {
-            hasUnexploredNeighbour = true;
-        }
-        if(!explored.containsValue((xy[1] - 1) - vr.walkSpeed()))
-        {
-            hasUnexploredNeighbour = true;
-        }
 
-         */
-        return false;
-        //return hasUnexploredNeighbour;
-    }
-
-    //V2: using get().containsValue
-    public ArrayList<Position> getUnexploredNeighbours(int[] xy, Variables vr)
-    {
-        ArrayList<Position> unexploredNeighbours = new ArrayList<>();
-        if(!explored.containsKey((xy[0] - 1 ) - vr.walkSpeed())){
-            unexploredNeighbours.add(new Position(xy[0] - 1, xy[1]));
-        }
-        if(!explored.containsKey((xy[0] + 1) + vr.walkSpeed()))
-        {
-            unexploredNeighbours.add(new Position(xy[0] + 1, xy[1]));
-        }
-        if(!explored.get(xy[0]).contains(xy[1] + 1))
-        {
-            unexploredNeighbours.add(new Position(xy[0], xy[1]+1));
-        }
-        if(!explored.get(xy[0]).contains(xy[1] - 1))
-        {
-            unexploredNeighbours.add(new Position(xy[0], xy[1]-1));
-        }
-        /*v1
-        if(!explored.containsValue((xy[1] + 1) + vr.walkSpeed()))
-        {
-            unexploredNeighbours.add(new Position(xy[0], xy[1]+1));
-        }
-        if(!explored.containsValue((xy[1] - 1) - vr.walkSpeed()))
-        {
-            unexploredNeighbours.add(new Position(xy[0], xy[1]-1));
-        }
-
-         */
-        return unexploredNeighbours;
-    }
-
-    //CHANGING THIS MADE IT NO LONGER GO TO THE RIGHT
-    //change 2: removing vr.walkspeed again    RESULT: GOES BACK TO THE RIGHT AGAIN
-    //V3: changed if statement contents
-    public int[] getBestUnexplored(ArrayList<Position> unexploredNeighbours, Variables vr)
-    {
-        int count = 0;
-        int[] bestXY = new int[2];
-
-        for(Position unexplored : unexploredNeighbours)
-        {
-            int currentCount = 0;
-            int[] currentXY =  {unexplored.getX(), unexplored.getY()};
-
-            if(visited.containsKey((currentXY[0]-1)) || walls.containsKey((currentXY[0]-1)))
-            {
-                currentCount++;
-            }
-            if(visited.containsKey((currentXY[0]+1)) || walls.containsKey((currentXY[0]+1)))
-            {
-                currentCount++;
-            }
-            /* v3
-            if(visited.get((currentXY[0])).contains(currentXY[1] +1) || walls.get((currentXY[0])).contains(currentXY[1] +1))
-            {
-                currentCount++;
-            }
-            if(visited.get((currentXY[0])).contains(currentXY[1] -1) || walls.get((currentXY[0])).contains(currentXY[1] -1))
-            {
-                currentCount++;
-            }
-
-             */
-            //v2
-            if(visited.containsValue((currentXY[1]+1)) || walls.containsValue((currentXY[0]+1)))
-            {
-                currentCount++;
-            }
-            if(visited.containsValue((currentXY[0]-1)) || walls.containsValue((currentXY[0]-1)))
-            {
-                currentCount++;
-            }
-
-            if(currentCount > count){
-                count = currentCount;
-                bestXY[0] = currentXY[0];
-                bestXY[1] = currentXY[1];
-            }
-        }
-        return bestXY;
-    }
 
     //V2: Added else statement to if X statement RESULT: Doesn't change anything - REMOVED
     public void updateExploration(String[][] vision, int[] xy, Rotations rot) {
